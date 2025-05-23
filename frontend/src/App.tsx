@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import WorkshopsPage from './components/WorkshopsPage';
 import './App.css';
 
 // Componente para rutas protegidas
@@ -57,10 +57,10 @@ function AppContent() {
     <Router>
       <div className="App">
         <Routes>
-          {/* Ruta raíz - redirige basado en autenticación */}
+          {/* Ruta raíz */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
-          {/* Rutas públicas (solo para usuarios no autenticados) */}
+          {/* Rutas públicas */}
           <Route 
             path="/login" 
             element={
@@ -78,7 +78,7 @@ function AppContent() {
             } 
           />
           
-          {/* Rutas protegidas (solo para usuarios autenticados) */}
+          {/* Rutas protegidas */}
           <Route 
             path="/dashboard" 
             element={
@@ -88,18 +88,17 @@ function AppContent() {
             } 
           />
           
-          {/* Rutas futuras para otras funcionalidades */}
+          {/* RUTA WORKSHOPS REAL - CONECTA CON BASE DE DATOS */}
           <Route 
             path="/workshops" 
             element={
               <ProtectedRoute>
-                <div className="min-h-screen flex items-center justify-center">
-                  <h1 className="text-2xl font-bold">Talleres - Próximamente</h1>
-                </div>
+                <WorkshopsPage />
               </ProtectedRoute>
             } 
           />
           
+          {/* Otras rutas */}
           <Route 
             path="/bookings" 
             element={
@@ -122,7 +121,7 @@ function AppContent() {
             } 
           />
           
-          {/* Ruta 404 */}
+          {/* 404 */}
           <Route 
             path="*" 
             element={
@@ -146,7 +145,7 @@ function AppContent() {
   );
 }
 
-// Componente App principal con el proveedor de autenticación
+// Componente App principal
 function App() {
   return (
     <AuthProvider>
