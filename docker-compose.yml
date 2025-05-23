@@ -51,13 +51,12 @@ services:
     networks:
       - mynetwork
 
-  reservation-service:
+  reservation-service:    # (puedes renombrar "reservation-service" a "api_gateway")
     build: ./API_GATEWAY
     container_name: api_gateway
     ports:
       - "5004:5000"
     depends_on:
-      depends_on:
       - auth-service
       - booking-service
       - payment-service
