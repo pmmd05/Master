@@ -1,4 +1,4 @@
-
+# backend/workshops-service/main.py - ENFOQUE 2: RUTAS SIMPLES
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +12,7 @@ app = FastAPI(title="Workshops Service", version="1.2")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:5004"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -75,81 +75,137 @@ def create_table():
     conn.commit()
     cursor.close()
     conn.close()
+    print("[workshops-service] Tabla 'workshops' verificada/creada")
 
-@app.post("/api/workshops", summary="Registrar un nuevo taller", response_model=Workshop)
+# ✅ RUTAS SIMPLES - Coinciden con lo que envía el API Gateway proxy
+
+@app.post("/", summary="Registrar un nuevo taller", response_model=Workshop)
 def crear_taller(data: WorkshopCreate):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    try:
+        print(f"[workshops-service] Creando taller: {data.title}")
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM workshops WHERE title = %s", (data.title,))
-    if cursor.fetchone():
+        cursor.execute("SELECT * FROM workshops WHERE title = %s", (data.title,))
+        if cursor.fetchone():
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=409, detail="Ya existe un taller con este título")
+
+        cursor.execute("""
+            INSERT INTO workshops (title, description, category, date, max_participants, price)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (data.title, data.description, data.category, data.date, data.max_participants, data.price))
+        conn.commit()
+
+        cursor.execute("SELECT * FROM workshops WHERE title = %s", (data.title,))
+        taller = cursor.fetchone()
         cursor.close()
         conn.close()
-        raise HTTPException(status_code=409, detail="Ya existe un taller con este título")
 
-    cursor.execute("""
-        INSERT INTO workshops (title, description, category, date, max_participants, price)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (data.title, data.description, data.category, data.date, data.max_participants, data.price))
-    conn.commit()
+        print(f"[workshops-service] Taller creado exitosamente: ID {taller['id']}")
+        return taller
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[workshops-service] Error creando taller: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
-    cursor.execute("SELECT * FROM workshops WHERE title = %s", (data.title,))
-    taller = cursor.fetchone()
-    cursor.close()
-    conn.close()
-
-    return taller
-
-@app.get("/api/workshops", response_model=List[Workshop], summary="Listar todos los talleres disponibles")
+@app.get("/", response_model=List[Workshop], summary="Listar todos los talleres disponibles")
 def listar_talleres():
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT * FROM workshops
-        WHERE current_participants < max_participants
-        ORDER BY date ASC
-    """)
-    talleres = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    if not talleres:
-        raise HTTPException(status_code=404, detail="No hay talleres disponibles")
-    return talleres
+    try:
+        print("[workshops-service] Obteniendo lista de talleres")
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT * FROM workshops
+            WHERE current_participants < max_participants
+            ORDER BY date ASC
+        """)
+        talleres = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        if not talleres:
+            raise HTTPException(status_code=404, detail="No hay talleres disponibles")
+        
+        print(f"[workshops-service] Encontrados {len(talleres)} talleres disponibles")
+        return talleres
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[workshops-service] Error obteniendo talleres: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
-@app.get("/api/workshops/buscar", response_model=List[Workshop], summary="Buscar talleres por categoría o palabra clave")
+@app.get("/buscar", response_model=List[Workshop], summary="Buscar talleres por categoría o palabra clave")
 def buscar_talleres(
     categoria: Optional[str] = Query(None),
     palabra: Optional[str] = Query(None)
 ):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    try:
+        print(f"[workshops-service] Búsqueda - Categoría: {categoria}, Palabra: {palabra}")
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    sql = """
-        SELECT * FROM workshops
-        WHERE current_participants < max_participants
-    """
-    params = []
+        sql = """
+            SELECT * FROM workshops
+            WHERE current_participants < max_participants
+        """
+        params = []
 
-    if categoria:
-        sql += " AND category = %s"
-        params.append(categoria)
+        if categoria:
+            sql += " AND category = %s"
+            params.append(categoria)
 
-    if palabra:
-        sql += " AND (title LIKE %s OR description LIKE %s)"
-        palabra_busqueda = f"%{palabra}%"
-        params.extend([palabra_busqueda, palabra_busqueda])
+        if palabra:
+            sql += " AND (title LIKE %s OR description LIKE %s)"
+            palabra_busqueda = f"%{palabra}%"
+            params.extend([palabra_busqueda, palabra_busqueda])
 
-    sql += " ORDER BY date ASC"
-    cursor.execute(sql, params)
-    resultados = cursor.fetchall()
-    cursor.close()
-    conn.close()
+        sql += " ORDER BY date ASC"
+        cursor.execute(sql, params)
+        resultados = cursor.fetchall()
+        cursor.close()
+        conn.close()
 
-    if not resultados:
-        raise HTTPException(status_code=404, detail="No se encontraron talleres con los filtros especificados")
+        if not resultados:
+            raise HTTPException(status_code=404, detail="No se encontraron talleres con los filtros especificados")
 
-    return resultados
+        print(f"[workshops-service] Búsqueda completada: {len(resultados)} resultados")
+        return resultados
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[workshops-service] Error en búsqueda: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
-@app.get("/api/workshops/health", summary="Verifica si el microservicio está activo")
+@app.get("/health", summary="Verifica si el microservicio está activo")
 def health():
-    return {"status": "workshops-service ok"}
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return {"status": "workshops-service ok", "database": "connected"}
+    except Exception as e:
+        return {"status": "workshops-service error", "database": "disconnected", "error": str(e)}
+
+@app.get("/debug")
+def debug_info():
+    return {
+        "service": "workshops-service",
+        "approach": "Enfoque 2 - Rutas simples",
+        "routes": [
+            "/ (GET, POST) - Listar/Crear talleres",
+            "/buscar (GET) - Buscar talleres",
+            "/health (GET)",
+            "/debug (GET)"
+        ],
+        "proxy_info": "API Gateway: /api/v0/workshops/{path} → /{path}",
+        "database": {"host": "db", "name": "users_db"}
+    }

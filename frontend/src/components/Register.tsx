@@ -13,7 +13,9 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -24,6 +26,9 @@ const Register: React.FC = () => {
       ...prev,
       [name]: value
     }));
+    // Limpiar errores cuando el usuario empiece a escribir
+    if (error) setError('');
+    if (success) setSuccess('');
   };
 
   const validatePassword = (password: string): string[] => {
@@ -48,58 +53,93 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+    setDebugInfo(null);
     setIsLoading(true);
 
-    // Validaciones
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('Por favor, completa todos los campos');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.email.includes('@')) {
-      setError('Por favor, ingresa un email válido');
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.name.length < 2) {
-      setError('El nombre debe tener al menos 2 caracteres');
-      setIsLoading(false);
-      return;
-    }
-
-    const passwordErrors = validatePassword(formData.password);
-    if (passwordErrors.length > 0) {
-      setError(`La contraseña: ${passwordErrors.join(', ')}`);
-      setIsLoading(false);
-      return;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      setIsLoading(false);
-      return;
-    }
+    console.log('🚀 [REGISTER] Iniciando proceso de registro...');
+    console.log('📝 [REGISTER] Datos del formulario:', {
+      name: formData.name,
+      email: formData.email,
+      passwordLength: formData.password.length
+    });
 
     try {
+      // Validaciones del lado cliente
+      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        throw new Error('Por favor, completa todos los campos');
+      }
+
+      if (!formData.email.includes('@')) {
+        throw new Error('Por favor, ingresa un email válido');
+      }
+
+      if (formData.name.length < 2) {
+        throw new Error('El nombre debe tener al menos 2 caracteres');
+      }
+
+      const passwordErrors = validatePassword(formData.password);
+      if (passwordErrors.length > 0) {
+        throw new Error(`La contraseña: ${passwordErrors.join(', ')}`);
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error('Las contraseñas no coinciden');
+      }
+
+      console.log('✅ [REGISTER] Validaciones pasadas, llamando a register...');
+
+      // Intentar registro
       const success = await register({
         name: formData.name,
         email: formData.email,
         password: formData.password
       });
 
+      console.log('📊 [REGISTER] Resultado del registro:', success);
+      setDebugInfo({ step: 'register', success, timestamp: new Date().toLocaleTimeString() });
+
       if (success) {
-        navigate('/dashboard'); // Redirigir al dashboard después del registro
+        setSuccess('¡Registro exitoso! Redirigiendo al dashboard...');
+        console.log('🎉 [REGISTER] Registro exitoso, redirigiendo...');
+        
+        // Pequeño delay para mostrar el mensaje de éxito
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       } else {
-        setError('Error al registrar el usuario. Intenta nuevamente.');
+        throw new Error('El registro falló. Por favor intenta nuevamente.');
       }
+
     } catch (err: any) {
-      if (err.message.includes('ya registrado')) {
-        setError('Este email ya está registrado. Intenta con otro email.');
-      } else {
-        setError(err.message || 'Error de conexión. Intenta nuevamente.');
+      console.error('❌ [REGISTER] Error en registro:', err);
+      
+      // Determinar el tipo de error
+      let errorMessage = 'Error desconocido';
+      
+      if (err.message) {
+        errorMessage = err.message;
+      } else if (typeof err === 'string') {
+        errorMessage = err;
       }
+      
+      // Errores específicos comunes
+      if (errorMessage.includes('ya registrado') || errorMessage.includes('already')) {
+        errorMessage = 'Este email ya está registrado. Intenta con otro email o ve al login.';
+      } else if (errorMessage.includes('connection') || errorMessage.includes('network')) {
+        errorMessage = 'Error de conexión. Verifica que el servidor esté funcionando.';
+      } else if (errorMessage.includes('timeout')) {
+        errorMessage = 'El servidor tardó demasiado en responder. Intenta nuevamente.';
+      }
+
+      setError(errorMessage);
+      setDebugInfo({ 
+        step: 'error', 
+        error: err, 
+        message: errorMessage,
+        timestamp: new Date().toLocaleTimeString() 
+      });
+
     } finally {
       setIsLoading(false);
     }
@@ -121,6 +161,17 @@ const Register: React.FC = () => {
   };
 
   const passwordStrength = getPasswordStrength(formData.password);
+
+  // Función para test rápido
+  const fillTestData = () => {
+    const timestamp = Date.now();
+    setFormData({
+      name: 'Usuario Test',
+      email: `test${timestamp}@example.com`,
+      password: 'TestPass123!',
+      confirmPassword: 'TestPass123!'
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -258,9 +309,39 @@ const Register: React.FC = () => {
             </div>
           </div>
 
+          {/* Mensajes de error y éxito */}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-              {error}
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <span className="text-red-500">❌</span>
+                </div>
+                <div className="ml-3">
+                  <p className="font-medium">Error en el registro:</p>
+                  <p>{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <span className="text-green-500">✅</span>
+                </div>
+                <div className="ml-3">
+                  <p className="font-medium">{success}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Debug info (solo en desarrollo) */}
+          {debugInfo && (
+            <div className="bg-blue-50 border border-blue-200 text-blue-600 px-4 py-3 rounded-md text-xs">
+              <p className="font-medium">Debug Info ({debugInfo.timestamp}):</p>
+              <pre className="mt-1 overflow-auto">{JSON.stringify(debugInfo, null, 2)}</pre>
             </div>
           )}
 
@@ -281,10 +362,37 @@ const Register: React.FC = () => {
             </button>
           </div>
 
+          {/* Botón para llenar datos de prueba (solo en desarrollo) */}
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={fillTestData}
+              className="text-sm text-gray-500 hover:text-gray-700 underline"
+            >
+              Llenar datos de prueba
+            </button>
+          </div>
+
           <div className="text-xs text-gray-500 text-center">
             Al registrarte, aceptas nuestros términos y condiciones
           </div>
         </form>
+
+        {/* Enlaces útiles para debugging */}
+        <div className="text-center space-y-2">
+          <Link
+            to="/debug"
+            className="text-sm text-blue-600 hover:text-blue-800 underline block"
+          >
+            🔧 Panel de Debug
+          </Link>
+          <Link
+            to="/login"
+            className="text-sm text-gray-600 hover:text-gray-800 underline block"
+          >
+            ¿Ya tienes cuenta? Inicia sesión
+          </Link>
+        </div>
       </div>
     </div>
   );

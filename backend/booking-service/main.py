@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field
@@ -9,7 +8,7 @@ app = FastAPI(title="Booking Service", version="1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://localhost:5004"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,68 +56,116 @@ def create_table():
     conn.commit()
     cursor.close()
     conn.close()
+    print("[booking-service] Tabla 'bookings' verificada/creada")
 
-@app.post("/api/booking/reservar", summary="Reservar un taller con validación completa")
+# ✅ RUTAS SIMPLES - Coinciden con lo que envía el API Gateway proxy
+
+@app.post("/reservar", summary="Reservar un taller con validación completa")
 def reservar_taller(data: BookingRequest):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    try:
+        print(f"[booking-service] Nueva reserva: {data.user_email} -> taller {data.workshop_id}")
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM users WHERE email = %s", (data.user_email,))
-    usuario = cursor.fetchone()
-    if not usuario:
+        cursor.execute("SELECT * FROM users WHERE email = %s", (data.user_email,))
+        usuario = cursor.fetchone()
+        if not usuario:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="El usuario no está registrado")
+
+        cursor.execute("SELECT * FROM workshops WHERE id = %s", (data.workshop_id,))
+        taller = cursor.fetchone()
+        if not taller:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=404, detail="Taller no encontrado")
+        if taller["current_participants"] >= taller["max_participants"]:
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=400, detail="No hay cupos disponibles para este taller")
+
+        cursor.execute("SELECT * FROM bookings WHERE user_email = %s AND workshop_id = %s", 
+                       (data.user_email, data.workshop_id))
+        if cursor.fetchone():
+            cursor.close()
+            conn.close()
+            raise HTTPException(status_code=409, detail="Ya tienes una reserva para este taller")
+
+        cursor.execute("""
+            INSERT INTO bookings (user_email, workshop_id)
+            VALUES (%s, %s)
+        """, (data.user_email, data.workshop_id))
+
+        cursor.execute("""
+            UPDATE workshops
+            SET current_participants = current_participants + 1
+            WHERE id = %s
+        """, (data.workshop_id,))
+
+        conn.commit()
+        cursor.execute("SELECT * FROM bookings WHERE user_email = %s AND workshop_id = %s",
+                       (data.user_email, data.workshop_id))
+        reserva = cursor.fetchone()
         cursor.close()
         conn.close()
-        raise HTTPException(status_code=404, detail="El usuario no está registrado")
+        
+        print(f"[booking-service] Reserva creada exitosamente: ID {reserva['id']}")
+        return reserva
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[booking-service] Error en reserva: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
-    cursor.execute("SELECT * FROM workshops WHERE id = %s", (data.workshop_id,))
-    taller = cursor.fetchone()
-    if not taller:
-        cursor.close()
-        conn.close()
-        raise HTTPException(status_code=404, detail="Taller no encontrado")
-    if taller["current_participants"] >= taller["max_participants"]:
-        cursor.close()
-        conn.close()
-        raise HTTPException(status_code=400, detail="No hay cupos disponibles para este taller")
-
-    cursor.execute("SELECT * FROM bookings WHERE user_email = %s AND workshop_id = %s", 
-                   (data.user_email, data.workshop_id))
-    if cursor.fetchone():
-        cursor.close()
-        conn.close()
-        raise HTTPException(status_code=409, detail="Ya tienes una reserva para este taller")
-
-    cursor.execute("""
-        INSERT INTO bookings (user_email, workshop_id)
-        VALUES (%s, %s)
-    """, (data.user_email, data.workshop_id))
-
-    cursor.execute("""
-        UPDATE workshops
-        SET current_participants = current_participants + 1
-        WHERE id = %s
-    """, (data.workshop_id,))
-
-    conn.commit()
-    cursor.execute("SELECT * FROM bookings WHERE user_email = %s AND workshop_id = %s",
-                   (data.user_email, data.workshop_id))
-    reserva = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return reserva
-
-@app.get("/api/booking/usuario/{email}", response_model=list[BookingResponse], summary="Listar reservas por usuario")
+@app.get("/usuario/{email}", response_model=list[BookingResponse], summary="Listar reservas por usuario")
 def listar_reservas(email: EmailStr):
-    conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM bookings WHERE user_email = %s", (email,))
-    reservas = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    if not reservas:
-        raise HTTPException(status_code=404, detail="No se encontraron reservas")
-    return reservas
+    try:
+        print(f"[booking-service] Obteniendo reservas para: {email}")
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM bookings WHERE user_email = %s", (email,))
+        reservas = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        if not reservas:
+            raise HTTPException(status_code=404, detail="No se encontraron reservas")
+        
+        print(f"[booking-service] Encontradas {len(reservas)} reservas para {email}")
+        return reservas
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[booking-service] Error obteniendo reservas: {e}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
-@app.get("/api/booking/health")
+@app.get("/health")
 def health():
-    return {"status": "booking-service ok"}
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return {"status": "booking-service ok", "database": "connected"}
+    except Exception as e:
+        return {"status": "booking-service error", "database": "disconnected", "error": str(e)}
+
+@app.get("/debug")
+def debug_info():
+    return {
+        "service": "booking-service",
+        "approach": "Enfoque 2 - Rutas simples",
+        "routes": [
+            "/reservar (POST)",
+            "/usuario/{email} (GET)",
+            "/health (GET)",
+            "/debug (GET)"
+        ],
+        "proxy_info": "API Gateway: /api/v0/booking/{path} → /{path}",
+        "database": {"host": "db", "name": "users_db"}
+    }
