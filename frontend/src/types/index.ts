@@ -65,6 +65,11 @@ export interface BookingRequest {
   workshop_id: number;
 }
 
+// TIPO PARA RESERVAS CON INFORMACIÓN DE TALLERES
+export interface BookingWithWorkshop extends Booking {
+  workshop?: Workshop;
+}
+
 // Tipos para pagos
 export interface PaymentRequest {
   user_email: string;
