@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import WorkshopsPage from './components/WorkshopsPage';
+import BookingPage from './components/BookingPage';
 import './App.css';
 
 // Componente para rutas protegidas
@@ -94,6 +95,16 @@ function AppContent() {
             element={
               <ProtectedRoute>
                 <WorkshopsPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          {/* RUTA BOOKINGS */}
+          <Route 
+            path="/bookings" 
+            element={
+              <ProtectedRoute>
+                <BookingPage />
               </ProtectedRoute>
             } 
           />
