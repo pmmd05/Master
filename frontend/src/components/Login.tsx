@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import './estilos/login.css';
 
 const Login: React.FC = () => {
   const { login } = useAuth();
@@ -22,68 +23,84 @@ const Login: React.FC = () => {
 
   return (
     <>
-      {/* Fondo con efecto de traslucidez */}
-      <div className="fixed inset-0 bg-[url('/Fonfo.jpg')] bg-cover bg-center z-0">
-        <div className="absolute inset-0 bg-white bg-opacity-60"></div>
-      </div>
+      {/* Fondo con efecto de traslucidez mejorado */}
+      <div className="login-background"></div>
 
       {/* Contenido principal */}
-      <div className="min-h-screen flex justify-center items-center relative z-10">
-        <div className="form-wrapper">
-          <div className="container-centered">  
-            <div className="card">
-              {/* Logo Mastercook */}
-              <img
-                src="/Logo.png.png"
-                alt="Logo Mastercook"
-                className="mx-auto mb-4 block"
-                style={{ height: "450px", width: "auto" }}
-              />
-              <h2 className="section-title">Iniciar sesión</h2>
+      <div className="login-container">
+        <div className="login-form-wrapper">
+          <div className="login-card fade-in">
+            {/* Logo Mastercook */}
+            <img
+              src="/Logo.png.png"
+              alt="Logo Mastercook"
+              className="login-logo"
+            />
+            
+            {/* Título de login */}
+            <h2 className="login-title">Iniciar sesión</h2>
 
-              {error && (
-                <p className="text-red-500 mb-4">{error}</p>
-              )}
+            {/* Mensaje de error */}
+            {error && (
+              <div className="login-error slide-in">
+                <span className="login-error-icon">❌</span>
+                <p>{error}</p>
+              </div>
+            )}
 
-              <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
-                <div>
-                  <label className="label-field" style={{ fontSize: '2rem' }}>Email</label>
-                  <input
-                    type="email"
-                    className="input-field"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="label-field" style={{ fontSize: '2rem' }}>Contraseña</label>
-                  <input
-                    type="password"
-                    className="input-field"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className={`btn-primary w-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            {/* Formulario de login */}
+            <form onSubmit={handleSubmit} className="login-form">
+              {/* Campo Email */}
+              <div className="login-field-group">
+                <label className="label-field">
+                  <span>📧</span>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="input-field"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="tu@email.com"
                   disabled={loading}
-                >
-                  {loading ? 'Cargando...' : 'Entrar'}
-                </button>
-              </form>
+                  required
+                />
+              </div>
 
-              <p className="text-helper mt-4 text-center">
-                ¿No tienes cuenta?{' '}
-                <a href="/register" className="text-indigo-600 hover:underline">
-                  Regístrate
-                </a>
-              </p>
-            </div>
+              {/* Campo Contraseña */}
+              <div className="login-field-group">
+                <label className="label-field">
+                  <span>🔒</span>
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  className="input-field"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Escribe tu contraseña"
+                  disabled={loading}
+                  required
+                />
+              </div>
+
+              {/* Botón de login */}
+              <button
+                type="submit"
+                className={`btn-primary login-button ${loading ? 'login-loading' : ''}`}
+                disabled={loading}
+              >
+                {loading ? 'Cargando...' : 'Entrar'}
+              </button>
+            </form>
+
+            {/* Texto de ayuda */}
+            <p className="login-help-text">
+              ¿No tienes cuenta?{' '}
+              <a href="/register" className="link-primary">
+                Regístrate aquí
+              </a>
+            </p>
           </div>
         </div>
       </div>
