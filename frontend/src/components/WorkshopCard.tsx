@@ -1,6 +1,7 @@
-// frontend/src/components/WorkshopCard.tsx - VERSIÓN SIMPLE QUE FUNCIONA
+// frontend/src/components/WorkshopCard.tsx - CORREGIDO
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import PaymentConfirmationModal from './PaymentConfirmationModal'; // ← Nombre correcto
 
 interface Workshop {
   id: number;
@@ -11,6 +12,14 @@ interface Workshop {
   max_participants: number;
   current_participants: number;
   price: number;
+}
+
+interface Booking {
+  id: number;
+  user_email: string;
+  workshop_id: number;
+  status: "Confirmada" | "Cancelada" | "Completada";
+  payment_status: "Pendiente" | "Pagado";
 }
 
 interface WorkshopCardProps {
@@ -24,6 +33,10 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
   const [showModal, setShowModal] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'success' | 'error'>('success');
+  
+  // Estados para el flujo de pago
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
 
   // Formatear fecha
   const formatDate = (dateString: string) => {
@@ -130,17 +143,17 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
       const booking = await response.json();
       console.log('✅ [WORKSHOP_CARD] Reserva exitosa:', booking);
 
-      setMessage(`¡Reserva confirmada para "${workshop.title}"! ID: ${booking.id}`);
-      setMessageType('success');
+      // Guardar la reserva para el flujo de pago
+      setCurrentBooking(booking);
       setShowModal(false);
+      
+      // Mostrar directamente el modal de pago
+      setShowPaymentModal(true);
 
-      // Callback de éxito
+      // Callback de éxito (para refrescar listas)
       if (onBookingSuccess) {
         setTimeout(onBookingSuccess, 1000);
       }
-
-      // Auto ocultar mensaje después de 5 segundos
-      setTimeout(() => setMessage(null), 5000);
 
     } catch (error: any) {
       console.error('❌ [WORKSHOP_CARD] Error en reserva:', error);
@@ -168,6 +181,22 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Manejar "pagar más tarde"
+  const handlePayLater = () => {
+    setShowPaymentModal(false);
+    setMessage(`¡Reserva confirmada para "${workshop.title}"! Puedes pagar más tarde desde "Mis Reservas".`);
+    setMessageType('success');
+    setTimeout(() => setMessage(null), 5000);
+  };
+
+  // Manejar cierre del modal
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    setMessage(`Reserva confirmada para "${workshop.title}". Puedes completar el pago desde "Mis Reservas".`);
+    setMessageType('success');
+    setTimeout(() => setMessage(null), 5000);
   };
 
   return (
@@ -263,7 +292,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
           {/* Info adicional */}
           <div className="mt-3 text-center">
             <p className="text-xs text-gray-500">
-              💡 Pago pendiente después de reservar
+              💡 Puedes pagar inmediatamente o más tarde
             </p>
           </div>
 
@@ -274,7 +303,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
         </div>
       </div>
 
-      {/* Modal de confirmación */}
+      {/* Modal de confirmación de reserva */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
@@ -293,7 +322,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
 
               <p className="text-sm text-gray-500 mb-6">
                 ¿Confirmas que quieres reservar este taller?<br/>
-                El pago quedará pendiente y podrás completarlo desde "Mis Reservas".
+                Podrás elegir pagar ahora o más tarde.
               </p>
 
               <div className="flex gap-3">
@@ -317,6 +346,22 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
         </div>
       )}
 
+      {/* Modal de confirmación de pago - CORREGIDO */}
+      {showPaymentModal && currentBooking && (
+        <PaymentConfirmationModal
+          isOpen={showPaymentModal}
+          booking={{
+            id: currentBooking.id,
+            workshop_id: workshop.id,
+            workshop_title: workshop.title,
+            workshop_price: workshop.price,
+            user_email: currentBooking.user_email
+          }}
+          onClose={handleClosePaymentModal}
+          onPayLater={handlePayLater}
+        />
+      )}
+
       {/* Mensaje de notificación */}
       {message && (
         <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${
@@ -336,7 +381,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
             </div>
             <div className="ml-3 flex-1">
               <p className="text-sm font-medium whitespace-pre-line">{message}</p>
-              {messageType === 'success' && (
+              {messageType === 'success' && message.includes('confirmada') && (
                 <div className="mt-2">
                   <button
                     onClick={() => window.location.href = '/bookings'}
