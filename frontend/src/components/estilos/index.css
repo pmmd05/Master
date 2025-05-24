@@ -19,6 +19,7 @@
 /* Estilos específicos por componente */
 @import './login.css';
 @import './register.css';
+@import './dashboard.css';
 
 /* ========================================
    DOCUMENTACIÓN DE USO
@@ -32,6 +33,7 @@
  *    import '../estilos/index.css';
  *    // o específicamente:
  *    import '../estilos/login.css';
+ *    import '../estilos/dashboard.css';
  *    ```
  * 
  * 2. CLASES PRINCIPALES DISPONIBLES:
@@ -40,12 +42,22 @@
  *    - .form-wrapper: Contenedor principal de formularios
  *    - .container-centered: Contenedor centrado con max-width
  *    - .card: Tarjeta base con sombras y bordes
+ *    - .dashboard-container: Contenedor principal del dashboard
+ *    - .dashboard-main-content: Contenido principal del dashboard
  * 
  *    FORMULARIOS:
  *    - .label-field: Etiquetas de campos
  *    - .input-field: Campos de entrada
  *    - .btn-primary: Botón principal
  *    - .link-primary: Enlaces principales
+ * 
+ *    DASHBOARD:
+ *    - .dashboard-hero: Sección hero del dashboard
+ *    - .dashboard-nav-card: Tarjetas de navegación
+ *    - .dashboard-quick-actions: Contenedor de acciones rápidas
+ *    - .dashboard-stats: Sección de estadísticas
+ *    - .dashboard-system-info: Información del sistema
+ *    - .dashboard-help-info: Información de ayuda
  * 
  *    MENSAJES:
  *    - .message-error: Mensajes de error
@@ -62,6 +74,8 @@
  *    - .icon-sm: Iconos pequeños (1rem)
  *    - .icon-md: Iconos medianos (1.25rem)
  *    - .icon-lg: Iconos grandes (1.5rem)
+ *    - .dashboard-nav-card-icon: Iconos de navegación del dashboard (1.5rem)
+ *    - .dashboard-hero-feature-icon: Iconos de características hero (1rem)
  * 
  *    ANIMACIONES:
  *    - .fade-in: Animación de aparición
@@ -102,6 +116,13 @@
  *    - Texto Principal: #333333 (Charcoal Gray)
  *    - Texto Secundario: #666666 (Ash Gray)
  *    - Fondo Claro: #FAFAFA (Snow White)
+ * 
+ * 6. DASHBOARD ESPECÍFICO:
+ *    - Diseño responsive con breakpoints específicos
+ *    - Animaciones suaves con fadeIn y slideIn
+ *    - Grid adaptativo para diferentes tamaños de pantalla
+ *    - Iconos optimizados para mejor usabilidad
+ *    - Espaciado coherente en todos los componentes
  */
 
 /* ========================================
@@ -242,12 +263,16 @@
 @media print {
   .no-print { display: none !important; }
   
-  .card {
+  .card,
+  .dashboard-nav-card,
+  .dashboard-quick-actions,
+  .dashboard-stats {
     box-shadow: none !important;
     border: 1px solid #ccc !important;
   }
   
-  .btn-primary {
+  .btn-primary,
+  .dashboard-help-button-primary {
     background: #333 !important;
     color: white !important;
   }
@@ -274,7 +299,9 @@
     border-width: 3px;
   }
   
-  .btn-primary {
+  .btn-primary,
+  .dashboard-nav-card,
+  .dashboard-quick-action-button {
     border: 2px solid #000;
   }
 }
@@ -290,7 +317,13 @@
   }
   
   .fade-in,
-  .slide-in {
+  .slide-in,
+  .dashboard-hero,
+  .dashboard-nav-card,
+  .dashboard-quick-actions,
+  .dashboard-stats,
+  .dashboard-system-info,
+  .dashboard-help-info {
     animation: none !important;
   }
 }
@@ -298,29 +331,11 @@
 /* Focus visible mejorado */
 .input-field:focus-visible,
 .btn-primary:focus-visible,
-.link-primary:focus-visible {
+.link-primary:focus-visible,
+.dashboard-nav-card:focus-visible,
+.dashboard-quick-action-button:focus-visible,
+.dashboard-help-button:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* ========================================
-   DEBUGGING (solo en desarrollo)
-   ======================================== */
-
-/*
- * Descomentar estas líneas para debugging visual:
- */
-
-/*
-.debug * {
-  outline: 1px solid red !important;
-}
-
-.debug .card {
-  outline: 2px solid blue !important;
-}
-
-.debug .form-wrapper {
-  outline: 2px solid green !important;
-}
-*/

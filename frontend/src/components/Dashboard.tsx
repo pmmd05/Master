@@ -1,8 +1,9 @@
-// frontend/src/components/Dashboard.tsx - DISEÑO MASTERCOOK ACADEMY ACTUALIZADO
+// frontend/src/components/Dashboard.tsx
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
+import './estilos/dashboard.css';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -11,234 +12,226 @@ const Dashboard: React.FC = () => {
   const navigationItems = [
     {
       title: 'Explorar Talleres',
-      description: 'Descubre nuestros talleres de cocina disponibles',
+      description: 'Descubre nuestros talleres de cocina disponibles y reserva tu lugar en clases exclusivas',
       icon: (
-        <svg className="icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="dashboard-nav-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      color: 'bg-indigo-500',
-      hoverColor: 'hover:bg-indigo-600',
       path: '/workshops',
       emoji: '🍳'
     },
     {
       title: 'Mis Reservas',
-      description: 'Gestiona tus reservas de talleres',
+      description: 'Gestiona tus reservas de talleres, revisa horarios y mantente al día con tus clases',
       icon: (
-        <svg className="icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="dashboard-nav-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      color: 'bg-green-500',
-      hoverColor: 'hover:bg-green-600',
       path: '/bookings',
       emoji: '📅'
     },
     {
       title: 'Historial de Pagos',
-      description: 'Revisa tus pagos y transacciones',
+      description: 'Revisa tus pagos, transacciones y mantén un control de tus inversiones culinarias',
       icon: (
-        <svg className="icon-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="dashboard-nav-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
         </svg>
       ),
-      color: 'bg-yellow-500',
-      hoverColor: 'hover:bg-yellow-600',
       path: '/payments',
       emoji: '💳'
     },
   ];
 
+  const quickActions = [
+    { emoji: '🍳', text: 'Explorar Talleres', action: () => navigate('/workshops') },
+    { emoji: '📅', text: 'Mis Reservas', action: () => navigate('/bookings') },
+    { emoji: '💳', text: 'Pagos', action: () => navigate('/payments') },
+    { emoji: '🔧', text: 'Debug', action: () => navigate('/debug') },
+    { emoji: '🔄', text: 'Recargar', action: () => window.location.reload() },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="dashboard-container">
       <Navbar />
       
-      {/* Contenido principal con padding para navbar fija */}
-      <div className="main-content">
-        <div className="container-centered py-8">
-          
-          {/* Hero Section */}
-          <div className="hero-section mb-8">
-            <div className="hero-content text-center">
-              <h1 className="text-4xl font-bold mb-4">
-                ¡Bienvenido de vuelta, {user?.name?.split(' ')[0]}!
-              </h1>
-              <p className="text-lg text-red-100 mb-6 max-w-2xl mx-auto">
-                Estamos emocionados de tenerte aquí. Explora nuestros talleres de cocina y descubre nuevas habilidades culinarias en un ambiente profesional y acogedor.
-              </p>
-              <div className="flex flex-wrap justify-center gap-6 text-sm">
-                <div className="flex items-center">
-                  <svg className="icon-sm mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Instructores Expertos
-                </div>
-                <div className="flex items-center">
-                  <svg className="icon-sm mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm8 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V8z" clipRule="evenodd" />
-                  </svg>
-                  Clases Prácticas
-                </div>
-                <div className="flex items-center">
-                  <svg className="icon-sm mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 2L3 7v11a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V7l-7-5z" clipRule="evenodd" />
-                  </svg>
-                  Ambiente Acogedor
-                </div>
+      <main className="dashboard-main-content">
+        
+        {/* Hero Section */}
+        <section className="dashboard-hero">
+          <div className="dashboard-hero-content">
+            <h1 className="dashboard-hero-title">
+              ¡Bienvenido de vuelta, {user?.name?.split(' ')[0]}!
+            </h1>
+            <p className="dashboard-hero-subtitle">
+              Estamos emocionados de tenerte aquí. Explora nuestros talleres de cocina y descubre nuevas habilidades culinarias en un ambiente profesional y acogedor.
+            </p>
+            <div className="dashboard-hero-features">
+              <div className="dashboard-hero-feature">
+                <svg className="dashboard-hero-feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                Instructores Expertos
+              </div>
+              <div className="dashboard-hero-feature">
+                <svg className="dashboard-hero-feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm8 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V8z" clipRule="evenodd" />
+                </svg>
+                Clases Prácticas
+              </div>
+              <div className="dashboard-hero-feature">
+                <svg className="dashboard-hero-feature-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2L3 7v11a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V7l-7-5z" clipRule="evenodd" />
+                </svg>
+                Ambiente Acogedor
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Navegación principal con nueva paleta */}
-          <div className="workshops-grid mb-8">
-            {navigationItems.map((item, index) => (
+        {/* Navegación principal */}
+        <section className="dashboard-navigation-grid">
+          {navigationItems.map((item, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => {
+                console.log(`🔄 [DASHBOARD] Navegando a: ${item.path}`);
+                navigate(item.path);
+              }}
+              className="dashboard-nav-card"
+            >
+              <div className="dashboard-nav-card-header">
+                <div className="dashboard-nav-card-icon-container">
+                  {item.icon}
+                </div>
+                <div className="dashboard-nav-card-title-container">
+                  <span className="dashboard-nav-card-emoji">{item.emoji}</span>
+                  <h3 className="dashboard-nav-card-title">{item.title}</h3>
+                </div>
+              </div>
+              <p className="dashboard-nav-card-description">{item.description}</p>
+            </button>
+          ))}
+        </section>
+
+        {/* Acciones rápidas */}
+        <section className="dashboard-quick-actions">
+          <h3 className="dashboard-section-title">
+            <span className="dashboard-section-title-emoji">⚡</span>
+            Acciones Rápidas
+          </h3>
+          <div className="dashboard-quick-actions-grid">
+            {quickActions.map((action, index) => (
               <button
                 key={index}
-                onClick={() => {
-                  console.log(`🔄 [DASHBOARD] Navegando a: ${item.path}`);
-                  navigate(item.path);
-                }}
-                className="workshop-card text-left p-8 group"
+                type="button"
+                onClick={action.action}
+                className="dashboard-quick-action-button"
               >
-                <div className="flex items-center mb-6">
-                  <div className="bg-red-100 rounded-xl p-4 mr-4 group-hover:bg-red-200 transition-colors duration-300">
-                    <div className="text-red-600">
-                      {item.icon}
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center">
-                      <span className="text-3xl mr-3">{item.emoji}</span>
-                      <h3 className="text-2xl font-bold text-gray-900 group-hover:text-red-600 transition-colors duration-300">
-                        {item.title}
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  {item.description}
-                </p>
+                <span className="dashboard-quick-action-emoji">{action.emoji}</span>
+                <span className="dashboard-quick-action-text">{action.text}</span>
               </button>
             ))}
           </div>
+        </section>
 
-          {/* Panel de acciones rápidas */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-200">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <span className="mr-3">⚡</span>
-              Acciones Rápidas
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <button
-                onClick={() => navigate('/workshops')}
-                className="category-card text-center py-6"
-              >
-                <span className="text-3xl mb-3 block">🍳</span>
-                <span className="text-sm font-medium">Explorar Talleres</span>
-              </button>
-              <button
-                onClick={() => navigate('/bookings')}
-                className="category-card text-center py-6"
-              >
-                <span className="text-3xl mb-3 block">📅</span>
-                <span className="text-sm font-medium">Mis Reservas</span>
-              </button>
-              <button
-                onClick={() => navigate('/payments')}
-                className="category-card text-center py-6"
-              >
-                <span className="text-3xl mb-3 block">💳</span>
-                <span className="text-sm font-medium">Pagos</span>
-              </button>
-              <button
-                onClick={() => navigate('/debug')}
-                className="category-card text-center py-6"
-              >
-                <span className="text-3xl mb-3 block">🔧</span>
-                <span className="text-sm font-medium">Debug</span>
-              </button>
-              <button
-                onClick={() => window.location.reload()}
-                className="category-card text-center py-6"
-              >
-                <span className="text-3xl mb-3 block">🔄</span>
-                <span className="text-sm font-medium">Recargar</span>
-              </button>
+        {/* Estadísticas de usuario */}
+        <section className="dashboard-stats">
+          <h3 className="dashboard-section-title">
+            <span className="dashboard-section-title-emoji">📊</span>
+            Tu Actividad en MasterCook
+          </h3>
+          <div className="dashboard-stats-grid">
+            <div className="dashboard-stat-card dashboard-stat-card-red">
+              <div className="dashboard-stat-number dashboard-stat-number-red">0</div>
+              <div className="dashboard-stat-label dashboard-stat-label-red">Talleres Reservados</div>
+              <div className="dashboard-stat-sublabel dashboard-stat-sublabel-red">Este mes</div>
+            </div>
+            <div className="dashboard-stat-card dashboard-stat-card-green">
+              <div className="dashboard-stat-number dashboard-stat-number-green">0</div>
+              <div className="dashboard-stat-label dashboard-stat-label-green">Talleres Completados</div>
+              <div className="dashboard-stat-sublabel dashboard-stat-sublabel-green">Total</div>
+            </div>
+            <div className="dashboard-stat-card dashboard-stat-card-yellow">
+              <div className="dashboard-stat-number dashboard-stat-number-yellow">0</div>
+              <div className="dashboard-stat-label dashboard-stat-label-yellow">Certificados Obtenidos</div>
+              <div className="dashboard-stat-sublabel dashboard-stat-sublabel-yellow">Disponibles próximamente</div>
             </div>
           </div>
+        </section>
 
-          {/* Estadísticas de usuario */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-200">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <span className="mr-3">📊</span>
-              Tu Actividad en MasterCook
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-red-50 rounded-xl border border-red-200">
-                <div className="text-4xl font-bold text-red-600 mb-2">0</div>
-                <div className="text-sm text-red-800 font-medium">Talleres Reservados</div>
-                <div className="text-xs text-red-600 mt-1">Este mes</div>
-              </div>
-              <div className="text-center p-6 bg-green-50 rounded-xl border border-green-200">
-                <div className="text-4xl font-bold text-green-600 mb-2">0</div>
-                <div className="text-sm text-green-800 font-medium">Talleres Completados</div>
-                <div className="text-xs text-green-600 mt-1">Total</div>
-              </div>
-              <div className="text-center p-6 bg-yellow-50 rounded-xl border border-yellow-200">
-                <div className="text-4xl font-bold text-yellow-600 mb-2">0</div>
-                <div className="text-sm text-yellow-800 font-medium">Certificados Obtenidos</div>
-                <div className="text-xs text-yellow-600 mt-1">Disponibles próximamente</div>
-              </div>
+        {/* Información de estado del sistema */}
+        <section className="dashboard-system-info">
+          <h3 className="dashboard-system-info-title">
+            <span className="dashboard-system-info-title-emoji">ℹ️</span>
+            Estado del Sistema
+          </h3>
+          <div className="dashboard-system-info-content">
+            <div className="dashboard-system-info-item">
+              <span className="dashboard-system-info-bullet">•</span>
+              <span><strong>Usuario:</strong> {user?.email} (ID: {user?.id})</span>
+            </div>
+            <div className="dashboard-system-info-item">
+              <span className="dashboard-system-info-bullet">•</span>
+              <span><strong>Token:</strong> {localStorage.getItem('authToken') ? '✅ Activo' : '❌ No disponible'}</span>
+            </div>
+            <div className="dashboard-system-info-item">
+              <span className="dashboard-system-info-bullet">•</span>
+              <span>
+                <strong>Debug Panel:</strong>{' '}
+                <button
+                  type="button"
+                  onClick={() => navigate('/debug')}
+                  className="dashboard-system-info-link"
+                >
+                  Ir al panel de debug
+                </button>
+              </span>
+            </div>
+            <div className="dashboard-system-info-item">
+              <span className="dashboard-system-info-bullet">•</span>
+              <span><strong>Soporte:</strong> Si tienes problemas con reservas, usa el panel de debug para diagnosticar</span>
             </div>
           </div>
+        </section>
 
-          {/* Información de estado del sistema */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
-            <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center">
-              <span className="mr-2">ℹ️</span>
-              Estado del Sistema
-            </h3>
-            <div className="text-blue-700 space-y-2 text-sm">
-              <p>• <strong>Usuario:</strong> {user?.email} (ID: {user?.id})</p>
-              <p>• <strong>Token:</strong> {localStorage.getItem('authToken') ? '✅ Activo' : '❌ No disponible'}</p>
-              <p>• <strong>Debug Panel:</strong> <button onClick={() => navigate('/debug')} className="underline hover:text-blue-900 transition-colors">Ir al panel de debug</button></p>
-              <p>• <strong>Soporte:</strong> Si tienes problemas con reservas, usa el panel de debug para diagnosticar</p>
-            </div>
+        {/* Información de ayuda */}
+        <section className="dashboard-help-info">
+          <h3 className="dashboard-help-info-title">
+            <span className="dashboard-help-info-title-emoji">🆘</span>
+            ¿Necesitas Ayuda?
+          </h3>
+          <p className="dashboard-help-info-description">
+            Si experimentas problemas técnicos con las reservas o pagos, tenemos herramientas de diagnóstico disponibles:
+          </p>
+          <div className="dashboard-help-buttons">
+            <button 
+              type="button"
+              onClick={() => navigate('/debug')}
+              className="dashboard-help-button dashboard-help-button-secondary"
+            >
+              🔧 Panel de Debug
+            </button>
+            <button 
+              type="button"
+              onClick={() => window.location.reload()}
+              className="dashboard-help-button dashboard-help-button-outline"
+            >
+              🔄 Recargar Página
+            </button>
+            <button 
+              type="button"
+              onClick={() => navigate('/workshops')}
+              className="dashboard-help-button dashboard-help-button-primary"
+            >
+              🍳 Ver Talleres
+            </button>
           </div>
-
-          {/* Información de ayuda */}
-          <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-orange-900 mb-3 flex items-center">
-              <span className="mr-2">🆘</span>
-              ¿Necesitas Ayuda?
-            </h3>
-            <p className="text-orange-700 mb-4">
-              Si experimentas problemas técnicos con las reservas o pagos, tenemos herramientas de diagnóstico disponibles:
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <button 
-                onClick={() => navigate('/debug')}
-                className="btn-secondary"
-              >
-                🔧 Panel de Debug
-              </button>
-              <button 
-                onClick={() => window.location.reload()}
-                className="btn-outline"
-              >
-                🔄 Recargar Página
-              </button>
-              <button 
-                onClick={() => navigate('/workshops')}
-                className="btn-primary"
-              >
-                🍳 Ver Talleres
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };
