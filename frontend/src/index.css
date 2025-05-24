@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /*
-  Paleta de Colores MasterCook Academy
-  Aplicando los colores exactos de la paleta proporcionada
+  Paleta de Colores MasterCook Academy - EXACTA
+  Basada en la paleta proporcionada en las imágenes
 */
 :root {
   /* === PALETA MASTERCOOK ACADEMY === */
@@ -36,71 +36,64 @@
   /* Fondo Claro - Snow White */
   --color-background: #FAFAFA;
   --color-background-pure: #FFFFFF;
-  --color-background-overlay: rgba(255, 255, 255, 0.9);
+  --color-background-overlay: rgba(255, 255, 255, 0.95);
 
   /* === CONFIGURACIÓN DE COMPONENTES === */
   
-  /* Wrapper/Cards */
-  --wrapper-bg: var(--color-secondary);
-  --wrapper-border-radius: 1rem;
-  --wrapper-shadow: 0 8px 24px rgba(51, 51, 51, 0.15);
+  /* Navbar */
+  --navbar-height: 80px;
+  --navbar-bg: var(--color-background-pure);
+  --navbar-shadow: 0 2px 12px rgba(51, 51, 51, 0.08);
+  --navbar-border: var(--color-secondary);
+
+  /* Cards */
   --card-bg: var(--color-background-pure);
-  --card-shadow: 0 4px 12px rgba(51, 51, 51, 0.1);
-  --card-hover-shadow: 0 8px 24px rgba(51, 51, 51, 0.15);
+  --card-border: var(--color-secondary);
+  --card-shadow: 0 4px 20px rgba(51, 51, 51, 0.08);
+  --card-hover-shadow: 0 8px 32px rgba(51, 51, 51, 0.12);
+  --card-border-radius: 16px;
+
+  /* Workshop Cards */
+  --workshop-card-bg: linear-gradient(135deg, var(--color-background-pure) 0%, var(--color-secondary) 100%);
+  --workshop-card-border: 2px solid var(--color-secondary-dark);
+  --workshop-card-hover-border: 2px solid var(--color-accent-light);
+
+  /* Booking Cards */
+  --booking-card-bg: linear-gradient(135deg, var(--color-background-pure) 0%, #FFF8F0 100%);
+  --booking-card-border: 2px solid #F0E6D6;
 
   /* Botones */
   --btn-primary-bg: var(--color-primary);
   --btn-primary-bg-hover: var(--color-primary-hover);
   --btn-primary-text: var(--color-background-pure);
-  --btn-primary-font-size: 1rem;
-  --btn-primary-padding-vertical: 0.875rem;
-  --btn-primary-padding-horizontal: 1.75rem;
+  --btn-primary-shadow: 0 4px 12px rgba(217, 79, 79, 0.3);
 
   --btn-secondary-bg: var(--color-accent);
   --btn-secondary-bg-hover: var(--color-accent-hover);
   --btn-secondary-text: var(--color-background-pure);
+  --btn-secondary-shadow: 0 4px 12px rgba(107, 142, 35, 0.3);
 
   --btn-outline-border: var(--color-accent);
   --btn-outline-text: var(--color-accent);
   --btn-outline-bg-hover: var(--color-accent);
 
-  /* Tipografía */
-  --section-title-size: 2.5rem;
-  --section-title-color: var(--color-text-primary);
-  --label-field-color: var(--color-text-secondary);
-  --text-helper-color: var(--color-text-secondary);
-  --text-helper-font-size: 0.875rem;
-
   /* Inputs */
-  --input-border: var(--color-accent);
-  --input-focus-ring: var(--color-accent-light);
+  --input-border: var(--color-secondary-dark);
+  --input-focus-border: var(--color-accent);
+  --input-focus-ring: rgba(107, 142, 35, 0.2);
   --input-bg: var(--color-background-pure);
   --input-text: var(--color-text-primary);
-  --input-font-size: 1rem;
-  --input-padding-vertical: 0.75rem;
-  --input-padding-horizontal: 1rem;
-  --input-spacing: 1.5rem;
-
-  /* Navegación */
-  --nav-bg: var(--color-background-pure);
-  --nav-border: var(--color-secondary);
-  --nav-text: var(--color-text-primary);
-  --nav-link-hover: var(--color-primary);
-
-  /* Estados */
-  --success-color: var(--color-accent);
-  --warning-color: #F59E0B;
-  --error-color: var(--color-primary);
-  --info-color: #3B82F6;
 
   /* Efectos y animaciones */
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.15s ease-in-out;
   --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-  /* Contenedores */
-  --container-max-w: 80rem;
-  --container-padding: 1rem;
+  /* Iconos */
+  --icon-size-sm: 16px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+  --icon-size-xl: 32px;
 }
 
 /* === BASE STYLES === */
@@ -110,43 +103,114 @@ html, body {
   padding: 0;
   background-color: var(--color-background);
   color: var(--color-text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
 }
 
 /* === COMPONENTES PRINCIPALES === */
 @layer components {
 
-  /* Form Wrapper */
-  .form-wrapper {
-    width: 90%;
-    max-width: 500px;
-    background-color: var(--wrapper-bg);
-    padding: 2.5rem;
-    border-radius: var(--wrapper-border-radius);
-    box-shadow: var(--wrapper-shadow);
+  /* Navbar Superior */
+  .navbar-mastercook {
+    @apply fixed top-0 left-0 right-0 z-50 px-6 py-4 transition-all duration-300;
+    height: var(--navbar-height);
+    background-color: var(--navbar-bg);
+    box-shadow: var(--navbar-shadow);
+    border-bottom: 1px solid var(--navbar-border);
     backdrop-filter: blur(10px);
-    transition: var(--transition-smooth);
   }
 
-  .form-wrapper:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(51, 51, 51, 0.2);
+  .navbar-content {
+    @apply flex items-center justify-between max-w-7xl mx-auto;
   }
 
-  /* Botón Primario */
+  .navbar-logo {
+    @apply flex items-center space-x-3;
+  }
+
+  .navbar-logo img {
+    height: 48px;
+    width: auto;
+  }
+
+  .navbar-brand {
+    @apply text-xl font-bold;
+    color: var(--color-text-primary);
+  }
+
+  .navbar-nav {
+    @apply hidden md:flex items-center space-x-6;
+  }
+
+  .navbar-link {
+    @apply px-3 py-2 rounded-lg font-medium transition-all duration-300 text-sm;
+    color: var(--color-text-secondary);
+  }
+
+  .navbar-link:hover {
+    color: var(--color-primary);
+    background-color: var(--color-secondary);
+    transform: translateY(-1px);
+  }
+
+  .navbar-link.active {
+    color: var(--color-primary);
+    background-color: var(--color-secondary);
+  }
+
+  .navbar-user {
+    @apply flex items-center space-x-3;
+  }
+
+  .navbar-avatar {
+    @apply w-8 h-8 rounded-full bg-gradient-to-r from-red-400 to-red-500 flex items-center justify-center text-white text-sm font-medium;
+  }
+
+  /* Body con padding para navbar fija */
+  .main-content {
+    padding-top: var(--navbar-height);
+    min-height: 100vh;
+  }
+
+  /* Workshop Cards */
+  .workshop-card {
+    @apply rounded-2xl p-6 transition-all duration-500 transform cursor-pointer;
+    background: var(--workshop-card-bg);
+    border: var(--workshop-card-border);
+    box-shadow: var(--card-shadow);
+  }
+
+  .workshop-card:hover {
+    border: var(--workshop-card-hover-border);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--card-hover-shadow);
+  }
+
+  /* Booking Cards */
+  .booking-card {
+    @apply rounded-2xl p-6 transition-all duration-500 transform;
+    background: var(--booking-card-bg);
+    border: var(--booking-card-border);
+    box-shadow: var(--card-shadow);
+  }
+
+  .booking-card:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: var(--card-hover-shadow);
+  }
+
+  /* Botones */
   .btn-primary {
-    @apply px-6 py-3 text-base font-semibold rounded-lg shadow-lg transition-all duration-300 transform;
+    @apply px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform;
     background-color: var(--btn-primary-bg);
     color: var(--btn-primary-text);
-    font-size: var(--btn-primary-font-size);
-    padding: var(--btn-primary-padding-vertical) var(--btn-primary-padding-horizontal);
-    border: 2px solid transparent;
+    box-shadow: var(--btn-primary-shadow);
+    border: none;
   }
   
   .btn-primary:hover {
     background-color: var(--btn-primary-bg-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(217, 79, 79, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(217, 79, 79, 0.4);
   }
 
   .btn-primary:active {
@@ -159,89 +223,92 @@ html, body {
     transform: none;
   }
 
-  /* Botón Secundario */
   .btn-secondary {
-    @apply px-5 py-2.5 text-base font-medium rounded-lg transition-all duration-300 transform;
+    @apply px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform;
     background-color: var(--btn-secondary-bg);
     color: var(--btn-secondary-text);
-    border: 2px solid var(--btn-secondary-bg);
+    box-shadow: var(--btn-secondary-shadow);
+    border: none;
   }
   
   .btn-secondary:hover {
     background-color: var(--btn-secondary-bg-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(107, 142, 35, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(107, 142, 35, 0.4);
   }
 
-  /* Botón Outline */
   .btn-outline {
-    @apply px-5 py-2.5 text-base font-medium rounded-lg transition-all duration-300 transform border-2;
+    @apply px-6 py-3 text-sm font-semibold rounded-xl transition-all duration-300 transform;
     background-color: transparent;
     color: var(--btn-outline-text);
-    border-color: var(--btn-outline-border);
+    border: 2px solid var(--btn-outline-border);
   }
   
   .btn-outline:hover {
     background-color: var(--btn-outline-bg-hover);
     color: var(--color-background-pure);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
   }
 
-  /* Cards/Contenedores */
-  .card {
-    @apply rounded-xl p-6 transition-all duration-300;
-    background-color: var(--card-bg);
+  /* Iconos pequeños y vistosos */
+  .icon-sm {
+    width: var(--icon-size-sm);
+    height: var(--icon-size-sm);
+  }
+
+  .icon-md {
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+  }
+
+  .icon-lg {
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  .icon-xl {
+    width: var(--icon-size-xl);
+    height: var(--icon-size-xl);
+  }
+
+  /* Form Wrapper para Login/Register */
+  .form-wrapper {
+    @apply w-full max-w-md mx-auto p-8 transition-all duration-300;
+    background: var(--color-background-pure);
+    border-radius: var(--card-border-radius);
     box-shadow: var(--card-shadow);
     border: 1px solid var(--color-secondary);
   }
 
-  .card:hover {
-    box-shadow: var(--card-hover-shadow);
+  .form-wrapper:hover {
     transform: translateY(-2px);
-  }
-
-  .card-workshop {
-    @apply card transform transition-all duration-300 cursor-pointer;
-    background: linear-gradient(135deg, var(--color-background-pure) 0%, var(--color-secondary) 100%);
-    border: 2px solid transparent;
-  }
-
-  .card-workshop:hover {
-    border-color: var(--color-accent-light);
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 12px 32px rgba(107, 142, 35, 0.2);
+    box-shadow: var(--card-hover-shadow);
   }
 
   /* Títulos de Sección */
   .section-title {
-    @apply font-bold mb-6 leading-tight;
-    font-size: var(--section-title-size);
-    color: var(--section-title-color);
-    text-shadow: 0 2px 4px rgba(51, 51, 51, 0.1);
+    @apply text-3xl font-bold mb-6 leading-tight;
+    color: var(--color-text-primary);
   }
 
   /* Labels */
   .label-field {
-    @apply block mb-2 font-semibold leading-tight;
-    color: var(--label-field-color);
-    font-size: 1rem;
+    @apply block mb-2 font-semibold text-sm;
+    color: var(--color-text-secondary);
   }
 
   /* Inputs */
   .input-field {
-    @apply block w-full rounded-lg transition-all duration-300;
-    font-size: var(--input-font-size);
-    padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+    @apply block w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm;
     background-color: var(--input-bg);
-    border: 2px solid var(--color-secondary-dark);
+    border: 2px solid var(--input-border);
     color: var(--input-text);
-    margin-bottom: var(--input-spacing);
   }
   
   .input-field:focus {
     outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(107, 142, 35, 0.1);
+    border-color: var(--input-focus-border);
+    box-shadow: 0 0 0 3px var(--input-focus-ring);
     transform: translateY(-1px);
   }
 
@@ -249,92 +316,65 @@ html, body {
     color: var(--color-text-muted);
   }
 
-  /* Texto Helper */
-  .text-helper {
-    color: var(--text-helper-color);
-    font-size: var(--text-helper-font-size);
-    line-height: 1.5;
+  /* Cards de categorías */
+  .category-card {
+    @apply px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 transform;
+    background: var(--color-background-pure);
+    border: 2px solid var(--color-secondary);
+    color: var(--color-text-primary);
   }
 
-  /* Navegación */
-  .navbar {
-    @apply flex items-center justify-between px-6 py-4 transition-all duration-300;
-    background-color: var(--nav-bg);
-    border-bottom: 2px solid var(--nav-border);
-    backdrop-filter: blur(10px);
-  }
-
-  .nav-link {
-    @apply px-4 py-2 rounded-lg font-medium transition-all duration-300;
-    color: var(--nav-text);
-  }
-
-  .nav-link:hover {
-    color: var(--nav-link-hover);
-    background-color: var(--color-secondary);
+  .category-card:hover {
+    border-color: var(--color-accent-light);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 142, 35, 0.2);
   }
 
-  /* Badges/Etiquetas */
-  .badge-primary {
-    @apply px-3 py-1 rounded-full text-sm font-medium;
-    background-color: var(--color-primary);
-    color: var(--color-background-pure);
-  }
-
-  .badge-secondary {
-    @apply px-3 py-1 rounded-full text-sm font-medium;
-    background-color: var(--color-accent);
-    color: var(--color-background-pure);
-  }
-
-  .badge-outline {
-    @apply px-3 py-1 rounded-full text-sm font-medium border-2;
-    background-color: transparent;
-    color: var(--color-accent);
+  .category-card.active {
+    background: var(--color-accent);
     border-color: var(--color-accent);
+    color: var(--color-background-pure);
   }
 
-  /* Estados */
-  .status-success {
-    @apply px-3 py-1 rounded-full text-sm font-medium;
-    background-color: rgba(107, 142, 35, 0.1);
+  /* Badges/Estados */
+  .status-confirmed {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+    background: rgba(107, 142, 35, 0.1);
     color: var(--color-accent-dark);
     border: 1px solid var(--color-accent-light);
   }
 
-  .status-warning {
-    @apply px-3 py-1 rounded-full text-sm font-medium;
-    background-color: rgba(245, 158, 11, 0.1);
+  .status-pending {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+    background: rgba(245, 158, 11, 0.1);
     color: #D97706;
     border: 1px solid #F59E0B;
   }
 
-  .status-error {
-    @apply px-3 py-1 rounded-full text-sm font-medium;
-    background-color: rgba(217, 79, 79, 0.1);
+  .status-cancelled {
+    @apply px-3 py-1 rounded-full text-xs font-medium;
+    background: rgba(217, 79, 79, 0.1);
     color: var(--color-primary-dark);
     border: 1px solid var(--color-primary);
   }
 
-  /* Contenedor centrado */
+  /* Container centrado */
   .container-centered {
-    @apply w-full mx-auto px-4;
-    max-width: var(--container-max-w);
-    padding-left: var(--container-padding);
-    padding-right: var(--container-padding);
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Efectos especiales */
-  .glow-accent {
-    box-shadow: 0 0 20px rgba(107, 142, 35, 0.3);
+  /* Grid responsivo para workshops */
+  .workshops-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
 
-  .glow-primary {
-    box-shadow: 0 0 20px rgba(217, 79, 79, 0.3);
+  .bookings-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   }
 
-  /* Gradientes */
+  /* Gradientes específicos de MasterCook */
   .gradient-primary {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   }
@@ -346,48 +386,27 @@ html, body {
   .gradient-warm {
     background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-background) 100%);
   }
-}
 
-/* === UTILIDADES ESPECÍFICAS === */
-@layer utilities {
-  .smooth-transition {
-    transition: var(--transition-smooth);
+  /* Hero sections */
+  .hero-section {
+    @apply py-12 px-6 rounded-2xl mb-8 text-white relative overflow-hidden;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   }
 
-  .fast-transition {
-    transition: var(--transition-fast);
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/chef-pattern.png') center/cover;
+    opacity: 0.1;
+    z-index: 0;
   }
 
-  .bounce-transition {
-    transition: var(--transition-bounce);
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-2px);
-  }
-
-  .hover-scale:hover {
-    transform: scale(1.05);
-  }
-
-  .hover-glow:hover {
-    box-shadow: 0 8px 25px rgba(107, 142, 35, 0.3);
-  }
-
-  /* Responsive */
-  .responsive-grid {
-    @apply grid gap-6;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  }
-
-  .responsive-flex {
-    @apply flex flex-col;
-  }
-
-  @media (min-width: 768px) {
-    .responsive-flex {
-      @apply flex-row;
-    }
+  .hero-content {
+    @apply relative z-10;
   }
 }
 
@@ -395,7 +414,7 @@ html, body {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -406,7 +425,7 @@ html, body {
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(30px);
   }
   to {
     opacity: 1;
@@ -415,8 +434,19 @@ html, body {
 }
 
 @keyframes pulse-gentle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(217, 79, 79, 0.7);
+  }
+  50% { 
+    transform: scale(1.02);
+    box-shadow: 0 0 0 10px rgba(217, 79, 79, 0);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 .animate-fade-in-up {
@@ -431,25 +461,97 @@ html, body {
   animation: pulse-gentle 2s infinite;
 }
 
-/* === RESPONSIVE BREAKPOINTS === */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 640px) {
+  .navbar-mastercook {
+    padding: 1rem;
+  }
+  
+  .navbar-nav {
+    @apply hidden;
+  }
+  
   .form-wrapper {
-    width: 95%;
-    padding: 1.5rem;
+    @apply mx-4 p-6;
   }
   
-  .section-title {
-    font-size: 2rem;
+  .workshops-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bookings-grid {
+    grid-template-columns: 1fr;
   }
   
-  .card-workshop {
-    margin-bottom: 1rem;
+  .hero-section {
+    @apply py-8 px-4;
   }
 }
 
-@media (min-width: 1024px) {
-  .form-wrapper {
-    max-width: 600px;
-    padding: 3rem;
+@media (min-width: 641px) and (max-width: 1024px) {
+  .workshops-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
+
+  .bookings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+}
+
+/* === UTILIDADES ESPECIALES === */
+.text-mastercook-primary {
+  color: var(--color-primary);
+}
+
+.text-mastercook-accent {
+  color: var(--color-accent);
+}
+
+.bg-mastercook-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-mastercook-secondary {
+  background-color: var(--color-secondary);
+}
+
+.bg-mastercook-accent {
+  background-color: var(--color-accent);
+}
+
+.border-mastercook-primary {
+  border-color: var(--color-primary);
+}
+
+.border-mastercook-accent {
+  border-color: var(--color-accent);
+}
+
+/* Efectos especiales */
+.hover-lift {
+  transition: var(--transition-smooth);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-scale {
+  transition: var(--transition-smooth);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.shadow-mastercook {
+  box-shadow: 0 8px 32px rgba(217, 79, 79, 0.15);
+}
+
+.shadow-mastercook-accent {
+  box-shadow: 0 8px 32px rgba(107, 142, 35, 0.15);
 }
