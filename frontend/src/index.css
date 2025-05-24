@@ -3,210 +3,453 @@
 @tailwind utilities;
 
 /*
-  Definición de variables CSS en formato hexadecimal:
-  - Personaliza aquí los colores de tu tema sin tocar las clases.
+  Paleta de Colores MasterCook Academy
+  Aplicando los colores exactos de la paleta proporcionada
 */
 :root {
-  --wrapper-bg: #FFF3E2;
+  /* === PALETA MASTERCOOK ACADEMY === */
+  /* Primario - Salsa Tomate */
+  --color-primary: #D94F4F;
+  --color-primary-hover: #C43E3E;
+  --color-primary-light: #E57373;
+  --color-primary-dark: #B73E3E;
+
+  /* Secundario - Creamy Vanilla */
+  --color-secondary: #FFF3E2;
+  --color-secondary-hover: #F5E6D3;
+  --color-secondary-dark: #E6D4C1;
+
+  /* Acento - Olive Green */
+  --color-accent: #6B8E23;
+  --color-accent-hover: #5A7A1F;
+  --color-accent-light: #8FB842;
+  --color-accent-dark: #4A5F17;
+
+  /* Texto Principal - Charcoal Gray */
+  --color-text-primary: #333333;
+  --color-text-primary-light: #4A4A4A;
+
+  /* Texto Secundario - Ash Gray */
+  --color-text-secondary: #666666;
+  --color-text-muted: #999999;
+
+  /* Fondo Claro - Snow White */
+  --color-background: #FAFAFA;
+  --color-background-pure: #FFFFFF;
+  --color-background-overlay: rgba(255, 255, 255, 0.9);
+
+  /* === CONFIGURACIÓN DE COMPONENTES === */
+  
+  /* Wrapper/Cards */
+  --wrapper-bg: var(--color-secondary);
   --wrapper-border-radius: 1rem;
-  --wrapper-shadow: 0 8px 16px rgb(0, 0, 0);
-  --text-helper-font-size: 2rem;
-  --section-title-size: 7rem;
-  --input-horizontal-align: right;    /* Opciones: left | center | right */
-  --input-horizontal-offset: 4rem
-  --label-font-size: 1.25rem;        /* 18px */
-  --input-font-size: 2rem;            /* 16px */
-  --input-padding-vertical: 0.3rem;     /* controla la altura */
-  --input-padding-horizontal: 1rem;
+  --wrapper-shadow: 0 8px 24px rgba(51, 51, 51, 0.15);
+  --card-bg: var(--color-background-pure);
+  --card-shadow: 0 4px 12px rgba(51, 51, 51, 0.1);
+  --card-hover-shadow: 0 8px 24px rgba(51, 51, 51, 0.15);
 
-  --body-bg: #FFF3E2 ;
-  --input-spacing: 1rem;  
+  /* Botones */
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-bg-hover: var(--color-primary-hover);
+  --btn-primary-text: var(--color-background-pure);
+  --btn-primary-font-size: 1rem;
+  --btn-primary-padding-vertical: 0.875rem;
+  --btn-primary-padding-horizontal: 1.75rem;
 
-  /* Input estándar con espacio controlado por variable */
-.input-field {
-  @apply block w-full px-3 py-2 text-base md:text-lg rounded-md focus:outline-none transition;
-  border: 1px solid var(--input-border);
-  color: inherit;
-  /* ESTA ES LA LÍNEA CORRECTA para usar la variable */
-  margin-bottom: var(--input-spacing);
-}
+  --btn-secondary-bg: var(--color-accent);
+  --btn-secondary-bg-hover: var(--color-accent-hover);
+  --btn-secondary-text: var(--color-background-pure);
 
-/* Input solo subrayado con espacio controlado */
-.input-underline {
-  @apply block w-full border-b-2 rounded-none px-0 pb-1 mt-1;
-  border-color: var(--input-underline-border);
-  background-color: transparent;
-  color: inherit;
-  margin-bottom: var(--input-spacing);
-}
-
-
-  /* Colores del Botón Primario */
-  --btn-primary-bg: #D94F4F;
-  --btn-primary-bg-hover: #6c2626 ;
-  --btn-primary-text: #333333 ;
-  --btn-primary-font-size: 1rem;        /* 16px */
-  --btn-primary-padding-vertical: 0.75rem;   /* controla la altura */
-  --btn-primary-padding-horizontal: 1.5rem;
-
-  /* Colores del Botón Secundario */
-  --btn-secondary-bg: #e5e7eb;
-  --btn-secondary-bg-hover: #d1d5db;
-  --btn-secondary-text: #1f2937;
-
-  /* Tarjeta de Contenido */
-  --card-bg: #FFF3E2;
-  --card-shadow: 0 4px 6px rgba(22, 13, 13, 0.874);
-
-  /* Contenedor Centrado */
-  --container-max-w: 80rem;
-  --container-max-h: 90rem;
+  --btn-outline-border: var(--color-accent);
+  --btn-outline-text: var(--color-accent);
+  --btn-outline-bg-hover: var(--color-accent);
 
   /* Tipografía */
-  --section-title-color: #333333 ;
-  --label-field-color: #666666;    /* Color de texto de "Usuario" y "Contraseña" */
-  --text-helper-color: #666666;
+  --section-title-size: 2.5rem;
+  --section-title-color: var(--color-text-primary);
+  --label-field-color: var(--color-text-secondary);
+  --text-helper-color: var(--color-text-secondary);
+  --text-helper-font-size: 0.875rem;
 
-  /* Input de Formulario */
-  --input-border: #6B8E23;
-  --input-focus-ring: #3f5612;
-  --input-underline-border: #6B8E23; /* Color de la línea inferior */
+  /* Inputs */
+  --input-border: var(--color-accent);
+  --input-focus-ring: var(--color-accent-light);
+  --input-bg: var(--color-background-pure);
+  --input-text: var(--color-text-primary);
+  --input-font-size: 1rem;
+  --input-padding-vertical: 0.75rem;
+  --input-padding-horizontal: 1rem;
+  --input-spacing: 1.5rem;
+
+  /* Navegación */
+  --nav-bg: var(--color-background-pure);
+  --nav-border: var(--color-secondary);
+  --nav-text: var(--color-text-primary);
+  --nav-link-hover: var(--color-primary);
+
+  /* Estados */
+  --success-color: var(--color-accent);
+  --warning-color: #F59E0B;
+  --error-color: var(--color-primary);
+  --info-color: #3B82F6;
+
+  /* Efectos y animaciones */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: all 0.15s ease-in-out;
+  --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Contenedores */
+  --container-max-w: 80rem;
+  --container-padding: 1rem;
 }
 
-@layer components {
-  
+/* === BASE STYLES === */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.form-wrapper {
-  width: 90%;
-  max-width: 700px;
-  background-color: #FFF3E2 ;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
+/* === COMPONENTES PRINCIPALES === */
+@layer components {
+
+  /* Form Wrapper */
+  .form-wrapper {
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--wrapper-bg);
+    padding: 2.5rem;
+    border-radius: var(--wrapper-border-radius);
+    box-shadow: var(--wrapper-shadow);
+    backdrop-filter: blur(10px);
+    transition: var(--transition-smooth);
+  }
+
+  .form-wrapper:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(51, 51, 51, 0.2);
+  }
 
   /* Botón Primario */
   .btn-primary {
-    @apply px-4 py-2 text-base font-semibold rounded-lg shadow transition ease-in-out duration-150;
+    @apply px-6 py-3 text-base font-semibold rounded-lg shadow-lg transition-all duration-300 transform;
     background-color: var(--btn-primary-bg);
     color: var(--btn-primary-text);
     font-size: var(--btn-primary-font-size);
     padding: var(--btn-primary-padding-vertical) var(--btn-primary-padding-horizontal);
+    border: 2px solid transparent;
   }
-  .btn-primary:hover { background-color: var(--btn-primary-bg-hover); }
+  
+  .btn-primary:hover {
+    background-color: var(--btn-primary-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(217, 79, 79, 0.3);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
 
   /* Botón Secundario */
   .btn-secondary {
-    @apply px-4 py-2 text-base font-medium rounded-lg transition ease-in-out duration-150;
+    @apply px-5 py-2.5 text-base font-medium rounded-lg transition-all duration-300 transform;
     background-color: var(--btn-secondary-bg);
     color: var(--btn-secondary-text);
+    border: 2px solid var(--btn-secondary-bg);
   }
-  .btn-secondary:hover { background-color: var(--btn-secondary-bg-hover); }
+  
+  .btn-secondary:hover {
+    background-color: var(--btn-secondary-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(107, 142, 35, 0.3);
+  }
 
-  /* Título de Sección */
+  /* Botón Outline */
+  .btn-outline {
+    @apply px-5 py-2.5 text-base font-medium rounded-lg transition-all duration-300 transform border-2;
+    background-color: transparent;
+    color: var(--btn-outline-text);
+    border-color: var(--btn-outline-border);
+  }
+  
+  .btn-outline:hover {
+    background-color: var(--btn-outline-bg-hover);
+    color: var(--color-background-pure);
+    transform: translateY(-1px);
+  }
+
+  /* Cards/Contenedores */
+  .card {
+    @apply rounded-xl p-6 transition-all duration-300;
+    background-color: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--color-secondary);
+  }
+
+  .card:hover {
+    box-shadow: var(--card-hover-shadow);
+    transform: translateY(-2px);
+  }
+
+  .card-workshop {
+    @apply card transform transition-all duration-300 cursor-pointer;
+    background: linear-gradient(135deg, var(--color-background-pure) 0%, var(--color-secondary) 100%);
+    border: 2px solid transparent;
+  }
+
+  .card-workshop:hover {
+    border-color: var(--color-accent-light);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(107, 142, 35, 0.2);
+  }
+
+  /* Títulos de Sección */
   .section-title {
-    @apply text-3xl font-bold mb-6;
+    @apply font-bold mb-6 leading-tight;
+    font-size: var(--section-title-size);
     color: var(--section-title-color);
+    text-shadow: 0 2px 4px rgba(51, 51, 51, 0.1);
   }
 
-  /* Etiqueta de Campo (Usuario, Contraseña) */
+  /* Labels */
   .label-field {
-    @apply block mb-1 font-medium leading-tight;
-  font-size: var(--label-font-size);
-  color: var(--label-field-color)
+    @apply block mb-2 font-semibold leading-tight;
+    color: var(--label-field-color);
+    font-size: 1rem;
   }
 
-  /* Input estándar */
+  /* Inputs */
   .input-field {
-    @apply block w-full rounded-md focus:outline-none transition mb-6;
+    @apply block w-full rounded-lg transition-all duration-300;
     font-size: var(--input-font-size);
     padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    border: 2px solid var(--color-secondary-dark);
+    color: var(--input-text);
+    margin-bottom: var(--input-spacing);
   }
+  
   .input-field:focus {
     outline: none;
-    box-shadow: 0 0 0 2px var(--input-focus-ring);
-    border-color: transparent;
-  }
-}
-
-  /* Estilo de input con línea inferior solamente */
-  /* Ahora es block y tiene separación para salto de línea */
-  .input-underline {
-    @apply block w-full border-b-2 rounded-none px-0 pb-1 mt-1 mb-10;
-    border-color: var(--input-underline-border);
-    background-color: transparent;
-    color: inherit;
-  }
-  .input-underline:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--input-focus-ring);
-    border-color: transparent;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(107, 142, 35, 0.1);
+    transform: translateY(-1px);
   }
 
-  /* Tarjeta de Contenido */
-  .card {
-  @apply rounded-2xl p-6 bg-[var(--card-bg)] shadow-[var(--card-shadow)];
-  /* Si quieres que el card también ocupe toda la altura: */
-  /* @apply h-full; */
-}
-
- @layer utilities {
-
- .container-centered {
-    @apply flex-none w-full mx-4;
-    max-width: var(--container-max-w);
-    max-height: var(--container-max-h);
+  .input-field::placeholder {
+    color: var(--color-text-muted);
   }
-}
 
-.section-title {
-  @apply font-bold mb-6;
-  /* en lugar de text-3xl */
-  font-size: var(--section-title-size);
-  line-height: 1.2;
-}
-
-
-  /* Texto Auxiliar */
+  /* Texto Helper */
   .text-helper {
-    @apply text-sm;
     color: var(--text-helper-color);
     font-size: var(--text-helper-font-size);
+    line-height: 1.5;
   }
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+
+  /* Navegación */
+  .navbar {
+    @apply flex items-center justify-between px-6 py-4 transition-all duration-300;
+    background-color: var(--nav-bg);
+    border-bottom: 2px solid var(--nav-border);
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-300;
+    color: var(--nav-text);
+  }
+
+  .nav-link:hover {
+    color: var(--nav-link-hover);
+    background-color: var(--color-secondary);
+    transform: translateY(-1px);
+  }
+
+  /* Badges/Etiquetas */
+  .badge-primary {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+    background-color: var(--color-primary);
+    color: var(--color-background-pure);
+  }
+
+  .badge-secondary {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+    background-color: var(--color-accent);
+    color: var(--color-background-pure);
+  }
+
+  .badge-outline {
+    @apply px-3 py-1 rounded-full text-sm font-medium border-2;
+    background-color: transparent;
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  /* Estados */
+  .status-success {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+    background-color: rgba(107, 142, 35, 0.1);
+    color: var(--color-accent-dark);
+    border: 1px solid var(--color-accent-light);
+  }
+
+  .status-warning {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #D97706;
+    border: 1px solid #F59E0B;
+  }
+
+  .status-error {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+    background-color: rgba(217, 79, 79, 0.1);
+    color: var(--color-primary-dark);
+    border: 1px solid var(--color-primary);
+  }
+
+  /* Contenedor centrado */
+  .container-centered {
+    @apply w-full mx-auto px-4;
+    max-width: var(--container-max-w);
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+  }
+
+  /* Efectos especiales */
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(107, 142, 35, 0.3);
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(217, 79, 79, 0.3);
+  }
+
+  /* Gradientes */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  }
+
+  .gradient-accent {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+  }
+
+  .gradient-warm {
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-background) 100%);
+  }
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-image: url('/Fonfo.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100vh;
+/* === UTILIDADES ESPECÍFICAS === */
+@layer utilities {
+  .smooth-transition {
+    transition: var(--transition-smooth);
+  }
+
+  .fast-transition {
+    transition: var(--transition-fast);
+  }
+
+  .bounce-transition {
+    transition: var(--transition-bounce);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 8px 25px rgba(107, 142, 35, 0.3);
+  }
+
+  /* Responsive */
+  .responsive-grid {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  .responsive-flex {
+    @apply flex flex-col;
+  }
+
+  @media (min-width: 768px) {
+    .responsive-flex {
+      @apply flex-row;
+    }
+  }
 }
 
-.background-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(255, 255, 255, 0.6); /* Blanco semitransparente */
-  z-index: 0;
-  pointer-events: none;
+/* === ANIMACIONES === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.input-field {
-  text-align: var(--input-horizontal-align);
-  margin-left: var(--input-horizontal-offset);
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-gentle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+.animate-pulse-gentle {
+  animation: pulse-gentle 2s infinite;
+}
+
+/* === RESPONSIVE BREAKPOINTS === */
+@media (max-width: 640px) {
+  .form-wrapper {
+    width: 95%;
+    padding: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .card-workshop {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .form-wrapper {
+    max-width: 600px;
+    padding: 3rem;
+  }
 }

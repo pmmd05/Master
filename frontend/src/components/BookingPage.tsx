@@ -1,5 +1,5 @@
-// frontend/src/components/BookingsPage.tsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../context/AuthContext';
 import { BookingsProvider, useBookings } from '../context/BookingsContext';
 import BookingCard from './BookingCard';
@@ -12,6 +12,7 @@ interface BookingWithWorkshop extends Booking {
 const BookingsPageContent: React.FC = () => {
   const { user } = useAuth();
   const { bookings, loading, error, refreshBookings } = useBookings();
+  const navigate = useNavigate(); 
   const [selectedBooking, setSelectedBooking] = useState<BookingWithWorkshop | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -38,8 +39,22 @@ const BookingsPageContent: React.FC = () => {
   // Manejar pago
   const handlePayment = (booking: BookingWithWorkshop) => {
     console.log('🔄 [BOOKINGS] Iniciando pago para reserva:', booking.id);
-    // Aquí integrarías con el sistema de pagos
-    alert(`Funcionalidad de pago para reserva #${booking.id} - ${booking.workshop?.title}`);
+    
+    if (!booking.workshop) {
+      alert('No se pueden cargar los detalles del taller para procesar el pago');
+      return;
+    }
+    
+    // Navegar a la página de pagos con los datos de la reserva
+    navigate('/paymentpage', {
+      state: {
+        bookingId: booking.id,
+        workshopId: booking.workshop_id,
+        workshopTitle: booking.workshop.title,
+        amount: booking.workshop.price,
+        userEmail: booking.user_email
+      }
+    });
   };
 
   // Manejar cancelación
@@ -128,7 +143,7 @@ const BookingsPageContent: React.FC = () => {
                 Hola, <span className="font-medium">{user?.name}</span>
               </span>
               <button
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => navigate('/dashboard')}
                 className="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
               >
                 ← Dashboard
@@ -205,7 +220,7 @@ const BookingsPageContent: React.FC = () => {
                   Tenemos talleres para todos los niveles y gustos culinarios.
                 </p>
                 <button
-                  onClick={() => window.location.href = '/workshops'}
+                  onClick={() => navigate('/workshops')}
                   className="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 font-medium"
                 >
                   🍳 Explorar Talleres Disponibles
@@ -234,7 +249,7 @@ const BookingsPageContent: React.FC = () => {
                     Ver Todas las Reservas
                   </button>
                   <button
-                    onClick={() => window.location.href = '/workshops'}
+                    onClick={() => navigate('/workshops')}
                     className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   >
                     Explorar Talleres
