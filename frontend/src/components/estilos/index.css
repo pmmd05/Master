@@ -1,0 +1,326 @@
+/* 
+ * Índice de Estilos - MasterCook Academy
+ * Archivo: frontend/src/components/estilos/index.css
+ * 
+ * Este archivo importa todos los estilos del sistema de diseño de MasterCook Academy
+ * y proporciona documentación sobre cómo utilizarlos.
+ */
+
+/* ========================================
+   IMPORTACIONES PRINCIPALES
+   ======================================== */
+
+/* Variables globales y sistema de colores */
+@import './variables.css';
+
+/* Estilos base y componentes reutilizables */
+@import './base.css';
+
+/* Estilos específicos por componente */
+@import './login.css';
+@import './register.css';
+
+/* ========================================
+   DOCUMENTACIÓN DE USO
+   ======================================== */
+
+/*
+ * CÓMO USAR ESTOS ESTILOS:
+ * 
+ * 1. IMPORTAR EN TU COMPONENTE:
+ *    ```tsx
+ *    import '../estilos/index.css';
+ *    // o específicamente:
+ *    import '../estilos/login.css';
+ *    ```
+ * 
+ * 2. CLASES PRINCIPALES DISPONIBLES:
+ * 
+ *    CONTENEDORES:
+ *    - .form-wrapper: Contenedor principal de formularios
+ *    - .container-centered: Contenedor centrado con max-width
+ *    - .card: Tarjeta base con sombras y bordes
+ * 
+ *    FORMULARIOS:
+ *    - .label-field: Etiquetas de campos
+ *    - .input-field: Campos de entrada
+ *    - .btn-primary: Botón principal
+ *    - .link-primary: Enlaces principales
+ * 
+ *    MENSAJES:
+ *    - .message-error: Mensajes de error
+ *    - .message-success: Mensajes de éxito
+ *    - .message-warning: Mensajes de advertencia
+ * 
+ *    FORTALEZA DE CONTRASEÑA:
+ *    - .password-strength-container: Contenedor del indicador
+ *    - .password-strength-bar: Barra de progreso
+ *    - .password-strength-fill: Relleno de la barra
+ *    - .strength-0 a .strength-4: Niveles de fortaleza
+ * 
+ *    ICONOS:
+ *    - .icon-sm: Iconos pequeños (1rem)
+ *    - .icon-md: Iconos medianos (1.25rem)
+ *    - .icon-lg: Iconos grandes (1.5rem)
+ * 
+ *    ANIMACIONES:
+ *    - .fade-in: Animación de aparición
+ *    - .slide-in: Animación de deslizamiento
+ * 
+ * 3. VARIABLES CSS DISPONIBLES:
+ * 
+ *    COLORES:
+ *    - var(--color-primary): Color principal (#D94F4F)
+ *    - var(--color-secondary): Color secundario (#FFF3E2)
+ *    - var(--color-accent): Color de acento (#6B8E23)
+ *    - var(--color-text-primary): Texto principal (#333333)
+ *    - var(--color-text-secondary): Texto secundario (#666666)
+ *    - var(--color-background-light): Fondo claro (#FAFAFA)
+ * 
+ *    ESPACIADO:
+ *    - var(--spacing-xs) a var(--spacing-3xl): 0.25rem a 4rem
+ * 
+ *    TIPOGRAFÍA:
+ *    - var(--font-size-xs) a var(--font-size-4xl): 0.75rem a 2.25rem
+ *    - var(--font-family-primary): Fuente principal
+ *    - var(--font-family-secondary): Fuente secundaria
+ * 
+ *    EFECTOS:
+ *    - var(--shadow-sm) a var(--shadow-xl): Sombras
+ *    - var(--border-radius-sm) a var(--border-radius-xl): Bordes redondeados
+ *    - var(--transition-fast/normal/slow): Transiciones
+ * 
+ * 4. RESPONSIVE BREAKPOINTS:
+ *    - Móvil: < 640px
+ *    - Tablet: 640px - 1024px
+ *    - Desktop: > 1024px
+ * 
+ * 5. PALETA DE COLORES COMPLETA:
+ *    - Primario: #D94F4F (Salsa Tomato)
+ *    - Secundario: #FFF3E2 (Creamy Vanilla)
+ *    - Acento: #6B8E23 (Olive Green)
+ *    - Texto Principal: #333333 (Charcoal Gray)
+ *    - Texto Secundario: #666666 (Ash Gray)
+ *    - Fondo Claro: #FAFAFA (Snow White)
+ */
+
+/* ========================================
+   ESTILOS UTILITARIOS ADICIONALES
+   ======================================== */
+
+/* Utilidades de display */
+.hidden { display: none !important; }
+.block { display: block !important; }
+.flex { display: flex !important; }
+.inline-flex { display: inline-flex !important; }
+.grid { display: grid !important; }
+
+/* Utilidades de posicionamiento */
+.relative { position: relative !important; }
+.absolute { position: absolute !important; }
+.fixed { position: fixed !important; }
+.sticky { position: sticky !important; }
+
+/* Utilidades de texto */
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+
+.font-light { font-weight: 300 !important; }
+.font-normal { font-weight: 400 !important; }
+.font-medium { font-weight: 500 !important; }
+.font-semibold { font-weight: 600 !important; }
+.font-bold { font-weight: 700 !important; }
+
+/* Utilidades de colores de texto */
+.text-primary { color: var(--color-primary) !important; }
+.text-secondary { color: var(--color-text-secondary) !important; }
+.text-accent { color: var(--color-accent) !important; }
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-error { color: var(--color-error) !important; }
+
+/* Utilidades de espaciado */
+.m-0 { margin: 0 !important; }
+.mt-auto { margin-top: auto !important; }
+.mb-auto { margin-bottom: auto !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+
+.p-0 { padding: 0 !important; }
+
+/* Utilidades de ancho y alto */
+.w-full { width: 100% !important; }
+.h-full { height: 100% !important; }
+.min-h-screen { min-height: 100vh !important; }
+
+/* Utilidades de flex */
+.items-center { align-items: center !important; }
+.items-start { align-items: flex-start !important; }
+.items-end { align-items: flex-end !important; }
+.justify-center { justify-content: center !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-start { justify-content: flex-start !important; }
+.justify-end { justify-content: flex-end !important; }
+
+.flex-col { flex-direction: column !important; }
+.flex-row { flex-direction: row !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+
+/* Utilidades de gap */
+.gap-xs { gap: var(--spacing-xs) !important; }
+.gap-sm { gap: var(--spacing-sm) !important; }
+.gap-md { gap: var(--spacing-md) !important; }
+.gap-lg { gap: var(--spacing-lg) !important; }
+.gap-xl { gap: var(--spacing-xl) !important; }
+
+/* Utilidades de overflow */
+.overflow-hidden { overflow: hidden !important; }
+.overflow-auto { overflow: auto !important; }
+.overflow-scroll { overflow: scroll !important; }
+
+/* Utilidades de cursor */
+.cursor-pointer { cursor: pointer !important; }
+.cursor-not-allowed { cursor: not-allowed !important; }
+.cursor-default { cursor: default !important; }
+
+/* Utilidades de opacidad */
+.opacity-0 { opacity: 0 !important; }
+.opacity-50 { opacity: 0.5 !important; }
+.opacity-75 { opacity: 0.75 !important; }
+.opacity-100 { opacity: 1 !important; }
+
+/* Utilidades de transformación */
+.transform { transform: translateZ(0) !important; }
+.scale-95 { transform: scale(0.95) !important; }
+.scale-100 { transform: scale(1) !important; }
+.scale-105 { transform: scale(1.05) !important; }
+
+/* Utilidades de z-index */
+.z-0 { z-index: 0 !important; }
+.z-10 { z-index: 10 !important; }
+.z-20 { z-index: 20 !important; }
+.z-30 { z-index: 30 !important; }
+.z-40 { z-index: 40 !important; }
+.z-50 { z-index: 50 !important; }
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+@media (max-width: 640px) {
+  .sm\:hidden { display: none !important; }
+  .sm\:block { display: block !important; }
+  .sm\:text-center { text-align: center !important; }
+  .sm\:text-sm { font-size: var(--font-size-sm) !important; }
+  .sm\:p-sm { padding: var(--spacing-sm) !important; }
+  .sm\:m-sm { margin: var(--spacing-sm) !important; }
+}
+
+@media (min-width: 768px) {
+  .md\:block { display: block !important; }
+  .md\:flex { display: flex !important; }
+  .md\:text-left { text-align: left !important; }
+  .md\:text-base { font-size: var(--font-size-base) !important; }
+  .md\:p-md { padding: var(--spacing-md) !important; }
+  .md\:m-md { margin: var(--spacing-md) !important; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:block { display: block !important; }
+  .lg\:flex { display: flex !important; }
+  .lg\:text-lg { font-size: var(--font-size-lg) !important; }
+  .lg\:p-lg { padding: var(--spacing-lg) !important; }
+  .lg\:m-lg { margin: var(--spacing-lg) !important; }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  .no-print { display: none !important; }
+  
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+  
+  .btn-primary {
+    background: #333 !important;
+    color: white !important;
+  }
+  
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ========================================
+   ACCESIBILIDAD
+   ======================================== */
+
+/* Mejorar el contraste en modo de alto contraste */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #B71C1C;
+    --color-text-primary: #000000;
+    --color-text-secondary: #444444;
+  }
+  
+  .input-field {
+    border-width: 3px;
+  }
+  
+  .btn-primary {
+    border: 2px solid #000;
+  }
+}
+
+/* Reducir movimiento para usuarios sensibles */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .fade-in,
+  .slide-in {
+    animation: none !important;
+  }
+}
+
+/* Focus visible mejorado */
+.input-field:focus-visible,
+.btn-primary:focus-visible,
+.link-primary:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   DEBUGGING (solo en desarrollo)
+   ======================================== */
+
+/*
+ * Descomentar estas líneas para debugging visual:
+ */
+
+/*
+.debug * {
+  outline: 1px solid red !important;
+}
+
+.debug .card {
+  outline: 2px solid blue !important;
+}
+
+.debug .form-wrapper {
+  outline: 2px solid green !important;
+}
+*/

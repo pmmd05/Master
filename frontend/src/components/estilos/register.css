@@ -1,0 +1,517 @@
+/* 
+ * Estilos Register - MasterCook Academy
+ * Archivo: frontend/src/components/estilos/register.css
+ */
+
+@import './variables.css';
+@import './base.css';
+
+/* Contenedor Principal de Register */
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--color-background-light) 0%,
+    var(--color-secondary) 50%,
+    var(--color-background-light) 100%
+  );
+  padding: var(--spacing-lg) var(--spacing-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.register-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(217, 79, 79, 0.03) 0%,
+    transparent 50%
+  );
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Wrapper del Formulario de Register */
+.register-form-wrapper {
+  width: 100%;
+  max-width: var(--card-max-width);
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+
+/* Tarjeta de Register */
+.register-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 
+    var(--shadow-xl),
+    0 0 0 1px rgba(217, 79, 79, 0.08);
+  padding: var(--spacing-3xl);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.register-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-primary));
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Logo en Register */
+.register-logo {
+  display: block;
+  margin: 0 auto var(--spacing-xl) auto;
+  height: 180px;
+  width: auto;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: all var(--transition-normal);
+}
+
+.register-logo:hover {
+  transform: scale(1.02) rotate(1deg);
+}
+
+/* Título de Register */
+.register-title {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  font-family: var(--font-family-secondary);
+  position: relative;
+}
+
+.register-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  border-radius: var(--border-radius-sm);
+}
+
+/* Formulario de Register */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Grupos de Campos en Register */
+.register-field-group {
+  position: relative;
+}
+
+.register-field-group .label-field {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.register-field-group .input-field {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  border: 2px solid #E5E7EB;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-normal);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.register-field-group .input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 
+    0 0 0 3px rgba(217, 79, 79, 0.08),
+    var(--shadow-md);
+  background: white;
+  transform: translateY(-1px);
+}
+
+/* Campos de Contraseña con Iconos */
+.password-field-container {
+  position: relative;
+}
+
+.password-field-container .input-field {
+  padding-right: 3rem;
+}
+
+.password-toggle-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+  padding: 0;
+}
+
+.password-toggle-button:hover {
+  color: var(--color-primary);
+}
+
+.password-toggle-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.password-toggle-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Indicador de Fortaleza de Contraseña */
+.password-strength-indicator {
+  margin-top: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  animation: slideIn var(--transition-normal) ease-out;
+}
+
+.password-strength-bar-container {
+  flex: 1;
+  height: 8px;
+  background-color: #E5E7EB;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.password-strength-bar-fill {
+  height: 100%;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-slow);
+  position: relative;
+}
+
+.password-strength-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: flow 2s ease-in-out infinite;
+}
+
+@keyframes flow {
+  0%, 100% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+.password-strength-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* Colores de Fortaleza de Contraseña Mejorados */
+.strength-bar-0 { background: linear-gradient(90deg, #EF4444, #DC2626); }
+.strength-bar-1 { background: linear-gradient(90deg, #F97316, #EA580C); }
+.strength-bar-2 { background: linear-gradient(90deg, #EAB308, #CA8A04); }
+.strength-bar-3 { background: linear-gradient(90deg, #3B82F6, #2563EB); }
+.strength-bar-4 { background: linear-gradient(90deg, #22C55E, #16A34A); }
+
+/* Mensajes de Estado */
+.register-message {
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  animation: slideIn var(--transition-normal) ease-out;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.register-message-error {
+  background: linear-gradient(135deg, #FEF2F2, #FDF2F8);
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+}
+
+.register-message-success {
+  background: linear-gradient(135deg, #F0FDF4, #F7FEE7);
+  border: 1px solid #BBF7D0;
+  color: #16A34A;
+  box-shadow: 0 2px 4px rgba(22, 163, 74, 0.1);
+}
+
+.register-message-icon {
+  font-size: var(--font-size-lg);
+  margin-top: 2px;
+}
+
+.register-message-content {
+  flex: 1;
+}
+
+.register-message-title {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* Botón de Register */
+.register-button {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  min-height: 52px;
+}
+
+.register-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  background: linear-gradient(135deg, var(--color-primary-dark), #B71C1C);
+}
+
+.register-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.register-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.8s ease;
+}
+
+.register-button:hover::before {
+  left: 100%;
+}
+
+/* Texto de Ayuda en Register */
+.register-help-text {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.register-help-text .link-primary {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.register-help-text .link-primary::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width var(--transition-normal);
+}
+
+.register-help-text .link-primary:hover {
+  color: var(--color-primary-dark);
+}
+
+.register-help-text .link-primary:hover::after {
+  width: 100%;
+}
+
+/* Estados de Carga */
+.register-loading {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.register-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive Design para Register */
+@media (max-width: 768px) {
+  .register-container {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+  
+  .register-card {
+    padding: var(--spacing-2xl);
+  }
+  
+  .register-logo {
+    height: 150px;
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .register-title {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+@media (max-width: 640px) {
+  .register-form-wrapper {
+    max-width: 100%;
+  }
+  
+  .register-card {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    margin: var(--spacing-sm);
+  }
+  
+  .register-logo {
+    height: 120px;
+  }
+  
+  .register-title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .register-form {
+    gap: var(--spacing-md);
+  }
+  
+  .register-field-group .input-field {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  .password-field-container .input-field {
+    padding-right: 2.5rem;
+  }
+  
+  .password-toggle-button {
+    width: 2.5rem;
+  }
+  
+  .password-toggle-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .register-button {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    min-height: 48px;
+  }
+  
+  .password-strength-label {
+    font-size: 10px;
+    min-width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .register-logo {
+    height: 100px;
+  }
+  
+  .register-title {
+    font-size: var(--font-size-lg);
+  }
+  
+  .register-field-group .label-field {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* Efectos Adicionales */
+.register-card:hover {
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(217, 79, 79, 0.1);
+}
+
+/* Micro-interacciones */
+.register-field-group:focus-within .label-field {
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+.password-strength-indicator {
+  transform: scale(0.95);
+  transition: transform var(--transition-normal);
+}
+
+.password-field-container:focus-within .password-strength-indicator {
+  transform: scale(1);
+}

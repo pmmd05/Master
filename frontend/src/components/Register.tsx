@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import './estilos/register.css';
 
 // Configuración de textos y placeholders
 const TEXTS = {
@@ -52,8 +53,7 @@ const Register: React.FC = () => {
     if (!password) return { strength: 0, text: '' };
     const level = Math.max(0, 4 - errors.length);
     const labels = ['Muy débil', 'Débil', 'Regular', 'Buena', 'Excelente'];
-    const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
-    return { strength: level, text: labels[level], color: colors[level] };
+    return { strength: level, text: labels[level] };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,59 +86,178 @@ const Register: React.FC = () => {
   const passwordStrength = getPasswordStrength(formData.password);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 relative">
-      <div className="form-wrapper">
-        <div className="container-centered">
-          <div className="card">
-            <img src="/Logo.png.png" alt="Logo Mastercook" className="mx-auto mb-4" style={{ height: 450, width: 'auto' }} />
-            <h2 className="section-title text-center mb-6">{TEXTS.title}</h2>
+    <div className="register-container">
+      <div className="register-form-wrapper">
+        <div className="register-card fade-in">
+          {/* Logo Mastercook */}
+          <img 
+            src="/Logo.png.png" 
+            alt="Logo Mastercook" 
+            className="register-logo" 
+          />
+          
+          {/* Título de registro */}
+          <h2 className="register-title">{TEXTS.title}</h2>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="name" className="label-field">{TEXTS.nameLabel}</label>
-                <input id="name" name="name" type="text" autoComplete="name" required className="input-field" placeholder={TEXTS.namePlaceholder} value={formData.name} onChange={handleChange} disabled={isLoading} />
+          {/* Formulario de registro */}
+          <form onSubmit={handleSubmit} className="register-form">
+            {/* Campo Nombre */}
+            <div className="register-field-group">
+              <label htmlFor="name" className="label-field">
+                <span>👤</span>
+                {TEXTS.nameLabel}
+              </label>
+              <input 
+                id="name" 
+                name="name" 
+                type="text" 
+                autoComplete="name" 
+                required 
+                className="input-field" 
+                placeholder={TEXTS.namePlaceholder} 
+                value={formData.name} 
+                onChange={handleChange} 
+                disabled={isLoading} 
+              />
+            </div>
+
+            {/* Campo Email */}
+            <div className="register-field-group">
+              <label htmlFor="email" className="label-field">
+                <span>📧</span>
+                {TEXTS.emailLabel}
+              </label>
+              <input 
+                id="email" 
+                name="email" 
+                type="email" 
+                autoComplete="email" 
+                required 
+                className="input-field" 
+                placeholder={TEXTS.emailPlaceholder} 
+                value={formData.email} 
+                onChange={handleChange} 
+                disabled={isLoading} 
+              />
+            </div>
+
+            {/* Campo Contraseña */}
+            <div className="register-field-group">
+              <label htmlFor="password" className="label-field">
+                <span>🔒</span>
+                {TEXTS.passwordLabel}
+              </label>
+              <div className="password-field-container">
+                <input 
+                  id="password" 
+                  name="password" 
+                  type={showPassword ? 'text' : 'password'} 
+                  autoComplete="new-password" 
+                  required 
+                  className="input-field" 
+                  placeholder={TEXTS.passwordPlaceholder} 
+                  value={formData.password} 
+                  onChange={handleChange} 
+                  disabled={isLoading} 
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle-button" 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  disabled={isLoading}
+                >
+                  {showPassword ? 
+                    <EyeSlashIcon className="password-toggle-icon"/> : 
+                    <EyeIcon className="password-toggle-icon"/>
+                  }
+                </button>
               </div>
-              <div>
-                <label htmlFor="email" className="label-field">{TEXTS.emailLabel}</label>
-                <input id="email" name="email" type="email" autoComplete="email" required className="input-field" placeholder={TEXTS.emailPlaceholder} value={formData.email} onChange={handleChange} disabled={isLoading} />
-              </div>
-              <div>
-                <label htmlFor="password" className="label-field">{TEXTS.passwordLabel}</label>
-                <div className="relative">
-                  <input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" required className="input-field pr-10" placeholder={TEXTS.passwordPlaceholder} value={formData.password} onChange={handleChange} disabled={isLoading} />
-                  <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center" onClick={() => setShowPassword(!showPassword)} disabled={isLoading}>
-                    {showPassword ? <EyeSlashIcon className="h-5 w-5 text-gray-400"/> : <EyeIcon className="h-5 w-5 text-gray-400"/>}
-                  </button>
-                </div>
-                {formData.password && (
-                  <div className="mt-2 flex items-center space-x-2">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div className={`${passwordStrength.color} h-2 rounded-full transition-all`} style={{ width: `${(passwordStrength.strength/4)*100}%` }} />
-                    </div>
-                    <span className="text-xs text-gray-600">{passwordStrength.text}</span>
+              
+              {/* Indicador de fortaleza de contraseña mejorado */}
+              {formData.password && (
+                <div className="password-strength-indicator">
+                  <div className="password-strength-bar-container">
+                    <div 
+                      className={`password-strength-bar-fill strength-bar-${passwordStrength.strength}`} 
+                      style={{ width: `${(passwordStrength.strength/4)*100}%` }} 
+                    />
                   </div>
-                )}
+                  <span className="password-strength-label">
+                    {passwordStrength.text}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Campo Confirmar Contraseña */}
+            <div className="register-field-group">
+              <label htmlFor="confirmPassword" className="label-field">
+                <span>🔐</span>
+                {TEXTS.confirmPasswordLabel}
+              </label>
+              <div className="password-field-container">
+                <input 
+                  id="confirmPassword" 
+                  name="confirmPassword" 
+                  type={showConfirmPassword ? 'text' : 'password'} 
+                  autoComplete="new-password" 
+                  required 
+                  className="input-field" 
+                  placeholder={TEXTS.confirmPasswordPlaceholder} 
+                  value={formData.confirmPassword} 
+                  onChange={handleChange} 
+                  disabled={isLoading} 
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle-button" 
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+                  disabled={isLoading}
+                >
+                  {showConfirmPassword ? 
+                    <EyeSlashIcon className="password-toggle-icon"/> : 
+                    <EyeIcon className="password-toggle-icon"/>
+                  }
+                </button>
               </div>
-              <div>
-                <label htmlFor="confirmPassword" className="label-field">{TEXTS.confirmPasswordLabel}</label>
-                <div className="relative">
-                  <input id="confirmPassword" name="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} autoComplete="new-password" required className="input-field pr-10" placeholder={TEXTS.confirmPasswordPlaceholder} value={formData.confirmPassword} onChange={handleChange} disabled={isLoading} />
-                  <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center" onClick={() => setShowConfirmPassword(!showConfirmPassword)} disabled={isLoading}>
-                    {showConfirmPassword ? <EyeSlashIcon className="h-5 w-5 text-gray-400"/> : <EyeIcon className="h-5 w-5 text-gray-400"/>}
-                  </button>
+            </div>
+
+            {/* Mensajes de estado mejorados */}
+            {error && (
+              <div className="register-message register-message-error slide-in">
+                <span className="register-message-icon">❌</span>
+                <div className="register-message-content">
+                  <p className="register-message-title">Error en el registro:</p>
+                  <p>{error}</p>
                 </div>
               </div>
-
-              {error && (<div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm"><div className="flex items-start space-x-2"><span className="text-red-500">❌</span><div><p className="font-medium">Error en el registro:</p><p>{error}</p></div></div></div>)}
-              {success && (<div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm"><div className="flex items-center space-x-2"><span className="text-green-500">✅</span><p className="font-medium">{success}</p></div></div>)}
-
-              <button type="submit" disabled={isLoading} className="btn-primary w-full py-2">{isLoading ? TEXTS.registeringButton : TEXTS.registerButton}</button>
-
-              <div className="text-center mt-4">
-                <Link to="/login" className="text-sm text-indigo-600 hover:text-indigo-800">{TEXTS.loginLinkText}</Link>
+            )}
+            
+            {success && (
+              <div className="register-message register-message-success slide-in">
+                <span className="register-message-icon">✅</span>
+                <div className="register-message-content">
+                  <p className="register-message-title">{success}</p>
+                </div>
               </div>
-            </form>
-          </div>
+            )}
+
+            {/* Botón de registro */}
+            <button 
+              type="submit" 
+              disabled={isLoading} 
+              className={`btn-primary register-button ${isLoading ? 'register-loading' : ''}`}
+            >
+              {isLoading ? TEXTS.registeringButton : TEXTS.registerButton}
+            </button>
+
+            {/* Enlace a login */}
+            <div className="register-help-text">
+              <Link to="/login" className="link-primary">
+                {TEXTS.loginLinkText}
+              </Link>
+            </div>
+          </form>
         </div>
       </div>
     </div>
