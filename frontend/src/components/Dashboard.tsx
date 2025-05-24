@@ -19,7 +19,6 @@ const Dashboard: React.FC = () => {
         </svg>
       ),
       path: '/workshops',
-      emoji: '🍳'
     },
     {
       title: 'Mis Reservas',
@@ -30,7 +29,6 @@ const Dashboard: React.FC = () => {
         </svg>
       ),
       path: '/bookings',
-      emoji: '📅'
     },
     {
       title: 'Pagos',
@@ -41,7 +39,6 @@ const Dashboard: React.FC = () => {
         </svg>
       ),
       path: '/payment',
-      emoji: '💳'
     },
   ];
 
@@ -105,7 +102,6 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="dashboard-nav-card-title-container">
                   <span className="dashboard-nav-card-emoji" role="img" aria-label={item.title}>
-                    {item.emoji}
                   </span>
                   <h3 className="dashboard-nav-card-title">{item.title}</h3>
                 </div>
@@ -118,7 +114,7 @@ const Dashboard: React.FC = () => {
         {/* Estadísticas de usuario */}
         <section className="dashboard-stats">
           <h3 className="dashboard-section-title">
-            <span className="dashboard-section-title-emoji" role="img" aria-label="Estadísticas">📊</span>
+            <span className="dashboard-section-title-emoji" role="img" aria-label="Estadísticas"></span>
             Tu Progreso en MasterCook
           </h3>
           <div className="dashboard-stats-grid">
@@ -149,18 +145,16 @@ const Dashboard: React.FC = () => {
           <p className="dashboard-help-info-description">
             Si tienes dudas sobre nuestros talleres, reservas o pagos, estamos aquí para ayudarte a tener la mejor experiencia culinaria.
           </p>
+          <p className="dashboard-help-info-description">
+            Contactanos por correo electrónico o por WhatsApp y te responderemos lo antes posible.
+          </p>
+          <p className="dashboard-correo">
+            Correo: mastercookinfo@gmail.com
+          </p>
+          <p className="dashboard-numero">
+            WhatsApp: +502 3003-9839
+          </p>
           <div className="dashboard-help-buttons">
-            <button 
-              type="button"
-              onClick={() => {
-                console.log('💳 [DASHBOARD] Navegando a pagos...');
-                navigate('/payment');
-              }}
-              className="dashboard-help-button dashboard-help-button-secondary"
-              aria-label="Ir a pagos"
-            >
-              💳 Gestionar Pagos
-            </button>
             <button 
               type="button"
               onClick={() => {
@@ -171,17 +165,6 @@ const Dashboard: React.FC = () => {
               aria-label="Recargar página"
             >
               🔄 Recargar Página
-            </button>
-            <button 
-              type="button"
-              onClick={() => {
-                console.log('🍳 [DASHBOARD] Navegando a talleres...');
-                navigate('/workshops');
-              }}
-              className="dashboard-help-button dashboard-help-button-primary"
-              aria-label="Ver talleres disponibles"
-            >
-              🍳 Ver Talleres
             </button>
           </div>
         </section>

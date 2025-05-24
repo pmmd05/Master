@@ -20,6 +20,7 @@
 @import './login.css';
 @import './register.css';
 @import './dashboard.css';
+@import './navbar.css';
 
 /* ========================================
    DOCUMENTACIÓN DE USO
@@ -34,6 +35,7 @@
  *    // o específicamente:
  *    import '../estilos/login.css';
  *    import '../estilos/dashboard.css';
+ *    import '../estilos/navbar.css';
  *    ```
  * 
  * 2. CLASES PRINCIPALES DISPONIBLES:
@@ -44,12 +46,24 @@
  *    - .card: Tarjeta base con sombras y bordes
  *    - .dashboard-container: Contenedor principal del dashboard
  *    - .dashboard-main-content: Contenido principal del dashboard
+ *    - .navbar-mastercook: Barra de navegación principal
  * 
  *    FORMULARIOS:
  *    - .label-field: Etiquetas de campos
  *    - .input-field: Campos de entrada
  *    - .btn-primary: Botón principal
  *    - .link-primary: Enlaces principales
+ * 
+ *    NAVBAR:
+ *    - .navbar-mastercook: Barra de navegación principal
+ *    - .navbar-content: Contenido del navbar
+ *    - .navbar-logo: Logo y brand
+ *    - .navbar-nav: Navegación desktop
+ *    - .navbar-link: Enlaces de navegación
+ *    - .navbar-user: Sección de usuario
+ *    - .navbar-user-dropdown: Menú desplegable de usuario
+ *    - .navbar-mobile-menu: Menú móvil
+ *    - .navbar-mobile-link: Enlaces móviles
  * 
  *    DASHBOARD:
  *    - .dashboard-hero: Sección hero del dashboard
@@ -117,7 +131,15 @@
  *    - Texto Secundario: #666666 (Ash Gray)
  *    - Fondo Claro: #FAFAFA (Snow White)
  * 
- * 6. DASHBOARD ESPECÍFICO:
+ * 6. NAVBAR ESPECÍFICO:
+ *    - Diseño glassmorphism con backdrop-filter
+ *    - Posición fija en la parte superior
+ *    - Responsive con menú hamburguesa en móviles
+ *    - Dropdown de usuario elegante
+ *    - Animaciones suaves y hover effects
+ *    - Accesibilidad mejorada con ARIA labels
+ * 
+ * 7. DASHBOARD ESPECÍFICO:
  *    - Diseño responsive con breakpoints específicos
  *    - Animaciones suaves con fadeIn y slideIn
  *    - Grid adaptativo para diferentes tamaños de pantalla
@@ -266,7 +288,8 @@
   .card,
   .dashboard-nav-card,
   .dashboard-quick-actions,
-  .dashboard-stats {
+  .dashboard-stats,
+  .navbar-mastercook {
     box-shadow: none !important;
     border: 1px solid #ccc !important;
   }
@@ -301,7 +324,8 @@
   
   .btn-primary,
   .dashboard-nav-card,
-  .dashboard-quick-action-button {
+  .dashboard-quick-action-button,
+  .navbar-link {
     border: 2px solid #000;
   }
 }
@@ -323,7 +347,8 @@
   .dashboard-quick-actions,
   .dashboard-stats,
   .dashboard-system-info,
-  .dashboard-help-info {
+  .dashboard-help-info,
+  .navbar-mastercook {
     animation: none !important;
   }
 }
@@ -334,8 +359,10 @@
 .link-primary:focus-visible,
 .dashboard-nav-card:focus-visible,
 .dashboard-quick-action-button:focus-visible,
-.dashboard-help-button:focus-visible {
+.dashboard-help-button:focus-visible,
+.navbar-link:focus-visible,
+.navbar-user-menu-button:focus-visible,
+.navbar-mobile-button:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
-
