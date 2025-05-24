@@ -7,9 +7,12 @@ import './App.css';
 import Login from './components/Login';
 import Register from './components/Register';
 
-// Importaciones de páginas principales (verifica que existan)
+// Importaciones de páginas principales
 import WorkshopsPage from './components/WorkshopsPage';
 import BookingPage from './components/BookingPage';
+
+// IMPORTAR PaymentPage
+import PaymentPage from './components/PaymentPage';
 
 // Dashboard mejorado
 const Dashboard: React.FC = () => {
@@ -191,6 +194,7 @@ const Dashboard: React.FC = () => {
             <p>• <strong>Dashboard:</strong> Funcionando ✅</p>
             <p>• <strong>Talleres:</strong> <a href="/workshops" className="underline">Ir a talleres</a></p>
             <p>• <strong>Reservas:</strong> <a href="/bookings" className="underline">Ver mis reservas</a></p>
+            <p>• <strong>Pagos:</strong> <a href="/payment" className="underline">Sistema de pagos</a></p>
           </div>
         </div>
       </div>
@@ -243,6 +247,12 @@ const DebugPage: React.FC = () => (
                 className="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700"
               >
                 Test Talleres
+              </button>
+              <button
+                onClick={() => window.location.href = '/payment'}
+                className="w-full bg-purple-600 text-white px-3 py-2 rounded text-sm hover:bg-purple-700"
+              >
+                Test Página de Pago
               </button>
             </div>
           </div>
@@ -394,6 +404,16 @@ function AppContent() {
             } 
           />
 
+          {/* ✅ PÁGINA DE PAGOS */}
+          <Route 
+            path="/payment" 
+            element={
+              <ProtectedRoute>
+                <PaymentPage />
+              </ProtectedRoute>
+            } 
+          />
+
           {/* ALIAS PARA RESERVAS */}
           <Route 
             path="/my-bookings" 
@@ -431,6 +451,7 @@ function AppContent() {
                       <a href="/dashboard" className="text-indigo-600 hover:underline">📊 Dashboard</a>
                       <a href="/workshops" className="text-indigo-600 hover:underline">🍳 Talleres</a>
                       <a href="/bookings" className="text-indigo-600 hover:underline">📅 Reservas</a>
+                      <a href="/payment" className="text-indigo-600 hover:underline">💳 Pagos</a>
                       <a href="/debug" className="text-indigo-600 hover:underline">🔧 Debug</a>
                     </div>
                   </div>

@@ -1,7 +1,7 @@
-// frontend/src/components/WorkshopCard.tsx - CORREGIDO
+// frontend/src/components/WorkshopCard.tsx - DISEÑO MASTERCOOK ACADEMY ACTUALIZADO
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import PaymentConfirmationModal from './PaymentConfirmationModal'; // ← Nombre correcto
+import PaymentConfirmationModal from './PaymentConfirmationModal';
 
 interface Workshop {
   id: number;
@@ -42,9 +42,8 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
+      weekday: 'short',
+      month: 'short',
       day: 'numeric'
     });
   };
@@ -60,27 +59,84 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
   // Calcular disponibilidad
   const availableSpots = workshop.max_participants - workshop.current_participants;
   const isFullyBooked = availableSpots <= 0;
+  const isAlmostFull = availableSpots <= 3 && availableSpots > 0;
 
-  // Determinar color de la categoría
-  const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: string } = {
-      'Italiana': 'bg-red-100 text-red-800',
-      'Panadería': 'bg-yellow-100 text-yellow-800',
-      'Repostería': 'bg-pink-100 text-pink-800',
-      'Japonesa': 'bg-purple-100 text-purple-800',
-      'Vegana': 'bg-green-100 text-green-800',
-      'Mexicana': 'bg-orange-100 text-orange-800',
-      'Francesa': 'bg-blue-100 text-blue-800',
-      'Española': 'bg-red-100 text-red-800',
-      'Barbacoa': 'bg-gray-100 text-gray-800',
-      'Tailandesa': 'bg-emerald-100 text-emerald-800',
-      'Bebidas': 'bg-amber-100 text-amber-800',
-      'China': 'bg-red-100 text-red-800',
-      'India': 'bg-orange-100 text-orange-800',
-      'Mediterránea': 'bg-cyan-100 text-cyan-800',
+  // Determinar color de la categoría con paleta MasterCook
+  const getCategoryInfo = (category: string) => {
+    const categories: { [key: string]: { color: string, icon: string, emoji: string } } = {
+      'Italiana': { 
+        color: 'bg-red-50 text-red-700 border-red-200', 
+        icon: 'text-red-600',
+        emoji: '🍝'
+      },
+      'Panadería': { 
+        color: 'bg-yellow-50 text-yellow-700 border-yellow-200', 
+        icon: 'text-yellow-600',
+        emoji: '🥖'
+      },
+      'Repostería': { 
+        color: 'bg-pink-50 text-pink-700 border-pink-200', 
+        icon: 'text-pink-600',
+        emoji: '🧁'
+      },
+      'Japonesa': { 
+        color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
+        icon: 'text-indigo-600',
+        emoji: '🍣'
+      },
+      'Vegana': { 
+        color: 'bg-green-50 text-green-700 border-green-200', 
+        icon: 'text-green-600',
+        emoji: '🥬'
+      },
+      'Mexicana': { 
+        color: 'bg-orange-50 text-orange-700 border-orange-200', 
+        icon: 'text-orange-600',
+        emoji: '🌮'
+      },
+      'Francesa': { 
+        color: 'bg-blue-50 text-blue-700 border-blue-200', 
+        icon: 'text-blue-600',
+        emoji: '🥐'
+      },
+      'Española': { 
+        color: 'bg-amber-50 text-amber-700 border-amber-200', 
+        icon: 'text-amber-600',
+        emoji: '🥘'
+      },
+      'Barbacoa': { 
+        color: 'bg-gray-50 text-gray-700 border-gray-200', 
+        icon: 'text-gray-600',
+        emoji: '🔥'
+      },
+      'Tailandesa': { 
+        color: 'bg-emerald-50 text-emerald-700 border-emerald-200', 
+        icon: 'text-emerald-600',
+        emoji: '🍜'
+      },
+      'Bebidas': { 
+        color: 'bg-cyan-50 text-cyan-700 border-cyan-200', 
+        icon: 'text-cyan-600',
+        emoji: '🥤'
+      }
     };
-    return colors[category] || 'bg-gray-100 text-gray-800';
+    return categories[category] || { 
+      color: 'bg-gray-50 text-gray-700 border-gray-200', 
+      icon: 'text-gray-600',
+      emoji: '🍽️'
+    };
   };
+
+  const categoryInfo = getCategoryInfo(workshop.category);
+
+  // Verificar si la fecha ya pasó
+  const isWorkshopPast = () => {
+    const workshopDate = new Date(workshop.date);
+    const today = new Date();
+    return workshopDate < today;
+  };
+
+  const isPastWorkshop = isWorkshopPast();
 
   // Función principal para hacer la reserva
   const handleBooking = async () => {
@@ -108,13 +164,11 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
         workshop_id: workshop.id
       });
 
-      // Obtener el token
       const token = localStorage.getItem('authToken');
       if (!token) {
         throw new Error('No hay token de autenticación');
       }
 
-      // Preparar datos de reserva
       const bookingData = {
         user_email: user.email,
         workshop_id: workshop.id
@@ -122,7 +176,6 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
 
       console.log('📡 [WORKSHOP_CARD] Enviando solicitud:', bookingData);
 
-      // Hacer la solicitud
       const response = await fetch('http://localhost:5004/api/v0/booking/reservar', {
         method: 'POST',
         headers: {
@@ -132,25 +185,18 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
         body: JSON.stringify(bookingData)
       });
 
-      console.log('📊 [WORKSHOP_CARD] Respuesta status:', response.status);
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('❌ [WORKSHOP_CARD] Error response:', errorData);
         throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
       }
 
       const booking = await response.json();
       console.log('✅ [WORKSHOP_CARD] Reserva exitosa:', booking);
 
-      // Guardar la reserva para el flujo de pago
       setCurrentBooking(booking);
       setShowModal(false);
-      
-      // Mostrar directamente el modal de pago
       setShowPaymentModal(true);
 
-      // Callback de éxito (para refrescar listas)
       if (onBookingSuccess) {
         setTimeout(onBookingSuccess, 1000);
       }
@@ -164,7 +210,6 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
         errorMessage = error.message;
       }
       
-      // Mejorar mensajes de error
       if (errorMessage.includes('ya tienes una reserva')) {
         errorMessage = `Ya tienes una reserva para "${workshop.title}". Ve a "Mis Reservas" para verla.`;
       } else if (errorMessage.includes('401')) {
@@ -201,144 +246,236 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border">
-        {/* Header */}
-        <div className="p-4">
-          <div className="flex justify-between items-start mb-3">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(workshop.category)}`}>
-              {workshop.category}
-            </span>
-            <div className="text-right">
-              <div className="text-lg font-bold text-gray-900">
-                {formatPrice(workshop.price)}
-              </div>
-            </div>
+      {/* Card Principal con Nueva Paleta MasterCook */}
+      <div className={`workshop-card group ${isPastWorkshop ? 'opacity-75 grayscale' : ''}`}>
+        
+        {/* Header con indicador de estado */}
+        <div className="relative mb-4">
+          {/* Indicador de disponibilidad */}
+          <div className="absolute top-0 right-0 z-10">
+            {isFullyBooked ? (
+              <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                Agotado
+              </span>
+            ) : isAlmostFull ? (
+              <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                ¡Últimos cupos!
+              </span>
+            ) : (
+              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                Disponible
+              </span>
+            )}
           </div>
 
-          {/* Título */}
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {workshop.title}
-          </h3>
+          {/* Categoría */}
+          <div className={`inline-flex items-center px-3 py-2 rounded-xl text-sm font-medium border ${categoryInfo.color}`}>
+            <span className="text-lg mr-2">{categoryInfo.emoji}</span>
+            {workshop.category}
+          </div>
+        </div>
 
-          {/* Descripción */}
-          <p className="text-gray-600 text-sm mb-3">
-            {workshop.description}
-          </p>
+        {/* Título del taller */}
+        <h3 className="text-xl font-bold text-gray-800 leading-tight mb-3 group-hover:text-red-600 transition-colors duration-300">
+          {workshop.title}
+        </h3>
 
+        {/* Descripción */}
+        <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+          {workshop.description}
+        </p>
+
+        {/* Información clave */}
+        <div className="space-y-3 mb-6">
           {/* Fecha */}
-          <div className="flex items-center mb-3">
-            <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span className="text-sm text-gray-600 capitalize">
-              {formatDate(workshop.date)}
-            </span>
+          <div className="flex items-center bg-gray-50 rounded-lg px-3 py-2">
+            <div className="bg-blue-100 rounded-lg p-2 mr-3">
+              <svg className="icon-sm text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-sm font-medium text-gray-800">
+                {formatDate(workshop.date)}
+              </div>
+              {isPastWorkshop && (
+                <div className="text-xs text-red-500 font-medium">
+                  Taller finalizado
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Participantes */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
             <div className="flex items-center">
-              <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span className="text-sm text-gray-600">
-                {workshop.current_participants}/{workshop.max_participants}
-              </span>
+              <div className="bg-green-100 rounded-lg p-2 mr-3">
+                <svg className="icon-sm text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm font-medium text-gray-800">
+                  {workshop.current_participants}/{workshop.max_participants}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {availableSpots} disponibles
+                </div>
+              </div>
             </div>
             
-            {availableSpots <= 3 && availableSpots > 0 && (
-              <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full">
-                ¡Últimos {availableSpots} cupos!
-              </span>
-            )}
-          </div>
-
-          {/* Barra de progreso */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-            <div 
-              className={`h-2 rounded-full ${
-                isFullyBooked ? 'bg-red-500' : 
-                availableSpots <= 3 ? 'bg-yellow-500' : 
-                'bg-green-500'
-              }`}
-              style={{ 
-                width: `${Math.min((workshop.current_participants / workshop.max_participants) * 100, 100)}%` 
-              }}
-            ></div>
-          </div>
-
-          {/* Botón de reserva */}
-          <button
-            onClick={() => setShowModal(true)}
-            disabled={isFullyBooked || isLoading}
-            className={`w-full py-3 px-4 rounded-md text-sm font-medium transition-colors duration-200 ${
-              isFullyBooked
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-            }`}
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Reservando...
+            {/* Precio */}
+            <div className="text-right">
+              <div className="text-xl font-bold text-gray-900">
+                {formatPrice(workshop.price)}
               </div>
-            ) : isFullyBooked ? (
-              'Sin Cupos Disponibles'
-            ) : (
-              `Reservar - ${formatPrice(workshop.price)}`
-            )}
-          </button>
-
-          {/* Info adicional */}
-          <div className="mt-3 text-center">
-            <p className="text-xs text-gray-500">
-              💡 Puedes pagar inmediatamente o más tarde
-            </p>
+              <div className="text-xs text-gray-500">por persona</div>
+            </div>
           </div>
+        </div>
 
-          {/* ID del taller para debug */}
-          <div className="mt-2 text-center">
-            <span className="text-xs text-gray-400">ID: #{workshop.id}</span>
-          </div>
+        {/* Barra de progreso de ocupación */}
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
+          <div 
+            className={`h-2 rounded-full transition-all duration-1000 ${
+              isFullyBooked ? 'bg-red-500' : 
+              isAlmostFull ? 'bg-yellow-500' : 
+              'bg-green-500'
+            }`}
+            style={{ 
+              width: `${Math.min((workshop.current_participants / workshop.max_participants) * 100, 100)}%` 
+            }}
+          ></div>
+        </div>
+
+        {/* Botón de reserva */}
+        <button
+          onClick={() => setShowModal(true)}
+          disabled={isFullyBooked || isLoading || isPastWorkshop}
+          className={`
+            w-full py-4 px-6 rounded-xl font-bold text-sm
+            transition-all duration-300 transform
+            ${isFullyBooked || isPastWorkshop
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'btn-primary hover:scale-105'
+            }
+          `}
+        >
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+              Reservando...
+            </div>
+          ) : isFullyBooked ? (
+            <div className="flex items-center justify-center">
+              <svg className="icon-sm mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              Sin Cupos
+            </div>
+          ) : isPastWorkshop ? (
+            <div className="flex items-center justify-center">
+              <svg className="icon-sm mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+              Finalizado
+            </div>
+          ) : (
+            <div className="flex items-center justify-center">
+              <svg className="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Reservar {formatPrice(workshop.price)}
+            </div>
+          )}
+        </button>
+
+        {/* ID del taller */}
+        <div className="text-center mt-4 pt-3 border-t border-gray-100">
+          <span className="text-xs text-gray-400">ID: #{workshop.id}</span>
         </div>
       </div>
 
       {/* Modal de confirmación de reserva */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3 text-center">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
-                Confirmar Reserva
-              </h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-100">
+            <div className="p-6">
+              {/* Header del modal */}
+              <div className="text-center mb-6">
+                <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="icon-xl text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Confirmar Reserva
+                </h3>
+                <p className="text-gray-600">
+                  ¿Deseas reservar este taller de cocina?
+                </p>
+              </div>
               
-              <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-                <p className="font-semibold text-gray-900 mb-2">{workshop.title}</p>
-                <p className="text-sm text-gray-600 mb-1">📅 {formatDate(workshop.date)}</p>
-                <p className="text-sm text-gray-600 mb-1">💰 {formatPrice(workshop.price)}</p>
-                <p className="text-sm text-gray-600 mb-1">🏷️ {workshop.category}</p>
-                <p className="text-sm text-gray-600">👥 {availableSpots} cupos disponibles</p>
+              {/* Información del taller */}
+              <div className="bg-gray-50 rounded-xl p-4 mb-6 border">
+                <div className="flex items-start">
+                  <div className="mr-3 text-2xl">{categoryInfo.emoji}</div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-gray-900 mb-2">{workshop.title}</h4>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      <div className="flex justify-between">
+                        <span>📅 Fecha:</span>
+                        <span className="font-medium">{formatDate(workshop.date)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>💰 Precio:</span>
+                        <span className="font-bold text-red-600">{formatPrice(workshop.price)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>🏷️ Categoría:</span>
+                        <span className="font-medium">{workshop.category}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>👥 Disponibles:</span>
+                        <span className="font-medium text-green-600">{availableSpots} cupos</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <p className="text-sm text-gray-500 mb-6">
-                ¿Confirmas que quieres reservar este taller?<br/>
-                Podrás elegir pagar ahora o más tarde.
-              </p>
+              {/* Información sobre el pago */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
+                <div className="flex items-center text-sm text-blue-700">
+                  <svg className="icon-sm mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Después de confirmar, podrás elegir pagar ahora o más tarde</span>
+                </div>
+              </div>
 
+              {/* Botones */}
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowModal(false)}
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 disabled:opacity-50"
+                  className="flex-1 btn-outline"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleBooking}
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50"
+                  className="flex-1 btn-primary"
                 >
-                  {isLoading ? 'Reservando...' : 'Confirmar'}
+                  {isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Procesando...
+                    </div>
+                  ) : (
+                    '✨ Confirmar'
+                  )}
                 </button>
               </div>
             </div>
@@ -346,7 +483,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
         </div>
       )}
 
-      {/* Modal de confirmación de pago - CORREGIDO */}
+      {/* Modal de confirmación de pago */}
       {showPaymentModal && currentBooking && (
         <PaymentConfirmationModal
           isOpen={showPaymentModal}
@@ -362,19 +499,21 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
         />
       )}
 
-      {/* Mensaje de notificación */}
+      {/* Notificación de mensaje */}
       {message && (
-        <div className={`fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-sm ${
-          messageType === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        <div className={`fixed top-20 right-4 max-w-sm rounded-xl shadow-2xl z-50 transform transition-all duration-500 p-4 ${
+          messageType === 'success' 
+            ? 'bg-green-500 text-white' 
+            : 'bg-red-500 text-white'
         }`}>
           <div className="flex items-start">
             <div className="flex-shrink-0">
               {messageType === 'success' ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="icon-md" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               ) : (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="icon-md" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               )}
@@ -382,21 +521,21 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
             <div className="ml-3 flex-1">
               <p className="text-sm font-medium whitespace-pre-line">{message}</p>
               {messageType === 'success' && message.includes('confirmada') && (
-                <div className="mt-2">
+                <div className="mt-3">
                   <button
                     onClick={() => window.location.href = '/bookings'}
-                    className="text-xs bg-white bg-opacity-20 hover:bg-opacity-30 px-2 py-1 rounded"
+                    className="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-lg text-xs font-medium transition-colors duration-200"
                   >
-                    Ver Mis Reservas
+                    Ver Mis Reservas →
                   </button>
                 </div>
               )}
             </div>
             <button
               onClick={() => setMessage(null)}
-              className="ml-2 text-white hover:text-gray-200"
+              className="ml-2 hover:opacity-75 transition-opacity duration-200"
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
