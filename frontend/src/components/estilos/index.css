@@ -1,9 +1,6 @@
 /* 
- * Índice de Estilos - MasterCook Academy
+ * Índice de Estilos Actualizado - MasterCook Academy
  * Archivo: frontend/src/components/estilos/index.css
- * 
- * Este archivo importa todos los estilos del sistema de diseño de MasterCook Academy
- * y proporciona documentación sobre cómo utilizarlos.
  */
 
 /* ========================================
@@ -22,403 +19,361 @@
 @import './dashboard.css';
 @import './navbar.css';
 @import './workshops.css';
+@import './payment.css'; /* 🆕 NUEVO: Estilos para la página de pagos */
 
 /* ========================================
-   DOCUMENTACIÓN DE USO
+   NUEVAS UTILIDADES PARA PAYMENT
    ======================================== */
 
-/*
- * CÓMO USAR ESTOS ESTILOS:
- * 
- * 1. IMPORTAR EN TU COMPONENTE:
- *    ```tsx
- *    import '../estilos/index.css';
- *    // o específicamente:
- *    import '../estilos/login.css';
- *    import '../estilos/dashboard.css';
- *    import '../estilos/navbar.css';
- *    import '../estilos/workshops.css';
- *    ```
- * 
- * 2. CLASES PRINCIPALES DISPONIBLES:
- * 
- *    CONTENEDORES:
- *    - .form-wrapper: Contenedor principal de formularios
- *    - .container-centered: Contenedor centrado con max-width
- *    - .card: Tarjeta base con sombras y bordes
- *    - .dashboard-container: Contenedor principal del dashboard
- *    - .dashboard-main-content: Contenido principal del dashboard
- *    - .navbar-mastercook: Barra de navegación principal
- *    - .workshops-container: Contenedor principal de workshops
- *    - .workshops-main-content: Contenido principal de workshops
- * 
- *    FORMULARIOS:
- *    - .label-field: Etiquetas de campos
- *    - .input-field: Campos de entrada
- *    - .btn-primary: Botón principal
- *    - .link-primary: Enlaces principales
- * 
- *    NAVBAR:
- *    - .navbar-mastercook: Barra de navegación principal
- *    - .navbar-content: Contenido del navbar
- *    - .navbar-logo: Logo y brand
- *    - .navbar-nav: Navegación desktop
- *    - .navbar-link: Enlaces de navegación
- *    - .navbar-user: Sección de usuario
- *    - .navbar-user-dropdown: Menú desplegable de usuario
- *    - .navbar-mobile-menu: Menú móvil
- *    - .navbar-mobile-link: Enlaces móviles
- * 
- *    DASHBOARD:
- *    - .dashboard-hero: Sección hero del dashboard
- *    - .dashboard-nav-card: Tarjetas de navegación
- *    - .dashboard-quick-actions: Contenedor de acciones rápidas
- *    - .dashboard-stats: Sección de estadísticas
- *    - .dashboard-system-info: Información del sistema
- *    - .dashboard-help-info: Información de ayuda
- * 
- *    WORKSHOPS:
- *    - .workshops-header: Header de la página de workshops
- *    - .workshops-hero: Sección hero de workshops
- *    - .workshops-search-container: Contenedor de búsqueda
- *    - .workshops-search-input: Campo de búsqueda
- *    - .workshops-search-select: Selector de categorías
- *    - .workshops-search-quick-filter: Filtros rápidos
- *    - .workshops-grid: Grid de talleres
- *    - .workshop-card: Tarjeta individual de taller
- *    - .workshop-card-title: Título del taller
- *    - .workshop-card-description: Descripción del taller
- *    - .workshop-card-info: Información del taller (fecha, precio, etc.)
- *    - .workshop-card-button: Botón de reserva
- *    - .workshop-card-progress: Barra de progreso de ocupación
- *    - .workshops-loading: Estado de carga
- *    - .workshops-error: Estado de error
- *    - .workshops-empty: Estado vacío
- *    - .workshops-info-section: Información adicional
- *    - .workshops-cta-section: Llamada a la acción
- * 
- *    MENSAJES:
- *    - .message-error: Mensajes de error
- *    - .message-success: Mensajes de éxito
- *    - .message-warning: Mensajes de advertencia
- * 
- *    FORTALEZA DE CONTRASEÑA:
- *    - .password-strength-container: Contenedor del indicador
- *    - .password-strength-bar: Barra de progreso
- *    - .password-strength-fill: Relleno de la barra
- *    - .strength-0 a .strength-4: Niveles de fortaleza
- * 
- *    ICONOS:
- *    - .icon-sm: Iconos pequeños (1rem)
- *    - .icon-md: Iconos medianos (1.25rem)
- *    - .icon-lg: Iconos grandes (1.5rem)
- *    - .dashboard-nav-card-icon: Iconos de navegación del dashboard (1.5rem)
- *    - .dashboard-hero-feature-icon: Iconos de características hero (1rem)
- * 
- *    ANIMACIONES:
- *    - .fade-in: Animación de aparición
- *    - .slide-in: Animación de deslizamiento
- * 
- * 3. VARIABLES CSS DISPONIBLES:
- * 
- *    COLORES:
- *    - var(--color-primary): Color principal (#D94F4F)
- *    - var(--color-secondary): Color secundario (#FFF3E2)
- *    - var(--color-accent): Color de acento (#6B8E23)
- *    - var(--color-text-primary): Texto principal (#333333)
- *    - var(--color-text-secondary): Texto secundario (#666666)
- *    - var(--color-background-light): Fondo claro (#FAFAFA)
- * 
- *    ESPACIADO:
- *    - var(--spacing-xs) a var(--spacing-3xl): 0.25rem a 4rem
- * 
- *    TIPOGRAFÍA:
- *    - var(--font-size-xs) a var(--font-size-4xl): 0.75rem a 2.25rem
- *    - var(--font-family-primary): Fuente principal
- *    - var(--font-family-secondary): Fuente secundaria
- * 
- *    EFECTOS:
- *    - var(--shadow-sm) a var(--shadow-xl): Sombras
- *    - var(--border-radius-sm) a var(--border-radius-xl): Bordes redondeados
- *    - var(--transition-fast/normal/slow): Transiciones
- * 
- * 4. RESPONSIVE BREAKPOINTS:
- *    - Móvil: < 640px
- *    - Tablet: 640px - 1024px
- *    - Desktop: > 1024px
- * 
- * 5. PALETA DE COLORES COMPLETA:
- *    - Primario: #D94F4F (Salsa Tomato)
- *    - Secundario: #FFF3E2 (Creamy Vanilla)
- *    - Acento: #6B8E23 (Olive Green)
- *    - Texto Principal: #333333 (Charcoal Gray)
- *    - Texto Secundario: #666666 (Ash Gray)
- *    - Fondo Claro: #FAFAFA (Snow White)
- * 
- * 6. NAVBAR ESPECÍFICO:
- *    - Diseño glassmorphism con backdrop-filter
- *    - Posición fija en la parte superior
- *    - Responsive con menú hamburguesa en móviles
- *    - Dropdown de usuario elegante
- *    - Animaciones suaves y hover effects
- *    - Accesibilidad mejorada con ARIA labels
- * 
- * 7. DASHBOARD ESPECÍFICO:
- *    - Diseño responsive con breakpoints específicos
- *    - Animaciones suaves con fadeIn y slideIn
- *    - Grid adaptativo para diferentes tamaños de pantalla
- *    - Iconos optimizados para mejor usabilidad
- *    - Espaciado coherente en todos los componentes
- * 
- * 8. WORKSHOPS ESPECÍFICO:
- *    - Diseño coherente con dashboard y login/register
- *    - Cards de talleres con glassmorphism y hover effects
- *    - Sistema de búsqueda y filtros intuitivo
- *    - Indicadores visuales de disponibilidad y estado
- *    - Responsive design optimizado para todos los dispositivos
- *    - Barras de progreso animadas para ocupación
- *    - Estados de loading, error y empty state elegantes
- *    - Categorías con código de colores y emojis
- *    - Botones de acción con gradientes y animaciones
- *    - Información clara de precios, fechas y participantes
- */
+/* Utilidades específicas para componentes de pago */
+.payment-container {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    var(--color-background-light) 0%,
+    var(--color-secondary) 30%,
+    var(--color-background-light) 60%,
+    var(--color-secondary) 100%
+  );
+}
 
-/* ========================================
-   ESTILOS UTILITARIOS ADICIONALES
-   ======================================== */
+.payment-modal-open {
+  overflow: hidden;
+}
 
-/* Utilidades de display */
-.hidden { display: none !important; }
-.block { display: block !important; }
-.flex { display: flex !important; }
-.inline-flex { display: inline-flex !important; }
-.grid { display: grid !important; }
+/* Animaciones adicionales para payment */
+@keyframes paymentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
-/* Utilidades de posicionamiento */
-.relative { position: relative !important; }
-.absolute { position: absolute !important; }
-.fixed { position: fixed !important; }
-.sticky { position: sticky !important; }
+@keyframes paymentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-/* Utilidades de texto */
-.text-center { text-align: center !important; }
-.text-left { text-align: left !important; }
-.text-right { text-align: right !important; }
-.text-justify { text-align: justify !important; }
+.payment-slide-in {
+  animation: paymentSlideIn 0.4s ease-out;
+}
 
-.font-light { font-weight: 300 !important; }
-.font-normal { font-weight: 400 !important; }
-.font-medium { font-weight: 500 !important; }
-.font-semibold { font-weight: 600 !important; }
-.font-bold { font-weight: 700 !important; }
+.payment-fade-in {
+  animation: paymentFadeIn 0.3s ease-out;
+}
 
-/* Utilidades de colores de texto */
-.text-primary { color: var(--color-primary) !important; }
-.text-secondary { color: var(--color-text-secondary) !important; }
-.text-accent { color: var(--color-accent) !important; }
-.text-success { color: var(--color-success) !important; }
-.text-warning { color: var(--color-warning) !important; }
-.text-error { color: var(--color-error) !important; }
+/* Utilidades para estados de loading en payment */
+.payment-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
 
-/* Utilidades de espaciado */
-.m-0 { margin: 0 !important; }
-.mt-auto { margin-top: auto !important; }
-.mb-auto { margin-bottom: auto !important; }
-.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.payment-loading-spinner-large {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid #E5E7EB;
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 
-.p-0 { padding: 0 !important; }
+/* Utilidades de validation */
+.payment-input-valid {
+  border-color: var(--color-success) !important;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1) !important;
+}
 
-/* Utilidades de ancho y alto */
-.w-full { width: 100% !important; }
-.h-full { height: 100% !important; }
-.min-h-screen { min-height: 100vh !important; }
+.payment-input-invalid {
+  border-color: var(--color-error) !important;
+  box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1) !important;
+}
 
-/* Utilidades de flex */
-.items-center { align-items: center !important; }
-.items-start { align-items: flex-start !important; }
-.items-end { align-items: flex-end !important; }
-.justify-center { justify-content: center !important; }
-.justify-between { justify-content: space-between !important; }
-.justify-start { justify-content: flex-start !important; }
-.justify-end { justify-content: flex-end !important; }
+/* Utilidades para focus states mejorados */
+.payment-focus-ring:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
-.flex-col { flex-direction: column !important; }
-.flex-row { flex-direction: row !important; }
-.flex-wrap { flex-wrap: wrap !important; }
-.flex-nowrap { flex-wrap: nowrap !important; }
+.payment-focus-ring-blue:focus {
+  outline: 2px solid #1976D2;
+  outline-offset: 2px;
+}
 
-/* Utilidades de gap */
-.gap-xs { gap: var(--spacing-xs) !important; }
-.gap-sm { gap: var(--spacing-sm) !important; }
-.gap-md { gap: var(--spacing-md) !important; }
-.gap-lg { gap: var(--spacing-lg) !important; }
-.gap-xl { gap: var(--spacing-xl) !important; }
+/* Estados de card types */
+.payment-card-visa {
+  background: linear-gradient(135deg, #1A1F71, #0D47A1);
+  color: white;
+}
 
-/* Utilidades de overflow */
-.overflow-hidden { overflow: hidden !important; }
-.overflow-auto { overflow: auto !important; }
-.overflow-scroll { overflow: scroll !important; }
+.payment-card-mastercard {
+  background: linear-gradient(135deg, #EB001B, #F79E1B);
+  color: white;
+}
 
-/* Utilidades de cursor */
-.cursor-pointer { cursor: pointer !important; }
-.cursor-not-allowed { cursor: not-allowed !important; }
-.cursor-default { cursor: default !important; }
+.payment-card-amex {
+  background: linear-gradient(135deg, #006FCF, #0047AB);
+  color: white;
+}
 
-/* Utilidades de opacidad */
-.opacity-0 { opacity: 0 !important; }
-.opacity-50 { opacity: 0.5 !important; }
-.opacity-75 { opacity: 0.75 !important; }
-.opacity-100 { opacity: 1 !important; }
-
-/* Utilidades de transformación */
-.transform { transform: translateZ(0) !important; }
-.scale-95 { transform: scale(0.95) !important; }
-.scale-100 { transform: scale(1) !important; }
-.scale-105 { transform: scale(1.05) !important; }
-
-/* Utilidades de z-index */
-.z-0 { z-index: 0 !important; }
-.z-10 { z-index: 10 !important; }
-.z-20 { z-index: 20 !important; }
-.z-30 { z-index: 30 !important; }
-.z-40 { z-index: 40 !important; }
-.z-50 { z-index: 50 !important; }
-
-/* ========================================
-   RESPONSIVE UTILITIES
-   ======================================== */
-
+/* Utilidades de responsive específicas para payment */
 @media (max-width: 640px) {
-  .sm\:hidden { display: none !important; }
-  .sm\:block { display: block !important; }
-  .sm\:text-center { text-align: center !important; }
-  .sm\:text-sm { font-size: var(--font-size-sm) !important; }
-  .sm\:p-sm { padding: var(--spacing-sm) !important; }
-  .sm\:m-sm { margin: var(--spacing-sm) !important; }
+  .payment-mobile-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .payment-mobile-full {
+    width: 100%;
+  }
+  
+  .payment-mobile-center {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
-@media (min-width: 768px) {
-  .md\:block { display: block !important; }
-  .md\:flex { display: flex !important; }
-  .md\:text-left { text-align: left !important; }
-  .md\:text-base { font-size: var(--font-size-base) !important; }
-  .md\:p-md { padding: var(--spacing-md) !important; }
-  .md\:m-md { margin: var(--spacing-md) !important; }
-}
-
-@media (min-width: 1024px) {
-  .lg\:block { display: block !important; }
-  .lg\:flex { display: flex !important; }
-  .lg\:text-lg { font-size: var(--font-size-lg) !important; }
-  .lg\:p-lg { padding: var(--spacing-lg) !important; }
-  .lg\:m-lg { margin: var(--spacing-lg) !important; }
+/* Dark mode readiness (para futuras implementaciones) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --payment-bg-primary: #1F2937;
+    --payment-bg-secondary: #374151;
+    --payment-text-primary: #F9FAFB;
+    --payment-text-secondary: #D1D5DB;
+  }
 }
 
 /* ========================================
-   PRINT STYLES
+   UTILIDADES MEJORADAS EXISTENTES
    ======================================== */
 
+/* Loading states mejorados */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.loading-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Hover effects mejorados */
+.hover-lift {
+  transition: transform var(--transition-normal);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-scale {
+  transition: transform var(--transition-normal);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Text utilities adicionales */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Border utilities */
+.border-gradient {
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, var(--color-primary), var(--color-accent)) border-box;
+}
+
+/* Backdrop utilities */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(8px);
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(16px);
+}
+
+.backdrop-blur-xl {
+  backdrop-filter: blur(24px);
+}
+
+/* Safe area utilities (para mobile) */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Print utilities mejoradas */
 @media print {
-  .no-print { display: none !important; }
-  
-  .card,
-  .dashboard-nav-card,
-  .dashboard-quick-actions,
-  .dashboard-stats,
-  .navbar-mastercook,
-  .workshop-card,
-  .workshops-search-container {
-    box-shadow: none !important;
-    border: 1px solid #ccc !important;
+  .print-hidden {
+    display: none !important;
   }
   
-  .btn-primary,
-  .dashboard-help-button-primary,
-  .workshop-card-button.primary {
-    background: #333 !important;
-    color: white !important;
+  .print-visible {
+    display: block !important;
   }
   
-  * {
+  .print-break-before {
+    break-before: page;
+  }
+  
+  .print-break-after {
+    break-after: page;
+  }
+  
+  .print-break-inside-avoid {
+    break-inside: avoid;
+  }
+}
+
+/* Screen reader utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Accessibility improvements */
+.focus-visible-only:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.focus-visible-only:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode improvements */
+@media (prefers-contrast: high) {
+  .high-contrast-border {
+    border: 2px solid currentColor;
+  }
+  
+  .high-contrast-bg {
+    background: Canvas;
+    color: CanvasText;
+  }
+}
+
+/* Reduced motion improvements */
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .motion-safe * {
     animation: none !important;
     transition: none !important;
   }
 }
 
+/* Container queries preparación (futuro) */
+@container (min-width: 768px) {
+  .container-md\:text-lg {
+    font-size: var(--font-size-lg);
+  }
+}
+
 /* ========================================
-   ACCESIBILIDAD
+   DEBUGGING UTILITIES (DEVELOPMENT ONLY)
    ======================================== */
 
-/* Mejorar el contraste en modo de alto contraste */
-@media (prefers-contrast: high) {
-  :root {
-    --color-primary: #B71C1C;
-    --color-text-primary: #000000;
-    --color-text-secondary: #444444;
-  }
-  
-  .input-field,
-  .workshops-search-input,
-  .workshops-search-select {
-    border-width: 3px;
-  }
-  
-  .btn-primary,
-  .dashboard-nav-card,
-  .dashboard-quick-action-button,
-  .navbar-link,
-  .workshop-card,
-  .workshop-card-button {
-    border: 2px solid #000;
+.debug-grid {
+  background-image: 
+    linear-gradient(rgba(255, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.debug-outline * {
+  outline: 1px solid red;
+}
+
+.debug-spacing * {
+  background: rgba(255, 0, 0, 0.1);
+}
+
+/* Solo mostrar en development */
+@media (min-width: 0) {
+  .dev-only {
+    display: block;
   }
 }
 
-/* Reducir movimiento para usuarios sensibles */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  
-  .fade-in,
-  .slide-in,
-  .dashboard-hero,
-  .dashboard-nav-card,
-  .dashboard-quick-actions,
-  .dashboard-stats,
-  .dashboard-system-info,
-  .dashboard-help-info,
-  .navbar-mastercook,
-  .workshops-header,
-  .workshops-hero,
-  .workshops-search-container,
-  .workshop-card,
-  .workshops-list-container,
-  .workshops-info-section,
-  .workshops-cta-section {
-    animation: none !important;
-  }
-}
-
-/* Focus visible mejorado */
-.input-field:focus-visible,
-.btn-primary:focus-visible,
-.link-primary:focus-visible,
-.dashboard-nav-card:focus-visible,
-.dashboard-quick-action-button:focus-visible,
-.dashboard-help-button:focus-visible,
-.navbar-link:focus-visible,
-.navbar-user-menu-button:focus-visible,
-.navbar-mobile-button:focus-visible,
-.workshop-card:focus-visible,
-.workshops-search-input:focus-visible,
-.workshops-search-select:focus-visible,
-.workshops-search-quick-filter:focus-visible,
-.workshop-card-button:focus-visible,
-.workshops-cta-button:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 2px;
+/* Ocultar en production (agregar clase .production al body) */
+.production .dev-only {
+  display: none !important;
 }

@@ -1,8 +1,10 @@
-// frontend/src/components/PaymentPage.tsx - MOCK DE PAGOS COMPLETO
+// frontend/src/components/PaymentPage.tsx - DISEÑO MASTERCOOK ACADEMY MEJORADO
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { paymentService } from '../services/api';
+import Navbar from './Navbar';
+import './estilos/payment.css';
 
 interface PaymentData {
   bookingId?: number;
@@ -76,12 +78,30 @@ const PaymentPage: React.FC = () => {
     }
   };
 
+  // Formatear fecha de expiración
+  const formatExpiryDate = (value: string) => {
+    const v = value.replace(/\D/g, '');
+    if (v.length >= 2) {
+      return v.substring(0, 2) + '/' + v.substring(2, 4);
+    }
+    return v;
+  };
+
   // Manejar entrada de tarjeta
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCardNumber(e.target.value);
     setFormData(prev => ({ ...prev, cardNumber: formatted }));
     if (errors.cardNumber) {
       setErrors(prev => ({ ...prev, cardNumber: '' }));
+    }
+  };
+
+  // Manejar entrada de fecha
+  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatExpiryDate(e.target.value);
+    setFormData(prev => ({ ...prev, expiryDate: formatted }));
+    if (errors.expiryDate) {
+      setErrors(prev => ({ ...prev, expiryDate: '' }));
     }
   };
 
@@ -118,7 +138,7 @@ const PaymentPage: React.FC = () => {
       console.log('💳 [PAYMENT] Procesando pago...', paymentData);
 
       // Simular tiempo de procesamiento
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       const paymentRequest = {
         user_email: user?.email || paymentData.userEmail || '',
@@ -161,341 +181,379 @@ const PaymentPage: React.FC = () => {
     return 'Tarjeta';
   };
 
+  // Renderizar formulario de pago
+  const renderPaymentForm = () => (
+    <>
+      {/* Resumen del pago */}
+      <div className="payment-form-section">
+        <h2 className="payment-section-title">
+          📋 Resumen del Pago
+        </h2>
+        <div className="payment-summary">
+          <h3 className="payment-summary-title">Detalles de tu compra</h3>
+          <div className="payment-summary-details">
+            <div className="payment-summary-item">
+              <span className="payment-summary-label">🍳 Taller:</span>
+              <span className="payment-summary-value">{paymentData.workshopTitle}</span>
+            </div>
+            <div className="payment-summary-item">
+              <span className="payment-summary-label">👤 Participante:</span>
+              <span className="payment-summary-value">{user?.name} ({user?.email})</span>
+            </div>
+            <div className="payment-summary-item">
+              <span className="payment-summary-label">#️⃣ Reserva:</span>
+              <span className="payment-summary-value">#{paymentData.bookingId}</span>
+            </div>
+            <div className="payment-summary-item payment-summary-total">
+              <span className="payment-summary-label">💰 Total a pagar:</span>
+              <span className="payment-summary-value">{formatPrice(paymentData.amount || 0)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Métodos de pago */}
+      <div className="payment-form-section">
+        <h2 className="payment-section-title">
+          💳 Método de Pago
+        </h2>
+        <div className="payment-methods">
+          <div className="payment-methods-grid">
+            <div className="payment-method-option">
+              <input
+                type="radio"
+                id="credit_card"
+                name="paymentMethod"
+                value="credit_card"
+                checked={formData.paymentMethod === 'credit_card'}
+                onChange={handleInputChange}
+                className="payment-method-input"
+              />
+              <label htmlFor="credit_card" className="payment-method-label">
+                <svg className="payment-method-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                <span>Tarjeta de Crédito</span>
+              </label>
+            </div>
+
+            <div className="payment-method-option">
+              <input
+                type="radio"
+                id="paypal"
+                name="paymentMethod"
+                value="paypal"
+                checked={formData.paymentMethod === 'paypal'}
+                onChange={handleInputChange}
+                className="payment-method-input"
+              />
+              <label htmlFor="paypal" className="payment-method-label">
+                <svg className="payment-method-icon" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
+                </svg>
+                <span>PayPal</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Formulario de tarjeta */}
+      {formData.paymentMethod === 'credit_card' && (
+        <div className="payment-form-section">
+          <h2 className="payment-section-title">
+            🔒 Información de la Tarjeta
+          </h2>
+          <div className="payment-form-grid">
+            {/* Número de tarjeta */}
+            <div className="payment-form-field">
+              <label className="payment-form-label">
+                Número de Tarjeta
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  name="cardNumber"
+                  value={formData.cardNumber}
+                  onChange={handleCardNumberChange}
+                  placeholder="1234 5678 9012 3456"
+                  maxLength={19}
+                  className="payment-form-input"
+                />
+                {formData.cardNumber && (
+                  <div className="payment-card-type">
+                    {getCardType(formData.cardNumber)}
+                  </div>
+                )}
+              </div>
+              {errors.cardNumber && (
+                <div className="payment-form-error">{errors.cardNumber}</div>
+              )}
+            </div>
+
+            {/* Titular */}
+            <div className="payment-form-field">
+              <label className="payment-form-label">
+                Nombre del Titular
+              </label>
+              <input
+                type="text"
+                name="cardHolder"
+                value={formData.cardHolder}
+                onChange={handleInputChange}
+                placeholder="Como aparece en la tarjeta"
+                className="payment-form-input"
+              />
+              {errors.cardHolder && (
+                <div className="payment-form-error">{errors.cardHolder}</div>
+              )}
+            </div>
+
+            {/* Fecha y CVV */}
+            <div className="payment-form-row two-columns">
+              <div className="payment-form-field">
+                <label className="payment-form-label">
+                  Fecha de Vencimiento
+                </label>
+                <input
+                  type="text"
+                  name="expiryDate"
+                  value={formData.expiryDate}
+                  onChange={handleExpiryDateChange}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                  className="payment-form-input"
+                />
+                {errors.expiryDate && (
+                  <div className="payment-form-error">{errors.expiryDate}</div>
+                )}
+              </div>
+
+              <div className="payment-form-field">
+                <label className="payment-form-label">
+                  CVV
+                </label>
+                <input
+                  type="text"
+                  name="cvv"
+                  value={formData.cvv}
+                  onChange={handleInputChange}
+                  placeholder="123"
+                  maxLength={4}
+                  className="payment-form-input"
+                />
+                {errors.cvv && (
+                  <div className="payment-form-error">{errors.cvv}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PayPal Mock */}
+      {formData.paymentMethod === 'paypal' && (
+        <div className="payment-paypal-mock">
+          <svg className="payment-paypal-icon" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
+          </svg>
+          <p className="payment-paypal-text">Serás redirigido a PayPal para completar el pago</p>
+          <p className="payment-paypal-subtext">Pago seguro con tu cuenta PayPal</p>
+        </div>
+      )}
+
+      {/* Botones de acción */}
+      <div className="payment-actions">
+        <button
+          onClick={() => navigate('/bookings')}
+          className="payment-button payment-button-cancel"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1.25rem', height: '1.25rem' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Cancelar
+        </button>
+        <button
+          onClick={processPayment}
+          className="payment-button payment-button-pay"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1.25rem', height: '1.25rem' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v2a2 2 0 002 2z" />
+          </svg>
+          Pagar {formatPrice(paymentData.amount || 0)}
+        </button>
+      </div>
+
+      {/* Información de seguridad */}
+      <div className="payment-security-info">
+        <div className="payment-security-content">
+          <svg className="payment-security-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <p className="payment-security-text">
+            <strong>Pago 100% seguro:</strong> Tus datos están protegidos con encriptación SSL de nivel bancario
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
+  // Renderizar estado de procesamiento
+  const renderProcessing = () => (
+    <div className="payment-processing">
+      <div className="payment-processing-spinner"></div>
+      <h3 className="payment-processing-title">Procesando tu pago...</h3>
+      <p className="payment-processing-subtitle">
+        Por favor no cierres esta ventana ni actualices la página
+      </p>
+      <div className="payment-processing-progress">
+        <div className="payment-processing-progress-fill"></div>
+      </div>
+    </div>
+  );
+
+  // Renderizar resultado exitoso
+  const renderSuccess = () => (
+    <div className="payment-result payment-result-success">
+      <div className="payment-result-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '2rem', height: '2rem' }}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h3 className="payment-result-title">¡Pago Exitoso!</h3>
+      <p className="payment-result-message">Tu pago ha sido procesado correctamente</p>
+      
+      <div className="payment-result-details">
+        <h4 className="payment-result-details-title">Detalles del Pago</h4>
+        <div className="payment-summary-details">
+          <div className="payment-summary-item">
+            <span className="payment-summary-label">🔢 ID Transacción:</span>
+            <span className="payment-summary-value">{paymentResult?.transaction_id}</span>
+          </div>
+          <div className="payment-summary-item">
+            <span className="payment-summary-label">🍳 Taller:</span>
+            <span className="payment-summary-value">{paymentData.workshopTitle}</span>
+          </div>
+          <div className="payment-summary-item">
+            <span className="payment-summary-label">💰 Monto:</span>
+            <span className="payment-summary-value">{formatPrice(paymentData.amount || 0)}</span>
+          </div>
+          <div className="payment-summary-item">
+            <span className="payment-summary-label">📊 Estado:</span>
+            <span className="payment-summary-value" style={{ color: 'var(--color-success)', fontWeight: 'bold' }}>Pagado ✅</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="payment-result-actions">
+        <button
+          onClick={() => navigate('/bookings')}
+          className="payment-result-button payment-result-button-primary"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Ver Mis Reservas
+        </button>
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="payment-result-button payment-result-button-secondary"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+          </svg>
+          Ir al Dashboard
+        </button>
+      </div>
+    </div>
+  );
+
+  // Renderizar error
+  const renderError = () => (
+    <div className="payment-result payment-result-error">
+      <div className="payment-result-icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '2rem', height: '2rem' }}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
+      <h3 className="payment-result-title">Error en el Pago</h3>
+      <p className="payment-result-message">
+        {paymentResult?.message || 'No se pudo procesar tu pago'}
+      </p>
+      
+      <div className="payment-result-actions">
+        <button
+          onClick={() => setStep('form')}
+          className="payment-result-button payment-result-button-primary"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Intentar de Nuevo
+        </button>
+        <button
+          onClick={() => navigate('/bookings')}
+          className="payment-result-button payment-result-button-secondary"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver a Reservas
+        </button>
+      </div>
+    </div>
+  );
+
   // Renderizar paso actual
   const renderCurrentStep = () => {
     switch (step) {
       case 'form':
-        return (
-          <div className="space-y-6">
-            {/* Información del taller */}
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-              <h3 className="font-semibold text-indigo-900 mb-2">Resumen del Pago</h3>
-              <div className="space-y-1 text-sm text-indigo-800">
-                <p><strong>Taller:</strong> {paymentData.workshopTitle}</p>
-                <p><strong>Participante:</strong> {user?.name} ({user?.email})</p>
-                <p><strong>Total a pagar:</strong> <span className="text-lg font-bold">{formatPrice(paymentData.amount || 0)}</span></p>
-              </div>
-            </div>
-
-            {/* Métodos de pago */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Método de Pago
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <label className={`relative cursor-pointer p-3 border rounded-lg transition-colors ${
-                  formData.paymentMethod === 'credit_card' 
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-900' 
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="credit_card"
-                    checked={formData.paymentMethod === 'credit_card'}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <span className="text-sm font-medium">Tarjeta</span>
-                    </div>
-                  </div>
-                </label>
-
-                <label className={`relative cursor-pointer p-3 border rounded-lg transition-colors ${
-                  formData.paymentMethod === 'paypal' 
-                    ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="paypal"
-                    checked={formData.paymentMethod === 'paypal'}
-                    onChange={handleInputChange}
-                    className="sr-only"
-                  />
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <span className="text-sm font-medium">PayPal</span>
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {/* Formulario de tarjeta */}
-            {formData.paymentMethod === 'credit_card' && (
-              <div className="space-y-4">
-                {/* Número de tarjeta */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Número de Tarjeta
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="cardNumber"
-                      value={formData.cardNumber}
-                      onChange={handleCardNumberChange}
-                      placeholder="1234 5678 9012 3456"
-                      maxLength={19}
-                      className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                        errors.cardNumber ? 'border-red-300' : 'border-gray-300'
-                      }`}
-                    />
-                    {formData.cardNumber && (
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                        <span className="text-xs text-gray-500">{getCardType(formData.cardNumber)}</span>
-                      </div>
-                    )}
-                  </div>
-                  {errors.cardNumber && (
-                    <p className="mt-1 text-sm text-red-600">{errors.cardNumber}</p>
-                  )}
-                </div>
-
-                {/* Titular */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nombre del Titular
-                  </label>
-                  <input
-                    type="text"
-                    name="cardHolder"
-                    value={formData.cardHolder}
-                    onChange={handleInputChange}
-                    placeholder="Como aparece en la tarjeta"
-                    className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                      errors.cardHolder ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                  />
-                  {errors.cardHolder && (
-                    <p className="mt-1 text-sm text-red-600">{errors.cardHolder}</p>
-                  )}
-                </div>
-
-                {/* Fecha y CVV */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Fecha de Vencimiento
-                    </label>
-                    <input
-                      type="text"
-                      name="expiryDate"
-                      value={formData.expiryDate}
-                      onChange={handleInputChange}
-                      placeholder="MM/YY"
-                      maxLength={5}
-                      className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                        errors.expiryDate ? 'border-red-300' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.expiryDate && (
-                      <p className="mt-1 text-sm text-red-600">{errors.expiryDate}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      CVV
-                    </label>
-                    <input
-                      type="text"
-                      name="cvv"
-                      value={formData.cvv}
-                      onChange={handleInputChange}
-                      placeholder="123"
-                      maxLength={4}
-                      className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                        errors.cvv ? 'border-red-300' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.cvv && (
-                      <p className="mt-1 text-sm text-red-600">{errors.cvv}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* PayPal Mock */}
-            {formData.paymentMethod === 'paypal' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                <div className="text-blue-600 mb-2">
-                  <svg className="w-12 h-12 mx-auto" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
-                  </svg>
-                </div>
-                <p className="text-blue-800 font-medium">Serás redirigido a PayPal para completar el pago</p>
-                <p className="text-blue-600 text-sm mt-1">Pago seguro con tu cuenta PayPal</p>
-              </div>
-            )}
-
-            {/* Botones de acción */}
-            <div className="flex gap-4 pt-4">
-              <button
-                onClick={() => navigate('/bookings')}
-                className="flex-1 py-3 px-4 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 font-medium transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={processPayment}
-                className="flex-1 py-3 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 font-medium transition-colors"
-              >
-                Pagar {formatPrice(paymentData.amount || 0)}
-              </button>
-            </div>
-
-            {/* Información de seguridad */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <p className="text-green-700 text-sm">
-                  <strong>Pago seguro:</strong> Tus datos están protegidos con encriptación SSL
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-
+        return renderPaymentForm();
       case 'processing':
-        return (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Procesando tu pago...</h3>
-            <p className="text-gray-600">Por favor no cierres esta ventana ni actualices la página</p>
-            <div className="mt-4 max-w-md mx-auto bg-gray-100 rounded-full h-2">
-              <div className="bg-indigo-500 h-2 rounded-full animate-pulse" style={{ width: '75%' }}></div>
-            </div>
-          </div>
-        );
-
+        return renderProcessing();
       case 'success':
-        return (
-          <div className="text-center py-12">
-            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-              <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">¡Pago Exitoso!</h3>
-            <p className="text-gray-600 mb-6">Tu pago ha sido procesado correctamente</p>
-            
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 text-left max-w-md mx-auto">
-              <h4 className="font-medium text-green-900 mb-2">Detalles del Pago</h4>
-              <div className="space-y-1 text-sm text-green-800">
-                <p><strong>ID de Transacción:</strong> {paymentResult?.transaction_id}</p>
-                <p><strong>Taller:</strong> {paymentData.workshopTitle}</p>
-                <p><strong>Monto:</strong> {formatPrice(paymentData.amount || 0)}</p>
-                <p><strong>Estado:</strong> Pagado ✅</p>
-              </div>
-            </div>
-
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => navigate('/bookings')}
-                className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 font-medium transition-colors"
-              >
-                Ver Mis Reservas
-              </button>
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="bg-gray-100 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium transition-colors"
-              >
-                Ir al Dashboard
-              </button>
-            </div>
-          </div>
-        );
-
+        return renderSuccess();
       case 'error':
-        return (
-          <div className="text-center py-12">
-            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4">
-              <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Error en el Pago</h3>
-            <p className="text-gray-600 mb-6">
-              {paymentResult?.message || 'No se pudo procesar tu pago'}
-            </p>
-            
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => setStep('form')}
-                className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 font-medium transition-colors"
-              >
-                Intentar de Nuevo
-              </button>
-              <button
-                onClick={() => navigate('/bookings')}
-                className="bg-gray-100 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 font-medium transition-colors"
-              >
-                Volver a Reservas
-              </button>
-            </div>
-          </div>
-        );
-
+        return renderError();
       default:
         return null;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="payment-page-container">
+      <Navbar />
+      
       {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">
-                💳 Procesar Pago
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                {user?.name}
-              </span>
-            </div>
+      <div className="payment-page-header">
+        <div className="payment-page-header-content">
+          <h1 className="payment-page-header-title">
+            Procesar Pago
+          </h1>
+          <div className="payment-page-header-user">
+            <span>👤</span>
+            <span className="payment-page-user-name">{user?.name}</span>
           </div>
         </div>
       </div>
 
       {/* Contenido principal */}
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="payment-page-main">
+        <div className="payment-page-card">
           {renderCurrentStep()}
         </div>
 
-        {/* Información adicional */}
+        {/* Información de debug (solo en formulario) */}
         {step === 'form' && (
-          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">
-              ℹ️ Información sobre el pago
+          <div className="payment-debug-info">
+            <h3 className="payment-debug-title">
+              ℹ️ Información sobre el simulador de pagos
             </h3>
-            <div className="text-blue-700 space-y-1 text-xs">
-              <p>• Este es un simulador de pagos - No se procesarán pagos reales</p>
-              <p>• Usa cualquier número de tarjeta para probar (ej: 4111 1111 1111 1111)</p>
-              <p>• Tarjetas terminadas en 0000 simularán pagos fallidos</p>
-              <p>• El pago quedará registrado en tu historial de reservas</p>
+            <div className="payment-debug-list">
+              <div>• Este es un simulador de pagos - No se procesarán pagos reales</div>
+              <div>• Usa cualquier número de tarjeta para probar (ej: 4111 1111 1111 1111)</div>
+              <div>• Tarjetas terminadas en 0000 simularán pagos fallidos</div>
+              <div>• El pago quedará registrado en tu historial de reservas</div>
             </div>
           </div>
         )}

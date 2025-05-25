@@ -1,4 +1,4 @@
-// frontend/src/components/WorkshopCard.tsx - CON FIX TEMPORAL INLINE
+// frontend/src/components/WorkshopCard.tsx - TIPOS CORREGIDOS
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import PaymentConfirmationModal from './PaymentConfirmationModal';
@@ -23,6 +23,15 @@ interface Booking {
   payment_status: "Pendiente" | "Pagado";
 }
 
+// 🆕 NUEVO: Tipo específico para el modal de pago
+interface PaymentModalBooking {
+  id: number;
+  workshop_id: number;
+  workshop_title: string;
+  workshop_price: number;
+  user_email: string;
+}
+
 interface WorkshopCardProps {
   workshop: Workshop;
   onBookingSuccess?: () => void;
@@ -35,9 +44,10 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess,
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   
-  // Estados para el flujo de pago
+  // Estados para el flujo de pago MEJORADO - TIPOS CORREGIDOS
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
+  // ✅ CORREGIDO: Usar el tipo correcto para el modal
+  const [currentBooking, setCurrentBooking] = useState<PaymentModalBooking | null>(null);
 
   // Estilos inline para el botón (FIX TEMPORAL)
   const buttonStyles = {
@@ -143,7 +153,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess,
     setLocalError(null);
   };
 
-  // Función principal para hacer la reserva
+  // Función principal para hacer la reserva - TIPOS CORREGIDOS
   const handleConfirmBooking = async () => {
     const userEmail = user?.email || null;
     
@@ -192,17 +202,23 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess,
       const booking = await response.json();
       console.log('✅ [WORKSHOP_CARD] Reserva exitosa:', booking);
 
-      const bookingWithEmail = {
-        ...booking,
+      // ✅ CORREGIDO: Crear objeto con el tipo correcto para el modal
+      const paymentModalData: PaymentModalBooking = {
+        id: booking.id,
+        workshop_id: workshop.id,
+        workshop_title: workshop.title,
+        workshop_price: workshop.price,
         user_email: userEmail
       };
 
-      setCurrentBooking(bookingWithEmail);
+      // 🎯 FLUJO MEJORADO: Cerrar confirmación y mostrar modal de pago
+      setCurrentBooking(paymentModalData);
       setShowConfirmation(false);
       setShowPaymentModal(true);
 
+      // Refrescar la lista después de un tiempo
       if (onBookingSuccess) {
-        setTimeout(onBookingSuccess, 1000);
+        setTimeout(onBookingSuccess, 1500);
       }
 
     } catch (error: any) {
@@ -231,16 +247,22 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess,
     }
   };
 
-  // Manejar "pagar más tarde"
+  // Manejar "pagar más tarde" - FLUJO MEJORADO
   const handlePayLater = () => {
+    console.log('⏰ [WORKSHOP_CARD] Usuario eligió pagar más tarde');
     setShowPaymentModal(false);
-    onMessage?.(`¡Reserva confirmada para "${workshop.title}"! Puedes pagar más tarde desde "Mis Reservas".`, 'success');
+    
+    // Mostrar mensaje de éxito
+    onMessage?.(`¡Reserva confirmada para "${workshop.title}"! Puedes completar el pago desde "Mis Reservas" cuando gustes.`, 'success');
   };
 
-  // Manejar cierre del modal de pago
+  // Manejar cierre del modal de pago - FLUJO MEJORADO
   const handleClosePaymentModal = () => {
+    console.log('❌ [WORKSHOP_CARD] Usuario cerró el modal de pago');
     setShowPaymentModal(false);
-    onMessage?.(`Reserva confirmada para "${workshop.title}". Puedes completar el pago desde "Mis Reservas".`, 'success');
+    
+    // Mostrar mensaje informativo
+    onMessage?.(`Reserva confirmada para "${workshop.title}". Recuerda completar el pago antes del taller desde "Mis Reservas".`, 'success');
   };
 
   // Determinar clases CSS dinámicas
@@ -422,7 +444,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess,
             className={`workshop-card-button ${
               isFullyBooked || isPastWorkshop ? 'disabled' : 'primary'
             }`}
-  
+            style={buttonStyles}
           >
             {isLoading ? (
               <div className="workshops-loading-content">
@@ -498,17 +520,11 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess,
         </div>
       </div>
 
-      {/* Modal de confirmación de pago */}
+      {/* 🎯 MODAL DE CONFIRMACIÓN DE PAGO MEJORADO - TIPOS CORREGIDOS */}
       {showPaymentModal && currentBooking && (
         <PaymentConfirmationModal
           isOpen={showPaymentModal}
-          booking={{
-            id: currentBooking.id,
-            workshop_id: workshop.id,
-            workshop_title: workshop.title,
-            workshop_price: workshop.price,
-            user_email: currentBooking.user_email || user?.email || ''
-          }}
+          booking={currentBooking}
           onClose={handleClosePaymentModal}
           onPayLater={handlePayLater}
         />
