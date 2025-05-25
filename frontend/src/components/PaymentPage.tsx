@@ -163,13 +163,16 @@ const PaymentPage: React.FC = () => {
       }
 
     } catch (error: any) {
-      console.error('❌ [PAYMENT] Error procesando pago:', error);
-      setPaymentResult({ 
-        status: 'error',
-        message: error.message || 'Error inesperado al procesar el pago'
-      });
-      setStep('error');
-    }
+    // Si el error incluye "cannot connect to", mostramos mensaje divertido
+    const errorMsg = error.message && error.message.includes('500')
+      ? 'Error al conectar con el servidor. El chef encargado de los pagos está en huelga. Estamos negociando con croissants.'
+      : (error.message || 'Error inesperado al procesar el pago');
+    setPaymentResult({
+      status: 'error',
+      message: errorMsg
+    });
+     setStep('error');
+   }
   };
 
   // Determinar el tipo de tarjeta

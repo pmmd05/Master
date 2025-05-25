@@ -114,7 +114,7 @@ const BookingsPageContent: React.FC = () => {
               </svg>
               <h3 className="text-lg font-medium text-red-800">Error al cargar reservas</h3>
             </div>
-            <p className="text-red-600 mb-4">{error}</p>
+            <p className="text-red-600 mb-4">Error al conectar con tus reservas, Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo.</p>
             <button
               onClick={() => window.location.reload()}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"

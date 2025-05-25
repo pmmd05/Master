@@ -176,7 +176,7 @@ const WorkshopsList: React.FC = () => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <h3 className="workshops-error-title">Error al cargar talleres</h3>
-        <p className="workshops-error-message">{error}</p>
+        <p className="workshops-error-message">No fue posible conectar con el servidor. No es que no haya talleres… es que el microservicio se fue a moler pimienta y no volvió</p>
         <div className="workshops-error-actions">
           <button
             onClick={() => window.location.reload()}
