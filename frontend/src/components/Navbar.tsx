@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
     { path: '/workshops', label: 'Talleres', icon: '🍳' },
-    { path: '/bookings', label: 'Mis Reservas', icon: '📅' },
+    { path: '/bookings', label: 'Reservas', icon: '📅' },
     { path: '/payments', label: 'Pagos', icon: '💳' }
   ];
 

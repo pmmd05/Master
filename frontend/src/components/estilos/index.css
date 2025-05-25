@@ -19,14 +19,15 @@
 @import './dashboard.css';
 @import './navbar.css';
 @import './workshops.css';
-@import './payment.css'; /* 🆕 NUEVO: Estilos para la página de pagos */
+@import './bookings.css'; /* 🆕 NUEVO: Estilos para Mis Reservas */
+@import './payment.css'; /* Estilos para la página de pagos */
 
 /* ========================================
-   NUEVAS UTILIDADES PARA PAYMENT
+   NUEVAS UTILIDADES PARA BOOKINGS
    ======================================== */
 
-/* Utilidades específicas para componentes de pago */
-.payment-container {
+/* Utilidades específicas para gestión de reservas */
+.booking-container {
   min-height: 100vh;
   background: linear-gradient(
     135deg,
@@ -37,12 +38,12 @@
   );
 }
 
-.payment-modal-open {
+.booking-modal-open {
   overflow: hidden;
 }
 
-/* Animaciones adicionales para payment */
-@keyframes paymentSlideIn {
+/* Animaciones adicionales para bookings */
+@keyframes bookingSlideIn {
   from {
     opacity: 0;
     transform: translateY(30px) scale(0.95);
@@ -53,7 +54,7 @@
   }
 }
 
-@keyframes paymentFadeIn {
+@keyframes bookingFadeIn {
   from {
     opacity: 0;
   }
@@ -62,16 +63,16 @@
   }
 }
 
-.payment-slide-in {
-  animation: paymentSlideIn 0.4s ease-out;
+.booking-slide-in {
+  animation: bookingSlideIn 0.4s ease-out;
 }
 
-.payment-fade-in {
-  animation: paymentFadeIn 0.3s ease-out;
+.booking-fade-in {
+  animation: bookingFadeIn 0.3s ease-out;
 }
 
-/* Utilidades para estados de loading en payment */
-.payment-loading-overlay {
+/* Utilidades para estados de carga en bookings */
+.booking-loading-overlay {
   position: absolute;
   inset: 0;
   background: rgba(255, 255, 255, 0.8);
@@ -82,7 +83,7 @@
   z-index: 100;
 }
 
-.payment-loading-spinner-large {
+.booking-loading-spinner-large {
   width: 3rem;
   height: 3rem;
   border: 3px solid #E5E7EB;
@@ -91,70 +92,96 @@
   animation: spin 1s linear infinite;
 }
 
-/* Utilidades de validation */
-.payment-input-valid {
+/* Utilidades de validation para bookings */
+.booking-input-valid {
   border-color: var(--color-success) !important;
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1) !important;
 }
 
-.payment-input-invalid {
+.booking-input-invalid {
   border-color: var(--color-error) !important;
   box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1) !important;
 }
 
-/* Utilidades para focus states mejorados */
-.payment-focus-ring:focus {
+/* Utilidades para focus states mejorados en bookings */
+.booking-focus-ring:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.payment-focus-ring-blue:focus {
-  outline: 2px solid #1976D2;
+.booking-focus-ring-success:focus {
+  outline: 2px solid var(--color-success);
   outline-offset: 2px;
 }
 
-/* Estados de card types */
-.payment-card-visa {
-  background: linear-gradient(135deg, #1A1F71, #0D47A1);
-  color: white;
+.booking-focus-ring-error:focus {
+  outline: 2px solid var(--color-error);
+  outline-offset: 2px;
 }
 
-.payment-card-mastercard {
-  background: linear-gradient(135deg, #EB001B, #F79E1B);
-  color: white;
+/* Estados de reserva específicos */
+.booking-status-confirmed {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+  color: var(--color-success);
 }
 
-.payment-card-amex {
-  background: linear-gradient(135deg, #006FCF, #0047AB);
-  color: white;
+.booking-status-cancelled {
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.05));
+  color: var(--color-error);
 }
 
-/* Utilidades de responsive específicas para payment */
+.booking-status-completed {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.1), rgba(33, 150, 243, 0.05));
+  color: #1976D2;
+}
+
+.booking-status-pending {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.05));
+  color: var(--color-warning);
+}
+
+/* Utilidades de responsive específicas para bookings */
 @media (max-width: 640px) {
-  .payment-mobile-stack {
+  .booking-mobile-stack {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
   }
   
-  .payment-mobile-full {
+  .booking-mobile-full {
     width: 100%;
   }
   
-  .payment-mobile-center {
+  .booking-mobile-center {
     text-align: center;
     justify-content: center;
     align-items: center;
   }
+  
+  .booking-mobile-hide {
+    display: none;
+  }
 }
 
-/* Dark mode readiness (para futuras implementaciones) */
+@media (max-width: 480px) {
+  .booking-mobile-xs-hide {
+    display: none;
+  }
+  
+  .booking-mobile-xs-stack {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Dark mode readiness para bookings */
 @media (prefers-color-scheme: dark) {
   :root {
-    --payment-bg-primary: #1F2937;
-    --payment-bg-secondary: #374151;
-    --payment-text-primary: #F9FAFB;
-    --payment-text-secondary: #D1D5DB;
+    --booking-bg-primary: #1F2937;
+    --booking-bg-secondary: #374151;
+    --booking-text-primary: #F9FAFB;
+    --booking-text-secondary: #D1D5DB;
+    --booking-border: #4B5563;
   }
 }
 
