@@ -1,4 +1,4 @@
-// frontend/src/components/WorkshopsList.tsx - CON ESTILOS MASTERCOOK ACADEMY PREMIUM
+// frontend/src/components/WorkshopsList.tsx - CON ESTILOS MASTERCOOK ACADEMY PREMIUM Y MENSAJE GLOBAL
 import React, { useState } from 'react';
 import { useWorkshops } from '../context/WorkshopsContext';
 import { useAuth } from '../context/AuthContext';
@@ -14,8 +14,42 @@ const WorkshopsList: React.FC = () => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
+  
+  // Estado global para mensajes de todas las cards
+  const [globalMessage, setGlobalMessage] = useState<string | null>(null);
+  const [globalMessageType, setGlobalMessageType] = useState<'success' | 'error'>('success');
 
-  // Confirmar reserva
+  // Función para manejar mensajes globales desde las WorkshopCards
+  const handleGlobalMessage = (message: string, type: 'success' | 'error') => {
+    setGlobalMessage(message);
+    setGlobalMessageType(type);
+    
+    // Auto-ocultar mensaje después de unos segundos
+    setTimeout(() => {
+      setGlobalMessage(null);
+    }, type === 'success' ? 5000 : 7000);
+  };
+
+  // Función para cerrar el mensaje global manualmente
+  const closeGlobalMessage = () => {
+    setGlobalMessage(null);
+  };
+
+  // Función callback para cuando una card actualiza exitosamente
+  const handleCardBookingSuccess = () => {
+    // Refrescar la lista de talleres para actualizar current_participants
+    console.log('🔄 [WORKSHOPS] Refrescando lista de talleres...');
+    setTimeout(async () => {
+      try {
+        await refreshWorkshops();
+        console.log('✅ [WORKSHOPS] Lista de talleres actualizada');
+      } catch (refreshError) {
+        console.error('⚠️ [WORKSHOPS] Error refrescando talleres:', refreshError);
+      }
+    }, 1000);
+  };
+
+  // Confirmar reserva (para el modal viejo, mantenemos por compatibilidad)
   const confirmBooking = async () => {
     if (!bookingWorkshop || !user) {
       console.error('❌ [WORKSHOPS] No hay taller o usuario para reservar');
@@ -187,11 +221,57 @@ const WorkshopsList: React.FC = () => {
           <WorkshopCard
             key={workshop.id}
             workshop={workshop}
+            onBookingSuccess={handleCardBookingSuccess}
+            onMessage={handleGlobalMessage}
           />
         ))}
       </div>
 
-      {/* Modal de confirmación de reserva PREMIUM */}
+      {/* Notificación de mensaje GLOBAL con estilos premium */}
+      {globalMessage && (
+        <div className={`fixed top-20 right-4 max-w-sm rounded-xl shadow-2xl z-50 transform transition-all duration-500 p-4 backdrop-filter backdrop-blur-lg border ${
+          globalMessageType === 'success' 
+            ? 'bg-green-500 bg-opacity-95 text-white border-green-400' 
+            : 'bg-red-500 bg-opacity-95 text-white border-red-400'
+        }`}>
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              {globalMessageType === 'success' ? (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <div className="ml-3 flex-1">
+              <p className="text-sm font-medium whitespace-pre-line">{globalMessage}</p>
+              {globalMessageType === 'success' && globalMessage.includes('confirmada') && (
+                <div className="mt-3">
+                  <button
+                    onClick={() => window.location.href = '/bookings'}
+                    className="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-lg text-xs font-medium transition-colors duration-200 border border-white border-opacity-30"
+                  >
+                    Ver Mis Reservas →
+                  </button>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={closeGlobalMessage}
+              className="ml-2 hover:opacity-75 transition-opacity duration-200"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmación de reserva PREMIUM (para compatibilidad con código viejo) */}
       {bookingWorkshop && (
         <div className="booking-modal-overlay" onClick={(e) => e.target === e.currentTarget && cancelBooking()}>
           <div className="booking-modal-container">
@@ -314,7 +394,7 @@ const WorkshopsList: React.FC = () => {
         </div>
       )}
 
-      {/* Notificación de éxito PREMIUM */}
+      {/* Notificación de éxito PREMIUM (para compatibilidad con código viejo) */}
       {bookingSuccess && (
         <div className="booking-success-notification">
           <div className="booking-success-content">

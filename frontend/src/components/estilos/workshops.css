@@ -958,13 +958,17 @@
 /* ========================================
    BOTONES DE LA CARD
    ======================================== */
+.workshop-card-button svg {
+  width: 1rem !important;
+  height: 1rem !important;
+  flex-shrink: 0;
+}
+
 
 .workshop-card-button {
   width: 100%;
-  padding: var(--spacing-lg);
   border-radius: var(--border-radius-lg);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  font-size: var(--font-size-sm);
   border: none;
   cursor: pointer;
   transition: all var(--transition-normal);
@@ -974,7 +978,9 @@
   gap: var(--spacing-sm);
   position: relative;
   overflow: hidden;
-  min-height: 52px;
+  padding: var(--spacing-md) var(--spacing-lg); /* Era: var(--spacing-lg) */
+  font-weight: 600; /* Era: 700 */
+  min-height: 44px; /* Era: 52px */
 }
 
 .workshop-card-button.primary {
@@ -1804,8 +1810,9 @@
 }
 
 .icon-sm {
-  width: 1rem;
-  height: 1rem;
+  width: 1rem !important;
+  height: 1rem !important;
+  flex-shrink: 0;
 }
 
 .icon-md {

@@ -1,4 +1,4 @@
-// frontend/src/components/WorkshopCard.tsx - CON CONFIRMACIÓN INTEGRADA MODERNA OPTIMIZADA
+// frontend/src/components/WorkshopCard.tsx - CON FIX TEMPORAL INLINE
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import PaymentConfirmationModal from './PaymentConfirmationModal';
@@ -26,18 +26,35 @@ interface Booking {
 interface WorkshopCardProps {
   workshop: Workshop;
   onBookingSuccess?: () => void;
+  onMessage?: (message: string, type: 'success' | 'error') => void;
 }
 
-const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess }) => {
+const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess, onMessage }) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [messageType, setMessageType] = useState<'success' | 'error'>('success');
+  const [localError, setLocalError] = useState<string | null>(null);
   
   // Estados para el flujo de pago
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
+
+  // Estilos inline para el botón (FIX TEMPORAL)
+  const buttonStyles = {
+    padding: '12px 16px',
+    fontSize: '14px',
+    fontWeight: '600',
+    minHeight: '44px',
+    lineHeight: '1.2'
+  };
+
+  const buttonConfirmationStyles = {
+    padding: '10px 12px',
+    fontSize: '13px',
+    fontWeight: '600',
+    minHeight: '38px',
+    lineHeight: '1.2'
+  };
 
   // Formatear fecha corta
   const formatDate = (dateString: string) => {
@@ -107,26 +124,23 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
     const userEmail = user?.email || null;
     
     if (!user || !userEmail) {
-      setMessage('Debes estar autenticado para hacer una reserva');
-      setMessageType('error');
-      setTimeout(() => setMessage(null), 3000);
+      onMessage?.('Debes estar autenticado para hacer una reserva', 'error');
       return;
     }
 
     if (isFullyBooked) {
-      setMessage('Este taller ya no tiene cupos disponibles');
-      setMessageType('error');
-      setTimeout(() => setMessage(null), 3000);
+      onMessage?.('Este taller ya no tiene cupos disponibles', 'error');
       return;
     }
 
     setShowConfirmation(true);
+    setLocalError(null);
   };
 
   // Función para cancelar confirmación
   const handleCancelConfirmation = () => {
     setShowConfirmation(false);
-    setMessage(null);
+    setLocalError(null);
   };
 
   // Función principal para hacer la reserva
@@ -134,14 +148,13 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
     const userEmail = user?.email || null;
     
     if (!user || !userEmail) {
-      setMessage('Error: Usuario no autenticado correctamente');
-      setMessageType('error');
+      setLocalError('Error: Usuario no autenticado correctamente');
       return;
     }
 
     try {
       setIsLoading(true);
-      setMessage(null);
+      setLocalError(null);
       
       console.log('🎯 [WORKSHOP_CARD] Iniciando reserva:', {
         user: userEmail,
@@ -208,11 +221,10 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
       } else if (errorMessage.includes('404')) {
         errorMessage = 'El taller ya no está disponible.';
       } else if (errorMessage.includes('500')) {
-        errorMessage = 'Error del servidor. Intenta nuevamente en unos minutos.';
+        errorMessage = 'Error del servidor. Pronto podremos encender el horno para ti. Intenta nuevamente en unos minutos';
       }
 
-      setMessage(errorMessage);
-      setMessageType('error');
+      setLocalError(errorMessage);
       
     } finally {
       setIsLoading(false);
@@ -222,17 +234,13 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
   // Manejar "pagar más tarde"
   const handlePayLater = () => {
     setShowPaymentModal(false);
-    setMessage(`¡Reserva confirmada para "${workshop.title}"! Puedes pagar más tarde desde "Mis Reservas".`);
-    setMessageType('success');
-    setTimeout(() => setMessage(null), 5000);
+    onMessage?.(`¡Reserva confirmada para "${workshop.title}"! Puedes pagar más tarde desde "Mis Reservas".`, 'success');
   };
 
   // Manejar cierre del modal de pago
   const handleClosePaymentModal = () => {
     setShowPaymentModal(false);
-    setMessage(`Reserva confirmada para "${workshop.title}". Puedes completar el pago desde "Mis Reservas".`);
-    setMessageType('success');
-    setTimeout(() => setMessage(null), 5000);
+    onMessage?.(`Reserva confirmada para "${workshop.title}". Puedes completar el pago desde "Mis Reservas".`, 'success');
   };
 
   // Determinar clases CSS dinámicas
@@ -373,15 +381,15 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
               <span>Después de confirmar, podrás elegir pagar ahora o más tarde</span>
             </div>
 
-            {/* Mostrar error si existe */}
-            {message && messageType === 'error' && (
+            {/* Mostrar error LOCAL si existe */}
+            {localError && (
               <div className="workshop-card-confirmation-error">
                 <div className="workshop-card-confirmation-error-icon">
                   <svg fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <p>{message}</p>
+                <p>{localError}</p>
               </div>
             )}
           </div>
@@ -407,13 +415,14 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
 
         {/* Botones de acción */}
         {!showConfirmation ? (
-          /* Botón de reserva normal */
+          /* Botón de reserva normal CON ESTILO INLINE */
           <button
             onClick={handleShowConfirmation}
             disabled={isFullyBooked || isLoading || isPastWorkshop}
             className={`workshop-card-button ${
               isFullyBooked || isPastWorkshop ? 'disabled' : 'primary'
             }`}
+  
           >
             {isLoading ? (
               <div className="workshops-loading-content">
@@ -422,21 +431,27 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
               </div>
             ) : isFullyBooked ? (
               <>
-                <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
                 Sin Cupos
               </>
             ) : isPastWorkshop ? (
               <>
-                <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                 </svg>
                 Finalizado
               </>
             ) : (
               <>
-                <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <svg 
+                  className="icon-sm" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  style={{ width: '1rem', height: '1rem', flexShrink: 0 }}
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Reservar {formatPrice(workshop.price)}
@@ -444,12 +459,13 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
             )}
           </button>
         ) : (
-          /* Botones de confirmación */
+          /* Botones de confirmación CON ESTILO INLINE */
           <div className="workshop-card-confirmation-buttons">
             <button
               onClick={handleCancelConfirmation}
               disabled={isLoading}
               className="workshop-card-button outline"
+              style={buttonConfirmationStyles}
             >
               Cancelar
             </button>
@@ -457,6 +473,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
               onClick={handleConfirmBooking}
               disabled={isLoading}
               className="workshop-card-button primary"
+              style={buttonConfirmationStyles}
             >
               {isLoading ? (
                 <div className="workshops-loading-content">
@@ -465,7 +482,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
                 </div>
               ) : (
                 <>
-                  <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                   </svg>
                   ✨ Confirmar
@@ -495,50 +512,6 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
           onClose={handleClosePaymentModal}
           onPayLater={handlePayLater}
         />
-      )}
-
-      {/* Notificación de mensaje con estilos premium */}
-      {message && (
-        <div className={`fixed top-20 right-4 max-w-sm rounded-xl shadow-2xl z-50 transform transition-all duration-500 p-4 backdrop-filter backdrop-blur-lg border ${
-          messageType === 'success' 
-            ? 'bg-green-500 bg-opacity-95 text-white border-green-400' 
-            : 'bg-red-500 bg-opacity-95 text-white border-red-400'
-        }`}>
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              {messageType === 'success' ? (
-                <svg className="icon-md" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="icon-md" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-medium whitespace-pre-line">{message}</p>
-              {messageType === 'success' && message.includes('confirmada') && (
-                <div className="mt-3">
-                  <button
-                    onClick={() => window.location.href = '/bookings'}
-                    className="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-lg text-xs font-medium transition-colors duration-200 border border-white border-opacity-30"
-                  >
-                    Ver Mis Reservas →
-                  </button>
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => setMessage(null)}
-              className="ml-2 hover:opacity-75 transition-opacity duration-200"
-            >
-              <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-        </div>
       )}
     </>
   );
