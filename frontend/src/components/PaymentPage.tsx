@@ -237,23 +237,7 @@ const PaymentPage: React.FC = () => {
               </label>
             </div>
 
-            <div className="payment-method-option">
-              <input
-                type="radio"
-                id="paypal"
-                name="paymentMethod"
-                value="paypal"
-                checked={formData.paymentMethod === 'paypal'}
-                onChange={handleInputChange}
-                className="payment-method-input"
-              />
-              <label htmlFor="paypal" className="payment-method-label">
-                <svg className="payment-method-icon" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
-                </svg>
-                <span>PayPal</span>
-              </label>
-            </div>
+           
           </div>
         </div>
       </div>
@@ -339,7 +323,7 @@ const PaymentPage: React.FC = () => {
                   value={formData.cvv}
                   onChange={handleInputChange}
                   placeholder="123"
-                  maxLength={4}
+                  maxLength={3}
                   className="payment-form-input"
                 />
                 {errors.cvv && (
@@ -352,16 +336,7 @@ const PaymentPage: React.FC = () => {
       )}
 
       {/* PayPal Mock */}
-      {formData.paymentMethod === 'paypal' && (
-        <div className="payment-paypal-mock">
-          <svg className="payment-paypal-icon" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
-          </svg>
-          <p className="payment-paypal-text">Serás redirigido a PayPal para completar el pago</p>
-          <p className="payment-paypal-subtext">Pago seguro con tu cuenta PayPal</p>
-        </div>
-      )}
-
+      
       {/* Botones de acción */}
       <div className="payment-actions">
         <button

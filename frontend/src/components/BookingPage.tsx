@@ -46,7 +46,7 @@ const BookingsPageContent: React.FC = () => {
     }
     
     // Navegar a la página de pagos con los datos de la reserva
-    navigate('/paymentpage', {
+    navigate('/PaymentPage', {
       state: {
         bookingId: booking.id,
         workshopId: booking.workshop_id,

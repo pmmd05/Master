@@ -1,4 +1,4 @@
-// frontend/src/components/WorkshopsList.tsx - CON ESTILOS MASTERCOOK ACADEMY PREMIUM Y MENSAJE GLOBAL
+// frontend/src/components/WorkshopsList.tsx - ACTUALIZADO SIN MODAL DE PAGO
 import React, { useState } from 'react';
 import { useWorkshops } from '../context/WorkshopsContext';
 import { useAuth } from '../context/AuthContext';
@@ -271,7 +271,7 @@ const WorkshopsList: React.FC = () => {
         </div>
       )}
 
-      {/* Modal de confirmación de reserva PREMIUM (para compatibilidad con código viejo) */}
+      {/* Modal de confirmación de reserva PREMIUM (para compatibilidad con código viejo - pero ya no se usa) */}
       {bookingWorkshop && (
         <div className="booking-modal-overlay" onClick={(e) => e.target === e.currentTarget && cancelBooking()}>
           <div className="booking-modal-container">

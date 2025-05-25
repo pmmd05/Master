@@ -2874,4 +2874,1192 @@
     animation: none;
   }
 }
+/* 
+ * Estilos Simple Payment Modal - MasterCook Academy
+ * Modal de confirmación de pago simplificado y elegante
+ */
+
+/* Overlay del modal */
+.simple-payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* Modal principal */
+.simple-payment-modal {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(217, 79, 79, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  position: relative;
+  animation: fadeInModal 0.4s ease-out;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header del modal */
+.simple-payment-modal-header {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.simple-payment-modal-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 100%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.simple-payment-modal-success-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.simple-payment-modal-header-text {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.simple-payment-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.simple-payment-modal-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+}
+
+/* Contenido del modal */
+.simple-payment-modal-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Información básica */
+.simple-payment-modal-info {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid rgba(217, 79, 79, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.simple-payment-modal-workshop,
+.simple-payment-modal-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.simple-payment-modal-workshop {
+  border-bottom: 1px solid rgba(217, 79, 79, 0.1);
+}
+
+.simple-payment-modal-label {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.simple-payment-modal-value {
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+  line-height: 1.3;
+}
+
+.simple-payment-modal-price-value {
+  font-size: 1.125rem;
+  color: #D94F4F;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Pregunta principal */
+.simple-payment-modal-question {
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(33, 150, 243, 0.05);
+  border: 1px solid rgba(33, 150, 243, 0.15);
+  border-radius: 12px;
+}
+
+.simple-payment-modal-question p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1565C0;
+  margin: 0 0 0.5rem 0;
+}
+
+.simple-payment-modal-question small {
+  font-size: 0.75rem;
+  color: #1976D2;
+  line-height: 1.4;
+}
+
+/* Botones de acción */
+.simple-payment-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.simple-payment-modal-button {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.simple-payment-modal-button-secondary {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6B7280;
+  border: 2px solid rgba(107, 114, 128, 0.2);
+}
+
+.simple-payment-modal-button-secondary:hover {
+  background: rgba(107, 114, 128, 0.15);
+  color: #374151;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.simple-payment-modal-button-primary {
+  background: linear-gradient(135deg, #D94F4F, #C62828);
+  color: white;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 6px -1px rgba(217, 79, 79, 0.25);
+}
+
+.simple-payment-modal-button-primary:hover {
+  background: linear-gradient(135deg, #C62828, #B71C1C);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(217, 79, 79, 0.3);
+}
+
+/* Footer informativo */
+.simple-payment-modal-footer {
+  background: rgba(255, 152, 0, 0.05);
+  border: 1px solid rgba(255, 152, 0, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.simple-payment-modal-footer p {
+  font-size: 0.75rem;
+  color: #E65100;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .simple-payment-modal {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+  
+  .simple-payment-modal-header {
+    padding: 1.25rem;
+  }
+  
+  .simple-payment-modal-content {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+  
+  .simple-payment-modal-actions {
+    flex-direction: column;
+  }
+  
+  .simple-payment-modal-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .simple-payment-modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .simple-payment-modal-header {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .simple-payment-modal-content {
+    padding: 1rem;
+  }
+  
+  .simple-payment-modal-title {
+    font-size: 1.125rem;
+  }
+  
+  .simple-payment-modal-subtitle {
+    font-size: 0.8125rem;
+  }
+  
+  .simple-payment-modal-workshop,
+  .simple-payment-modal-price {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .simple-payment-modal-value,
+  .simple-payment-modal-price-value {
+    text-align: left;
+    max-width: 100%;
+  }
+  
+  .simple-payment-modal-button {
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+    min-height: 40px;
+  }
+}
+
+/* Estados de foco */
+.simple-payment-modal-button:focus {
+  outline: 2px solid #D94F4F;
+  outline-offset: 2px;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .simple-payment-modal-overlay,
+  .simple-payment-modal {
+    animation: none;
+  }
+  
+  .simple-payment-modal-button {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .simple-payment-modal {
+    border: 2px solid #333;
+  }
+  
+  .simple-payment-modal-info,
+  .simple-payment-modal-question,
+  .simple-payment-modal-footer {
+    border: 2px solid #666;
+  }
+}
+/* ========================================
+   CONFIRMACIÓN DE PAGO INTEGRADA EN CARD
+   ======================================== */
+
+.workshop-card-payment-choice {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(76, 175, 80, 0.02));
+  border: 2px solid rgba(76, 175, 80, 0.15);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-lg) 0;
+  animation: slideInConfirmation 0.4s ease-out;
+}
+
+.workshop-card-payment-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.workshop-card-payment-success-icon {
+  background: rgba(76, 175, 80, 0.15);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.workshop-card-payment-success-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-success);
+}
+
+.workshop-card-payment-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-success);
+  margin: 0;
+  font-family: var(--font-family-secondary);
+}
+
+.workshop-card-payment-subtitle {
+  font-size: var(--font-size-sm);
+  color: #388E3C;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+}
+
+.workshop-card-payment-info {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid rgba(76, 175, 80, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.workshop-card-payment-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+}
+
+.workshop-card-payment-detail:first-child {
+  border-bottom: 1px solid rgba(76, 175, 80, 0.1);
+}
+
+.workshop-card-payment-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.workshop-card-payment-value {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+  line-height: 1.3;
+}
+
+.workshop-card-payment-price {
+  font-size: var(--font-size-lg);
+  color: var(--color-success);
+  font-weight: 700;
+  text-align: right;
+}
+
+.workshop-card-payment-question {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background: rgba(33, 150, 243, 0.05);
+  border: 1px solid rgba(33, 150, 243, 0.15);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.workshop-card-payment-question p {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: #1565C0;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.workshop-card-payment-question small {
+  font-size: var(--font-size-xs);
+  color: #1976D2;
+  line-height: 1.4;
+}
+
+.workshop-card-payment-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.workshop-card-payment-button {
+  flex: 1;
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-family-secondary);
+}
+
+.workshop-card-payment-button-secondary {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--color-text-secondary);
+  border: 2px solid rgba(107, 114, 128, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.workshop-card-payment-button-secondary:hover {
+  background: rgba(107, 114, 128, 0.15);
+  color: var(--color-text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.workshop-card-payment-button-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
+}
+
+.workshop-card-payment-button-primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-dark), #B71C1C);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.workshop-card-payment-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left var(--transition-slow);
+}
+
+.workshop-card-payment-button:hover::before {
+  left: 100%;
+}
+
+.workshop-card-payment-footer {
+  background: rgba(255, 152, 0, 0.05);
+  border: 1px solid rgba(255, 152, 0, 0.15);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.workshop-card-payment-footer p {
+  font-size: var(--font-size-xs);
+  color: #E65100;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive para confirmación de pago integrada */
+@media (max-width: 768px) {
+  .workshop-card-payment-choice {
+    padding: var(--spacing-lg);
+    margin: var(--spacing-md) 0;
+  }
+  
+  .workshop-card-payment-actions {
+    flex-direction: column;
+  }
+  
+  .workshop-card-payment-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .workshop-card-payment-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .workshop-card-payment-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .workshop-card-payment-value,
+  .workshop-card-payment-price {
+    text-align: left;
+    max-width: 100%;
+    align-self: center;
+  }
+  
+  .workshop-card-payment-question {
+    padding: var(--spacing-md);
+  }
+  
+  .workshop-card-payment-footer {
+    padding: var(--spacing-sm);
+  }
+}
+
+
+/* ========================================
+   CONFIRMACIÓN DE PAGO INTEGRADA EN CARD
+   ======================================== */
+
+.workshop-card-payment-choice {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), rgba(76, 175, 80, 0.02));
+  border: 2px solid rgba(76, 175, 80, 0.15);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-xl);
+  margin: var(--spacing-lg) 0;
+  animation: slideInConfirmation 0.4s ease-out;
+}
+
+.workshop-card-payment-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.workshop-card-payment-success-icon {
+  background: rgba(76, 175, 80, 0.15);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.workshop-card-payment-success-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-success);
+}
+
+.workshop-card-payment-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-success);
+  margin: 0;
+  font-family: var(--font-family-secondary);
+}
+
+.workshop-card-payment-subtitle {
+  font-size: var(--font-size-sm);
+  color: #388E3C;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+}
+
+.workshop-card-payment-info {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid rgba(76, 175, 80, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.workshop-card-payment-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+}
+
+.workshop-card-payment-detail:first-child {
+  border-bottom: 1px solid rgba(76, 175, 80, 0.1);
+}
+
+.workshop-card-payment-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.workshop-card-payment-value {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+  line-height: 1.3;
+}
+
+.workshop-card-payment-price {
+  font-size: var(--font-size-lg);
+  color: var(--color-success);
+  font-weight: 700;
+  text-align: right;
+}
+
+.workshop-card-payment-question {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background: rgba(33, 150, 243, 0.05);
+  border: 1px solid rgba(33, 150, 243, 0.15);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.workshop-card-payment-question p {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: #1565C0;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.workshop-card-payment-question small {
+  font-size: var(--font-size-xs);
+  color: #1976D2;
+  line-height: 1.4;
+}
+
+.workshop-card-payment-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.workshop-card-payment-button {
+  flex: 1;
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-sm);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-family-secondary);
+}
+
+.workshop-card-payment-button-secondary {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--color-text-secondary);
+  border: 2px solid rgba(107, 114, 128, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.workshop-card-payment-button-secondary:hover {
+  background: rgba(107, 114, 128, 0.15);
+  color: var(--color-text-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.workshop-card-payment-button-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  color: white;
+  box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
+}
+
+.workshop-card-payment-button-primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-dark), #B71C1C);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.workshop-card-payment-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left var(--transition-slow);
+}
+
+.workshop-card-payment-button:hover::before {
+  left: 100%;
+}
+
+.workshop-card-payment-footer {
+  background: rgba(255, 152, 0, 0.05);
+  border: 1px solid rgba(255, 152, 0, 0.15);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.workshop-card-payment-footer p {
+  font-size: var(--font-size-xs);
+  color: #E65100;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive para confirmación de pago integrada */
+@media (max-width: 768px) {
+  .workshop-card-payment-choice {
+    padding: var(--spacing-lg);
+    margin: var(--spacing-md) 0;
+  }
+  
+  .workshop-card-payment-actions {
+    flex-direction: column;
+  }
+  
+  .workshop-card-payment-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .workshop-card-payment-header {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .workshop-card-payment-detail {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .workshop-card-payment-value,
+  .workshop-card-payment-price {
+    text-align: left;
+    max-width: 100%;
+    align-self: center;
+  }
+  
+  .workshop-card-payment-question {
+    padding: var(--spacing-md);
+  }
+  
+  .workshop-card-payment-footer {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* ========================================
+   SIMPLE PAYMENT MODAL - VERSIÓN MEJORADA
+   ======================================== */
+
+/* Overlay del modal */
+.simple-payment-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeInOverlay 0.3s ease-out;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* Modal principal */
+.simple-payment-modal {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(217, 79, 79, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  position: relative;
+  animation: fadeInModal 0.4s ease-out;
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header del modal */
+.simple-payment-modal-header {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.simple-payment-modal-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 100%;
+  height: 200%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.simple-payment-modal-success-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.simple-payment-modal-header-text {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.simple-payment-modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.simple-payment-modal-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+}
+
+/* Contenido del modal */
+.simple-payment-modal-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Información básica */
+.simple-payment-modal-info {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid rgba(217, 79, 79, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.simple-payment-modal-workshop,
+.simple-payment-modal-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.simple-payment-modal-workshop {
+  border-bottom: 1px solid rgba(217, 79, 79, 0.1);
+}
+
+.simple-payment-modal-label {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.simple-payment-modal-value {
+  font-size: 0.875rem;
+  color: #333;
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+  line-height: 1.3;
+}
+
+.simple-payment-modal-price-value {
+  font-size: 1.125rem;
+  color: #D94F4F;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Pregunta principal */
+.simple-payment-modal-question {
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(33, 150, 243, 0.05);
+  border: 1px solid rgba(33, 150, 243, 0.15);
+  border-radius: 12px;
+}
+
+.simple-payment-modal-question p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1565C0;
+  margin: 0 0 0.5rem 0;
+}
+
+.simple-payment-modal-question small {
+  font-size: 0.75rem;
+  color: #1976D2;
+  line-height: 1.4;
+}
+
+/* Botones de acción */
+.simple-payment-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.simple-payment-modal-button {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.simple-payment-modal-button-secondary {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6B7280;
+  border: 2px solid rgba(107, 114, 128, 0.2);
+}
+
+.simple-payment-modal-button-secondary:hover {
+  background: rgba(107, 114, 128, 0.15);
+  color: #374151;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.simple-payment-modal-button-primary {
+  background: linear-gradient(135deg, #D94F4F, #C62828);
+  color: white;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 6px -1px rgba(217, 79, 79, 0.25);
+}
+
+.simple-payment-modal-button-primary:hover {
+  background: linear-gradient(135deg, #C62828, #B71C1C);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(217, 79, 79, 0.3);
+}
+
+/* Footer informativo */
+.simple-payment-modal-footer {
+  background: rgba(255, 152, 0, 0.05);
+  border: 1px solid rgba(255, 152, 0, 0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.simple-payment-modal-footer p {
+  font-size: 0.75rem;
+  color: #E65100;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive para Simple Payment Modal */
+@media (max-width: 768px) {
+  .simple-payment-modal {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+  
+  .simple-payment-modal-header {
+    padding: 1.25rem;
+  }
+  
+  .simple-payment-modal-content {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+  
+  .simple-payment-modal-actions {
+    flex-direction: column;
+  }
+  
+  .simple-payment-modal-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .simple-payment-modal-overlay {
+    padding: 0.5rem;
+  }
+  
+  .simple-payment-modal-header {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .simple-payment-modal-content {
+    padding: 1rem;
+  }
+  
+  .simple-payment-modal-title {
+    font-size: 1.125rem;
+  }
+  
+  .simple-payment-modal-subtitle {
+    font-size: 0.8125rem;
+  }
+  
+  .simple-payment-modal-workshop,
+  .simple-payment-modal-price {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .simple-payment-modal-value,
+  .simple-payment-modal-price-value {
+    text-align: left;
+    max-width: 100%;
+  }
+  
+  .simple-payment-modal-button {
+    padding: 0.75rem;
+    font-size: 0.8125rem;
+    min-height: 40px;
+  }
+}
+
+/* Estados de foco para Simple Payment Modal */
+.simple-payment-modal-button:focus {
+  outline: 2px solid #D94F4F;
+  outline-offset: 2px;
+}
+
+/* Accesibilidad para Simple Payment Modal */
+@media (prefers-reduced-motion: reduce) {
+  .simple-payment-modal-overlay,
+  .simple-payment-modal {
+    animation: none;
+  }
+  
+  .simple-payment-modal-button {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .simple-payment-modal {
+    border: 2px solid #333;
+  }
+  
+  .simple-payment-modal-info,
+  .simple-payment-modal-question,
+  .simple-payment-modal-footer {
+    border: 2px solid #666;
+  }
+}
 }

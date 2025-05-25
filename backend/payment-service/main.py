@@ -123,20 +123,20 @@ async def process_payment(payment_request: PaymentRequest):
         # Simular fallos basados en ciertos patrones (para testing)
         if payment_request.card_number and payment_request.card_number.endswith("0000"):
             payment_status = "declined"
-            message = "Insufficient funds"
+            message = "Fondos Insuficientes"
         elif payment_request.card_number and payment_request.card_number.endswith("1111"):
             payment_status = "declined" 
-            message = "Card expired"
+            message = "Tarjeta Expirada"
         elif payment_request.card_number and payment_request.card_number.endswith("2222"):
             payment_status = "pending"
-            message = "Payment under review"
+            message = "Pago en revisión"
         elif payment_request.amount > 1000:
             if random.random() < 0.3:
                 payment_status = "pending"
-                message = "High amount payment under review"
+                message = "Monto excesivo, revisión manual"
         elif random.random() < 0.05:
             payment_status = "declined"
-            message = "Transaction declined by bank"
+            message = "Transacción rechazada por el banco"
         
         # Actualizar el estado en la base de datos
         if payment_status == "approved":
