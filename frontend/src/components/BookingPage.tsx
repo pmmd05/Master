@@ -1,25 +1,27 @@
-// frontend/src/components/BookingPage.tsx - COMPLETAMENTE REESCRITO CON NUEVOS ESTILOS
+// frontend/src/components/BookingPage.tsx - INTEGRACIÓN COMPLETA CON API
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../context/AuthContext';
 import { BookingsProvider, useBookings } from '../context/BookingsContext';
 import BookingCard from './BookingCard';
-import './styles/bookings.css'; // Nuevo estilo para la página de reservas
+import './estilos/bookings.css'; // Corregida la ruta de estilos
 import { Booking, Workshop } from '../types';
 import Navbar from './Navbar';
+
 interface BookingWithWorkshop extends Booking {
   workshop?: Workshop;
 }
 
 const BookingsPageContent: React.FC = () => {
   const { user } = useAuth();
-  const { bookings, loading, error, refreshBookings } = useBookings();
+  const { bookings, loading, error, refreshBookings, cancelBooking } = useBookings();
   const navigate = useNavigate(); 
   const [selectedBooking, setSelectedBooking] = useState<BookingWithWorkshop | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [filter, setFilter] = useState<'all' | 'active' | 'past' | 'pending'>('all');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingBookingId, setProcessingBookingId] = useState<number | null>(null);
 
   // ====================================================
   // FUNCIONES DE UTILIDAD Y CÁLCULOS
@@ -28,7 +30,17 @@ const BookingsPageContent: React.FC = () => {
   // Filtrar reservas según el filtro seleccionado
   const filteredBookings = bookings.filter(booking => {
     const today = new Date();
-    const workshopDate = booking.workshop?.date ? new Date(booking.workshop.date) : null;
+    today.setHours(0, 0, 0, 0);
+    
+    let workshopDate: Date | null = null;
+    if (booking.workshop?.date) {
+      try {
+        workshopDate = new Date(booking.workshop.date);
+      } catch (error) {
+        console.error('Error parsing workshop date:', error);
+      }
+    }
+    
     const isPast = workshopDate && workshopDate < today;
 
     switch (filter) {
@@ -37,27 +49,51 @@ const BookingsPageContent: React.FC = () => {
       case 'past':
         return isPast || booking.status === 'Completada';
       case 'pending':
-        return booking.payment_status === 'Pendiente';
+        return booking.payment_status === 'Pendiente' && booking.status === 'Confirmada';
       default:
         return true;
     }
   });
 
-  // Obtener estadísticas
+  // Obtener estadísticas mejoradas
   const stats = {
     total: bookings.length,
-    active: bookings.filter(b => b.status === 'Confirmada' && 
-      (!b.workshop?.date || new Date(b.workshop.date) >= new Date())).length,
-    completed: bookings.filter(b => b.status === 'Completada' || 
-      (b.workshop?.date && new Date(b.workshop.date) < new Date())).length,
-    pending: bookings.filter(b => b.payment_status === 'Pendiente').length
+    active: bookings.filter(b => {
+      if (b.status !== 'Confirmada') return false;
+      
+      if (!b.workshop?.date) return true; // Considerar activa si no hay fecha
+      
+      try {
+        const workshopDate = new Date(b.workshop.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return workshopDate >= today;
+      } catch {
+        return true;
+      }
+    }).length,
+    completed: bookings.filter(b => {
+      if (b.status === 'Completada') return true;
+      
+      if (!b.workshop?.date) return false;
+      
+      try {
+        const workshopDate = new Date(b.workshop.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return workshopDate < today;
+      } catch {
+        return false;
+      }
+    }).length,
+    pending: bookings.filter(b => b.payment_status === 'Pendiente' && b.status === 'Confirmada').length
   };
 
   // ====================================================
   // MANEJADORES DE EVENTOS MEJORADOS
   // ====================================================
 
-  //  Manejar pago con navegación corregida
+  // Manejar pago con navegación corregida
   const handlePayment = (booking: BookingWithWorkshop) => {
     console.log('🔄 [BOOKINGS] Iniciando pago para reserva:', booking.id);
     
@@ -66,28 +102,68 @@ const BookingsPageContent: React.FC = () => {
       return;
     }
     
-    //  NAVEGACIÓN CORREGIDA - '/payments' en lugar de '/PaymentPage'
-    navigate('/payments', {
-      state: {
+    // Verificaciones adicionales
+    if (booking.payment_status === 'Pagado') {
+      alert('Esta reserva ya ha sido pagada');
+      return;
+    }
+    
+    if (booking.status !== 'Confirmada') {
+      alert('Solo se pueden pagar reservas confirmadas');
+      return;
+    }
+    
+    try {
+      const workshopDate = new Date(booking.workshop.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (workshopDate < today) {
+        alert('No se puede pagar un taller que ya ha finalizado');
+        return;
+      }
+      
+      console.log('🚀 [BOOKINGS] Navegando a payment con datos:', {
         bookingId: booking.id,
         workshopId: booking.workshop_id,
         workshopTitle: booking.workshop.title,
         amount: booking.workshop.price,
-        userEmail: booking.user_email,
-        category: booking.workshop.category,
-        date: booking.workshop.date,
-        fromBookings: true // Para identificar que viene de reservas
-      }
-    });
+        userEmail: user?.email || booking.user_email
+      });
+      
+      // Navegación a PaymentPage con todos los datos necesarios
+      navigate('/payment', {
+        state: {
+          bookingId: booking.id,
+          workshopId: booking.workshop_id,
+          workshopTitle: booking.workshop.title,
+          amount: booking.workshop.price,
+          userEmail: user?.email || booking.user_email,
+          category: booking.workshop.category,
+          date: booking.workshop.date,
+          description: booking.workshop.description,
+          fromBookings: true // Para identificar que viene de reservas
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error procesando fecha del taller:', error);
+      alert('Error al verificar la fecha del taller');
+    }
   };
 
-  // 🔥 Manejar cancelación con validaciones mejoradas
+  // Manejar cancelación con validaciones mejoradas
   const handleCancel = (booking: BookingWithWorkshop) => {
     console.log('🔍 [BOOKINGS] Verificando cancelación para reserva:', booking.id);
     
-    // Verificar si se puede cancelar (reservas pagadas)
+    // Verificaciones de negocio
     if (booking.payment_status === 'Pagado') {
       alert('❌ No se pueden cancelar reservas que ya han sido pagadas.');
+      return;
+    }
+    
+    if (booking.status !== 'Confirmada') {
+      alert('❌ Solo se pueden cancelar reservas confirmadas.');
       return;
     }
     
@@ -97,59 +173,92 @@ const BookingsPageContent: React.FC = () => {
       return;
     }
     
-    // Verificar tiempo restante (una semana antes)
-    const workshopDate = new Date(booking.workshop.date);
-    const oneWeekBefore = new Date();
-    oneWeekBefore.setDate(oneWeekBefore.getDate() + 7);
-    
-    if (workshopDate <= oneWeekBefore) {
-      alert('⏰ Solo se pueden cancelar reservas hasta una semana antes del taller.');
-      return;
+    try {
+      // Verificar tiempo restante (una semana antes)
+      const workshopDate = new Date(booking.workshop.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Verificar si ya pasó
+      if (workshopDate < today) {
+        alert('❌ No se pueden cancelar talleres que ya han finalizado.');
+        return;
+      }
+      
+      // Verificar si es muy próximo (una semana antes)
+      const oneWeekBefore = new Date();
+      oneWeekBefore.setDate(oneWeekBefore.getDate() + 7);
+      
+      if (workshopDate <= oneWeekBefore) {
+        alert('⏰ Solo se pueden cancelar reservas hasta una semana antes del taller.');
+        return;
+      }
+      
+      // Si todo está OK, mostrar modal de confirmación
+      setSelectedBooking(booking);
+      setShowCancelModal(true);
+      
+    } catch (error) {
+      console.error('Error verificando fecha para cancelación:', error);
+      alert('❌ Error al verificar la fecha del taller.');
     }
-    
-    // Si todo está OK, mostrar modal de confirmación
-    setSelectedBooking(booking);
-    setShowCancelModal(true);
   };
 
-  // 🔥 Confirmar cancelación con manejo de errores
+  // Confirmar cancelación con manejo de errores mejorado
   const confirmCancel = async () => {
     if (!selectedBooking) return;
     
     setIsProcessing(true);
+    setProcessingBookingId(selectedBooking.id);
     
     try {
       console.log('🗑️ [BOOKINGS] Cancelando reserva:', selectedBooking.id);
       
-      // 🔥 AQUÍ IMPLEMENTAR LA LLAMADA AL API REAL
-      // const response = await fetch(`/api/bookings/${selectedBooking.id}/cancel`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-      //   }
-      // });
-      
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(errorData.message || 'Error al cancelar la reserva');
-      // }
-      
-      // 🔥 SIMULACIÓN TEMPORAL (reemplazar con API real)
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simular delay
+      // Llamada real a la API usando el contexto
+      await cancelBooking(selectedBooking.id);
       
       console.log('✅ [BOOKINGS] Reserva cancelada exitosamente');
+      
+      // Mostrar mensaje de éxito
       alert(`✅ Reserva #${selectedBooking.id} cancelada exitosamente`);
       
+      // Cerrar modal
       setShowCancelModal(false);
       setSelectedBooking(null);
-      await refreshBookings(); // Recargar las reservas
       
-    } catch (error) {
+      // Refrescar las reservas para asegurar consistencia
+      setTimeout(async () => {
+        try {
+          await refreshBookings();
+        } catch (refreshError) {
+          console.error('⚠️ [BOOKINGS] Error refrescando reservas:', refreshError);
+        }
+      }, 1000);
+      
+    } catch (error: any) {
       console.error('❌ [BOOKINGS] Error al cancelar reserva:', error);
-      alert(`❌ Error al cancelar la reserva: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      
+      // Mensajes de error más específicos
+      let errorMessage = 'Error desconocido al cancelar la reserva.';
+      
+      if (error.message) {
+        if (error.message.includes('conexión') || error.message.includes('network')) {
+          errorMessage = 'Error de conexión. Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo.';
+        } else if (error.message.includes('404')) {
+          errorMessage = 'La reserva no existe o ya fue cancelada.';
+        } else if (error.message.includes('403') || error.message.includes('unauthorized')) {
+          errorMessage = 'No tienes permisos para cancelar esta reserva.';
+        } else if (error.message.includes('500')) {
+          errorMessage = 'Error del servidor. Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      alert(`❌ Error al cancelar la reserva: ${errorMessage}`);
     } finally {
       setIsProcessing(false);
+      setProcessingBookingId(null);
     }
   };
 
@@ -160,6 +269,25 @@ const BookingsPageContent: React.FC = () => {
     setShowDetailsModal(true);
   };
 
+  // Cerrar modales
+  const closeModals = () => {
+    if (!isProcessing) {
+      setShowDetailsModal(false);
+      setShowCancelModal(false);
+      setSelectedBooking(null);
+    }
+  };
+
+  // Manejar errores de carga con retry
+  const handleRetry = async () => {
+    console.log('🔄 [BOOKINGS] Reintentando cargar reservas...');
+    try {
+      await refreshBookings();
+    } catch (error) {
+      console.error('❌ [BOOKINGS] Error en retry:', error);
+    }
+  };
+
   // ====================================================
   // RENDERIZADO CONDICIONAL
   // ====================================================
@@ -168,11 +296,15 @@ const BookingsPageContent: React.FC = () => {
   if (loading) {
     return (
       <div className="bookings-container">
+        <Navbar />
         <div className="bookings-main-content">
           <div className="bookings-loading">
             <div className="bookings-loading-content">
               <div className="bookings-loading-spinner"></div>
               <p className="bookings-loading-text">Cargando tus reservas...</p>
+              <p style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: '0.5rem' }}>
+                Esto puede tomar unos segundos
+              </p>
             </div>
           </div>
         </div>
@@ -184,6 +316,7 @@ const BookingsPageContent: React.FC = () => {
   if (error) {
     return (
       <div className="bookings-container">
+        <Navbar />
         <div className="bookings-main-content">
           <div className="bookings-error">
             <svg className="bookings-error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,17 +324,30 @@ const BookingsPageContent: React.FC = () => {
             </svg>
             <h3 className="bookings-error-title">Error al cargar reservas</h3>
             <p className="bookings-error-message">
-              Error al conectar con tus reservas. Todo estaba listo para reservar... pero el chef de los microservicios dijo 'Hoy no cocino'. Vuelve cuando recupere el ánimo.
+              {error}
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bookings-error-button"
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Reintentar
-            </button>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={handleRetry}
+                className="bookings-error-button"
+                disabled={loading}
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {loading ? 'Reintentando...' : 'Reintentar'}
+              </button>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="bookings-error-button"
+                style={{ background: '#6B7280' }}
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver al Dashboard
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -214,6 +360,7 @@ const BookingsPageContent: React.FC = () => {
 
   return (
     <div className="bookings-container">
+      <Navbar />
       
       {/* Header con nuevo diseño */}
       <div className="bookings-header">
@@ -277,6 +424,7 @@ const BookingsPageContent: React.FC = () => {
                   key={key}
                   onClick={() => setFilter(key as any)}
                   className={`bookings-filter-button ${filter === key ? 'active' : ''}`}
+                  disabled={loading}
                 >
                   {label}
                   <span className="bookings-filter-count">
@@ -361,6 +509,7 @@ const BookingsPageContent: React.FC = () => {
                 onPayment={handlePayment}
                 onCancel={handleCancel}
                 onViewDetails={handleViewDetails}
+                isProcessing={processingBookingId === booking.id}
               />
             ))}
           </div>
@@ -391,11 +540,11 @@ const BookingsPageContent: React.FC = () => {
         </div>
       </div>
 
-      {/* ====================================================
-          MODAL DE DETALLES ELEGANTE Y PROFESIONAL
-          ======================================================= */}
+      {/* MODALES */}
+      
+      {/* Modal de detalles */}
       {showDetailsModal && selectedBooking && (
-        <div className="booking-details-modal-overlay" onClick={() => setShowDetailsModal(false)}>
+        <div className="booking-details-modal-overlay" onClick={closeModals}>
           <div className="booking-details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="booking-details-modal-header">
               <div className="booking-details-modal-info-icon">
@@ -450,24 +599,36 @@ const BookingsPageContent: React.FC = () => {
                     <div className="booking-details-item">
                       <span className="booking-details-item-label">Fecha:</span>
                       <span className="booking-details-item-value">
-                        {new Date(selectedBooking.workshop.date).toLocaleDateString('es-ES', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
+                        {(() => {
+                          try {
+                            return new Date(selectedBooking.workshop.date).toLocaleDateString('es-ES', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            });
+                          } catch {
+                            return 'Fecha no disponible';
+                          }
+                        })()}
                       </span>
                     </div>
                     <div className="booking-details-item">
                       <span className="booking-details-item-label">Precio:</span>
                       <span className="booking-details-item-value">
-                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price)}
+                        {(() => {
+                          try {
+                            return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price);
+                          } catch {
+                            return 'Precio no disponible';
+                          }
+                        })()}
                       </span>
                     </div>
                     <div className="booking-details-item">
                       <span className="booking-details-item-label">Participantes:</span>
                       <span className="booking-details-item-value">
-                        {selectedBooking.workshop.current_participants}/{selectedBooking.workshop.max_participants}
+                        {selectedBooking.workshop.current_participants || 0}/{selectedBooking.workshop.max_participants || 0}
                       </span>
                     </div>
                   </div>
@@ -475,12 +636,11 @@ const BookingsPageContent: React.FC = () => {
               )}
 
               <button
-                onClick={() => setShowDetailsModal(false)}
+                onClick={closeModals}
+                disabled={isProcessing}
                 className="booking-details-modal-close"
               >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                
                 Cerrar
               </button>
             </div>
@@ -488,11 +648,9 @@ const BookingsPageContent: React.FC = () => {
         </div>
       )}
 
-      {/* ====================================================
-          MODAL DE CANCELACIÓN ELEGANTE Y PROFESIONAL
-          ======================================================= */}
+      {/* Modal de cancelación */}
       {showCancelModal && selectedBooking && (
-        <div className="booking-cancel-modal-overlay" onClick={() => !isProcessing && setShowCancelModal(false)}>
+        <div className="booking-cancel-modal-overlay" onClick={() => !isProcessing && closeModals()}>
           <div className="booking-cancel-modal" onClick={(e) => e.stopPropagation()}>
             <div className="booking-cancel-modal-header">
               <div className="booking-cancel-modal-warning-icon">
@@ -529,18 +687,30 @@ const BookingsPageContent: React.FC = () => {
                       <div className="booking-cancel-modal-workshop-detail">
                         <span className="booking-cancel-modal-detail-label">Fecha:</span>
                         <span className="booking-cancel-modal-detail-value">
-                          {new Date(selectedBooking.workshop.date).toLocaleDateString('es-ES', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
+                          {(() => {
+                            try {
+                              return new Date(selectedBooking.workshop.date).toLocaleDateString('es-ES', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              });
+                            } catch {
+                              return 'Fecha no disponible';
+                            }
+                          })()}
                         </span>
                       </div>
                       <div className="booking-cancel-modal-workshop-detail">
                         <span className="booking-cancel-modal-detail-label">Precio:</span>
                         <span className="booking-cancel-modal-detail-value">
-                          {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price)}
+                          {(() => {
+                            try {
+                              return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price);
+                            } catch {
+                              return 'Precio no disponible';
+                            }
+                          })()}
                         </span>
                       </div>
                     </>
@@ -571,7 +741,7 @@ const BookingsPageContent: React.FC = () => {
 
               <div className="booking-cancel-modal-actions">
                 <button
-                  onClick={() => setShowCancelModal(false)}
+                  onClick={closeModals}
                   disabled={isProcessing}
                   className="booking-cancel-modal-button keep"
                 >
@@ -587,7 +757,7 @@ const BookingsPageContent: React.FC = () => {
                 >
                   {isProcessing ? (
                     <>
-                      <div className="booking-loading-spinner-large" style={{width: '1rem', height: '1rem'}}></div>
+                      <div className="booking-loading-spinner" style={{width: '1rem', height: '1rem'}}></div>
                       Cancelando...
                     </>
                   ) : (

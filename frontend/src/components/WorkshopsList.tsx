@@ -184,12 +184,7 @@ const WorkshopsList: React.FC = () => {
           >
             Reintentar
           </button>
-          <button
-            onClick={() => window.location.href = '/debug'}
-            className="workshops-error-button secondary"
-          >
-            Panel Debug
-          </button>
+          
         </div>
       </div>
     );

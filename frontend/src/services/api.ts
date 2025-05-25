@@ -1,4 +1,4 @@
-// frontend/src/services/api.ts - PUERTO CORRECTO 5004
+// frontend/src/services/api.ts - CON CANCELACIÓN DE RESERVAS
 
 import axios, { AxiosResponse } from 'axios';
 import { 
@@ -205,7 +205,7 @@ export const workshopsService = {
 };
 
 // ================================
-// SERVICIOS DE RESERVAS
+// SERVICIOS DE RESERVAS (MEJORADO)
 // ================================
 
 export const bookingService = {
@@ -233,6 +233,87 @@ export const bookingService = {
     } catch (error: any) {
       console.error('[API] Error al obtener reservas:', error.response?.data);
       const errorMessage = error.response?.data?.detail || error.message || 'Error al obtener reservas';
+      throw new Error(errorMessage);
+    }
+  },
+
+  // ✅ NUEVO: Cancelar una reserva
+  async cancelBooking(bookingId: number, reason?: string): Promise<{ message: string; booking: Booking }> {
+    try {
+      console.log('[API] Cancelando reserva:', bookingId);
+      
+      const requestData = {
+        booking_id: bookingId,
+        reason: reason || 'Usuario solicitó cancelación'
+      };
+      
+      const response: AxiosResponse<{ message: string; booking: Booking }> = await api.post(
+        `/api/v0/booking/cancelar/${bookingId}`, 
+        requestData
+      );
+      
+      console.log('[API] Reserva cancelada:', response.data.message);
+      return response.data;
+    } catch (error: any) {
+      console.error('[API] Error al cancelar reserva:', error.response?.data);
+      
+      // Manejo de errores específicos
+      let errorMessage = 'Error al cancelar la reserva';
+      
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Personalizar mensajes de error comunes
+      if (errorMessage.includes('404')) {
+        errorMessage = 'La reserva no existe o no se encuentra';
+      } else if (errorMessage.includes('400')) {
+        if (errorMessage.includes('ya está cancelada')) {
+          errorMessage = 'Esta reserva ya ha sido cancelada';
+        } else if (errorMessage.includes('pagadas')) {
+          errorMessage = 'No se pueden cancelar reservas que ya han sido pagadas';
+        } else if (errorMessage.includes('una semana')) {
+          errorMessage = 'Solo se pueden cancelar reservas hasta una semana antes del taller';
+        } else if (errorMessage.includes('finalizado')) {
+          errorMessage = 'No se pueden cancelar talleres que ya han finalizado';
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
+  },
+
+  // ✅ NUEVO: Obtener detalles de una reserva específica
+  async getBookingDetails(bookingId: number): Promise<Booking> {
+    try {
+      console.log('[API] Obteniendo detalles de reserva:', bookingId);
+      const response: AxiosResponse<Booking> = await api.get(`/api/v0/booking/reserva/${bookingId}`);
+      console.log('[API] Detalles de reserva obtenidos:', response.data.id);
+      return response.data;
+    } catch (error: any) {
+      console.error('[API] Error al obtener detalles de reserva:', error.response?.data);
+      const errorMessage = error.response?.data?.detail || error.message || 'Error al obtener detalles de la reserva';
+      throw new Error(errorMessage);
+    }
+  },
+
+  // ✅ NUEVO: Obtener estadísticas de reservas del usuario
+  async getUserBookingStats(email: string): Promise<{
+    total_reservas: number;
+    reservas_activas: number;
+    reservas_completadas: number;
+    pagos_pendientes: number;
+  }> {
+    try {
+      console.log('[API] Obteniendo estadísticas de reservas para:', email);
+      const response = await api.get(`/api/v0/booking/estadisticas/${email}`);
+      console.log('[API] Estadísticas obtenidas:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('[API] Error al obtener estadísticas:', error.response?.data);
+      const errorMessage = error.response?.data?.detail || error.message || 'Error al obtener estadísticas';
       throw new Error(errorMessage);
     }
   }
@@ -291,6 +372,19 @@ export const paymentService = {
       const errorMessage = error.response?.data?.detail || error.message || 'Error al obtener historial';
       throw new Error(errorMessage);
     }
+  },
+
+  // ✅ NUEVO: Verificar estado de pago de una reserva específica
+  async getBookingPaymentStatus(email: string, workshopId: number): Promise<any> {
+    try {
+      console.log('[API] Verificando estado de pago de reserva:', { email, workshopId });
+      const response = await api.get(`/api/v0/payment/booking/${email}/${workshopId}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('[API] Error al verificar estado de pago:', error.response?.data);
+      const errorMessage = error.response?.data?.detail || error.message || 'Error al verificar estado de pago';
+      throw new Error(errorMessage);
+    }
   }
 };
 
@@ -308,7 +402,73 @@ export const generalService = {
       console.error('[API] Error en health check:', error);
       throw new Error('API Gateway no disponible');
     }
+  },
+
+  // ✅ NUEVO: Debug completo de todos los servicios
+  async debugServices(): Promise<any> {
+    try {
+      console.log('[API] Obteniendo información de debug de servicios...');
+      const response = await api.get('/api/v0/debug/services');
+      console.log('[API] Debug info obtenida:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('[API] Error en debug de servicios:', error);
+      throw new Error('Error al obtener información de debug');
+    }
   }
+};
+
+// ================================
+// HELPER FUNCTIONS
+// ================================
+
+// Función helper para formatear errores de API
+export const formatApiError = (error: any): string => {
+  if (error.response?.data?.detail) {
+    return error.response.data.detail;
+  }
+  
+  if (error.message) {
+    // Personalizar mensajes comunes
+    if (error.message.includes('Network Error')) {
+      return 'Error de conexión. Verifica tu internet e intenta nuevamente.';
+    }
+    if (error.message.includes('timeout')) {
+      return 'La solicitud tardó demasiado. Intenta nuevamente.';
+    }
+    if (error.message.includes('500')) {
+      return 'Error del servidor. Intenta nuevamente en unos minutos.';
+    }
+    return error.message;
+  }
+  
+  return 'Error desconocido. Intenta nuevamente.';
+};
+
+// Función helper para verificar si el usuario está autenticado
+export const isAuthenticated = (): boolean => {
+  const token = localStorage.getItem('authToken');
+  const user = localStorage.getItem('user');
+  return !!(token && user);
+};
+
+// Función helper para obtener el token actual
+export const getCurrentToken = (): string | null => {
+  return localStorage.getItem('authToken');
+};
+
+// Función helper para obtener el usuario actual
+export const getCurrentUser = (): User | null => {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    try {
+      return JSON.parse(userData);
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  }
+  return null;
 };
 
 export default api;

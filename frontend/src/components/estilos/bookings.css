@@ -1783,4 +1783,488 @@
     animation: none !important;
     transition: none !important;
   }
+
+  /* ========================================
+   CORRECCIONES DE TAMAÑO DE BOTONES
+   ======================================== */
+
+/* Botones más pequeños y amigables */
+.booking-card-primary-action {
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  min-height: 44px;
+  max-height: 48px;
+}
+
+.booking-card-secondary-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  min-height: 36px;
+  max-height: 40px;
+}
+
+.booking-details-modal-close,
+.booking-cancel-modal-button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  min-height: 40px;
+  max-height: 44px;
+}
+
+/* ========================================
+   SCROLL EN MODALES
+   ======================================== */
+
+.booking-details-modal,
+.booking-cancel-modal {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.booking-details-modal-content,
+.booking-cancel-modal-content {
+  max-height: calc(85vh - 100px);
+  overflow-y: auto;
+}
+
+/* Scrollbar personalizada para mejor UX */
+.booking-details-modal::-webkit-scrollbar,
+.booking-cancel-modal::-webkit-scrollbar,
+.booking-details-modal-content::-webkit-scrollbar,
+.booking-cancel-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.booking-details-modal::-webkit-scrollbar-track,
+.booking-cancel-modal::-webkit-scrollbar-track,
+.booking-details-modal-content::-webkit-scrollbar-track,
+.booking-cancel-modal-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.booking-details-modal::-webkit-scrollbar-thumb,
+.booking-cancel-modal::-webkit-scrollbar-thumb,
+.booking-details-modal-content::-webkit-scrollbar-thumb,
+.booking-cancel-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.booking-details-modal::-webkit-scrollbar-thumb:hover,
+.booking-cancel-modal::-webkit-scrollbar-thumb:hover,
+.booking-details-modal-content::-webkit-scrollbar-thumb:hover,
+.booking-cancel-modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   ESTADOS DE PROCESAMIENTO
+   ======================================== */
+
+/* Overlay de procesamiento para BookingCard */
+.booking-card.processing {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.booking-card-processing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  border-radius: var(--border-radius-xl);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.booking-card-processing-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #E5E7EB;
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Estados disabled mejorados */
+.booking-card-primary-action:disabled,
+.booking-card-secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none !important;
+}
+
+.booking-card-primary-action:disabled:hover,
+.booking-card-secondary-button:disabled:hover {
+  transform: none !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ========================================
+   SPINNER PARA MODALES
+   ======================================== */
+
+.booking-loading-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+/* Spinner más grande para estados de carga */
+.booking-loading-spinner-large {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ========================================
+   MEJORAS EN ALERTAS Y NOTIFICACIONES
+   ======================================== */
+
+/* Alertas con animación de entrada */
+.booking-card-alert {
+  animation: slideInFromTop 0.5s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Alert específica para estados críticos */
+.booking-card-alert.critical {
+  background: rgba(244, 67, 54, 0.15);
+  color: #D32F2F;
+  border-color: rgba(244, 67, 54, 0.3);
+  font-weight: 600;
+}
+
+.booking-card-alert.success {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--color-success);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+/* ========================================
+   CORRECCIONES ESPECÍFICAS - AGREGAR AL FINAL DE bookings.css
+   ======================================== */
+
+/* ========================================
+   1. BOTONES MÁS PEQUEÑOS Y AMIGABLES
+   ======================================== */
+
+/* Botón principal "Pagar Ahora" más pequeño */
+.booking-card-primary-action {
+  padding: var(--spacing-md) var(--spacing-lg) !important;
+  font-size: var(--font-size-sm) !important;
+  min-height: 44px !important;
+  max-height: 48px !important;
+}
+
+/* Botones secundarios "Ver Detalles" y "Cancelar" más pequeños */
+.booking-card-secondary-button {
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  font-size: var(--font-size-xs) !important;
+  min-height: 36px !important;
+  max-height: 40px !important;
+}
+
+/* Botones de modales más pequeños */
+.booking-details-modal-close,
+.booking-cancel-modal-button {
+  padding: var(--spacing-sm) var(--spacing-lg) !important;
+  font-size: var(--font-size-sm) !important;
+  min-height: 40px !important;
+  max-height: 44px !important;
+}
+
+/* ========================================
+   2. SCROLL EN MODALES DE CANCELACIÓN
+   ======================================== */
+
+/* Hacer que los modales tengan scroll cuando el contenido es largo */
+.booking-details-modal,
+.booking-cancel-modal {
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+}
+
+.booking-details-modal-content,
+.booking-cancel-modal-content {
+  max-height: calc(85vh - 100px) !important;
+  overflow-y: auto !important;
+}
+
+/* Scrollbar personalizada elegante */
+.booking-details-modal::-webkit-scrollbar,
+.booking-cancel-modal::-webkit-scrollbar,
+.booking-details-modal-content::-webkit-scrollbar,
+.booking-cancel-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.booking-details-modal::-webkit-scrollbar-track,
+.booking-cancel-modal::-webkit-scrollbar-track,
+.booking-details-modal-content::-webkit-scrollbar-track,
+.booking-cancel-modal-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.booking-details-modal::-webkit-scrollbar-thumb,
+.booking-cancel-modal::-webkit-scrollbar-thumb,
+.booking-details-modal-content::-webkit-scrollbar-thumb,
+.booking-cancel-modal-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.booking-details-modal::-webkit-scrollbar-thumb:hover,
+.booking-cancel-modal::-webkit-scrollbar-thumb:hover,
+.booking-details-modal-content::-webkit-scrollbar-thumb:hover,
+.booking-cancel-modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   3. ESTADOS DE PROCESAMIENTO
+   ======================================== */
+
+/* Overlay de procesamiento para BookingCard */
+.booking-card.processing {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.booking-card-processing-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  border-radius: var(--border-radius-xl);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.booking-card-processing-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #E5E7EB;
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Estados disabled mejorados */
+.booking-card-primary-action:disabled,
+.booking-card-secondary-button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  transform: none !important;
+}
+
+.booking-card-primary-action:disabled:hover,
+.booking-card-secondary-button:disabled:hover {
+  transform: none !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ========================================
+   4. RESPONSIVE - BOTONES AÚN MÁS PEQUEÑOS EN MÓVIL
+   ======================================== */
+
+/* Mobile Large */
+@media (max-width: 768px) {
+  .booking-card-primary-action {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: var(--font-size-sm) !important;
+    min-height: 40px !important;
+    max-height: 44px !important;
+  }
+  
+  .booking-card-secondary-button {
+    padding: var(--spacing-xs) var(--spacing-sm) !important;
+    font-size: var(--font-size-xs) !important;
+    min-height: 32px !important;
+    max-height: 36px !important;
+  }
+  
+  .booking-cancel-modal,
+  .booking-details-modal {
+    max-height: 90vh !important;
+  }
+  
+  .booking-cancel-modal-content,
+  .booking-details-modal-content {
+    max-height: calc(90vh - 120px) !important;
+  }
+  
+  .booking-cancel-modal-button,
+  .booking-details-modal-close {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: var(--font-size-sm) !important;
+    min-height: 40px !important;
+    max-height: 44px !important;
+  }
+}
+
+/* Mobile Small */
+@media (max-width: 640px) {
+  .bookings-filter-button {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: var(--font-size-sm) !important;
+  }
+  
+  .booking-card-primary-action {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: var(--font-size-sm) !important;
+    min-height: 44px !important;
+    max-height: 48px !important;
+  }
+  
+  .booking-card-secondary-button {
+    padding: var(--spacing-xs) var(--spacing-sm) !important;
+    font-size: var(--font-size-xs) !important;
+    min-height: 36px !important;
+    max-height: 40px !important;
+  }
+}
+
+/* Mobile Extra Small */
+@media (max-width: 480px) {
+  .booking-card-primary-action {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: var(--font-size-sm) !important;
+    min-height: 40px !important;
+    max-height: 44px !important;
+  }
+  
+  .booking-card-secondary-button {
+    padding: 6px var(--spacing-sm) !important;
+    font-size: 11px !important;
+    min-height: 32px !important;
+    max-height: 36px !important;
+    line-height: 1.2;
+  }
+  
+  .booking-cancel-modal-button,
+  .booking-details-modal-close {
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+    font-size: var(--font-size-sm) !important;
+    min-height: 40px !important;
+    max-height: 44px !important;
+  }
+  
+  .booking-cancel-modal,
+  .booking-details-modal {
+    margin: var(--spacing-sm);
+    max-height: 95vh !important;
+  }
+  
+  .booking-cancel-modal-content,
+  .booking-details-modal-content {
+    padding: var(--spacing-md);
+    max-height: calc(95vh - 80px) !important;
+  }
+}
+
+/* ========================================
+   5. ANIMACIONES NECESARIAS
+   ======================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========================================
+   6. FALLBACKS PARA VARIABLES CSS
+   ======================================== */
+
+/* Si las variables CSS no están definidas, usar valores por defecto */
+.booking-card-primary-action {
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --font-size-sm: 0.875rem;
+  --border-radius-xl: 0.75rem;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card-secondary-button {
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --font-size-xs: 0.75rem;
+}
+
+/* ========================================
+   7. ASEGURAR QUE SE APLIQUEN LOS ESTILOS
+   ======================================== */
+
+/* Incrementar especificidad para asegurar que se apliquen */
+.booking-card .booking-card-primary-action.pay {
+  padding: var(--spacing-md, 0.75rem) var(--spacing-lg, 1rem) !important;
+  font-size: var(--font-size-sm, 0.875rem) !important;
+  min-height: 44px !important;
+  max-height: 48px !important;
+}
+
+.booking-card .booking-card-secondary-button.view,
+.booking-card .booking-card-secondary-button.cancel {
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 0.75rem) !important;
+  font-size: var(--font-size-xs, 0.75rem) !important;
+  min-height: 36px !important;
+  max-height: 40px !important;
+}
 }

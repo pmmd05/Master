@@ -1,5 +1,5 @@
-// frontend/src/hooks/useBooking.ts
-import { useState, useCallback } from 'react';
+// frontend/src/hooks/useBooking.ts - VERSIÓN MEJORADA CON API COMPLETA
+import { useState, useCallback, useEffect } from 'react';
 import { Workshop } from '../types';
 import { bookingService } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -26,6 +26,21 @@ export const useBooking = (onBookingSuccess?: () => Promise<void>): UseBookingRe
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Limpiar mensajes automáticamente después de un tiempo
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(null), 10000); // 10 segundos
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => setSuccess(null), 7000); // 7 segundos
+      return () => clearTimeout(timer);
+    }
+  }, [success]);
+
   // Iniciar proceso de reserva
   const initiateBooking = useCallback((workshop: Workshop) => {
     console.log('🎯 [USE_BOOKING] Iniciando reserva para:', workshop.title);
@@ -34,7 +49,7 @@ export const useBooking = (onBookingSuccess?: () => Promise<void>): UseBookingRe
     setSuccess(null);
   }, []);
 
-  // Confirmar la reserva
+  // Confirmar la reserva con validaciones robustas
   const confirmBooking = useCallback(async (): Promise<boolean> => {
     if (!selectedWorkshop || !user) {
       console.error('❌ [USE_BOOKING] No hay taller o usuario para reservar');
@@ -53,7 +68,7 @@ export const useBooking = (onBookingSuccess?: () => Promise<void>): UseBookingRe
         workshop_title: selectedWorkshop.title
       });
 
-      // Validaciones previas
+      // Validaciones previas mejoradas
       if (!user.email) {
         throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
       }
@@ -62,12 +77,20 @@ export const useBooking = (onBookingSuccess?: () => Promise<void>): UseBookingRe
         throw new Error('Este taller ya no tiene cupos disponibles.');
       }
 
-      // Verificar que la fecha no haya pasado
-      const workshopDate = new Date(selectedWorkshop.date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (workshopDate < today) {
-        throw new Error('No se puede reservar un taller que ya ha finalizado.');
+      // Verificar que la fecha no haya pasado (con mejor manejo de fechas)
+      try {
+        const workshopDate = new Date(selectedWorkshop.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (isNaN(workshopDate.getTime())) {
+          console.warn('⚠️ [USE_BOOKING] Fecha del taller inválida, continuando...');
+        } else if (workshopDate < today) {
+          throw new Error('No se puede reservar un taller que ya ha finalizado.');
+        }
+      } catch (dateError) {
+        console.warn('⚠️ [USE_BOOKING] Error verificando fecha:', dateError);
+        // Continuar con la reserva si hay problemas con la fecha
       }
 
       // Crear la reserva
@@ -85,14 +108,20 @@ export const useBooking = (onBookingSuccess?: () => Promise<void>): UseBookingRe
         payment_status: booking.payment_status
       });
       
-      // Mensaje de éxito personalizado
-      const successMessage = `🎉 ¡Reserva confirmada!
-      
-Taller: "${selectedWorkshop.title}"
-Estado: ${booking.status}
-Pago: ${booking.payment_status}
+      // Mensaje de éxito personalizado y detallado
+      const successMessage = `🎉 ¡Reserva confirmada exitosamente!
 
-Puedes gestionar tu reserva desde "Mis Reservas".`;
+📝 Detalles:
+• Taller: "${selectedWorkshop.title}"
+• Reserva ID: #${booking.id}
+• Estado: ${booking.status}
+• Pago: ${booking.payment_status}
+
+✅ Próximos pasos:
+${booking.payment_status === 'Pendiente' 
+  ? '• Completa tu pago desde "Mis Reservas"\n• Recibirás confirmación por email' 
+  : '• Recibirás los detalles por email\n• Revisa "Mis Reservas" para más info'
+}`;
 
       setSuccess(successMessage);
       setSelectedWorkshop(null);
@@ -110,18 +139,13 @@ Puedes gestionar tu reserva desde "Mis Reservas".`;
         }, 1000);
       }
 
-      // Auto-ocultar mensaje después de 7 segundos
-      setTimeout(() => {
-        setSuccess(null);
-      }, 7000);
-
       return true;
 
     } catch (error: any) {
       console.error('❌ [USE_BOOKING] Error creando reserva:', error);
       
-      // Mejorar y personalizar mensajes de error
-      let errorMessage = 'Error desconocido al procesar la reserva. Intenta nuevamente.';
+      // Mejorar y personalizar mensajes de error con contexto
+      let errorMessage = 'Error desconocido al procesar la reserva.';
       
       if (error.response?.data?.detail) {
         errorMessage = error.response.data.detail;
@@ -129,31 +153,31 @@ Puedes gestionar tu reserva desde "Mis Reservas".`;
         errorMessage = error.message;
       }
       
-      // Mensajes más específicos y útiles
+      // Mensajes más específicos y útiles con sugerencias
       if (errorMessage.includes('ya tienes una reserva') || errorMessage.includes('UNIQUE constraint')) {
         errorMessage = `Ya tienes una reserva para "${selectedWorkshop.title}". 
-        
-Revisa tu sección "Mis Reservas" para gestionar esta reserva.`;
+
+💡 Sugerencia: Revisa tu sección "Mis Reservas" para gestionar esta reserva existente.`;
       } else if (errorMessage.includes('Usuario no encontrado') || errorMessage.includes('not found')) {
         errorMessage = `Tu sesión de usuario no es válida. 
-        
-Por favor, cierra sesión e inicia sesión nuevamente.`;
+
+🔧 Solución: Cierra sesión e inicia sesión nuevamente para actualizar tu estado.`;
       } else if (errorMessage.includes('cupos') || errorMessage.includes('participants')) {
         errorMessage = `"${selectedWorkshop.title}" ya no tiene cupos disponibles. 
-        
-El taller se llenó mientras procesábamos tu solicitud.`;
+
+😞 Lo sentimos: El taller se llenó mientras procesábamos tu solicitud. Te sugerimos revisar otros talleres similares.`;
       } else if (errorMessage.includes('Taller no encontrado')) {
         errorMessage = `El taller "${selectedWorkshop.title}" ya no está disponible. 
-        
-Puede haber sido cancelado o modificado.`;
+
+ℹ️ Posible causa: El taller puede haber sido cancelado o modificado. Te sugerimos explorar otros talleres.`;
       } else if (errorMessage.includes('conexión') || errorMessage.includes('network') || errorMessage.includes('timeout')) {
         errorMessage = `Error de conexión con el servidor. 
-        
-Verifica tu conexión a internet e intenta nuevamente.`;
+
+🌐 Solución: Verifica tu conexión a internet e intenta nuevamente. Si persiste, intenta más tarde.`;
       } else if (errorMessage.includes('500') || errorMessage.includes('internal server')) {
         errorMessage = `Error interno del servidor. 
-        
-Nuestro equipo técnico ha sido notificado. Intenta nuevamente en unos minutos.`;
+
+🔧 Estado: Nuestro equipo técnico ha sido notificado automáticamente. Intenta nuevamente en unos minutos.`;
       }
       
       setError(errorMessage);
@@ -198,7 +222,10 @@ Nuestro equipo técnico ha sido notificado. Intenta nuevamente en unos minutos.`
   };
 };
 
-// Hook adicional para manejar el estado de reservas del usuario
+// ================================
+// HOOK PARA MANEJAR ESTADO DE RESERVAS DEL USUARIO
+// ================================
+
 export const useUserBookings = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<any[]>([]);
@@ -208,6 +235,8 @@ export const useUserBookings = () => {
   const loadBookings = useCallback(async () => {
     if (!user?.email) {
       console.log('ℹ️ [USER_BOOKINGS] No hay usuario autenticado');
+      setBookings([]);
+      setError(null);
       return;
     }
 
@@ -239,11 +268,157 @@ export const useUserBookings = () => {
     await loadBookings();
   }, [loadBookings]);
 
+  // Auto-cargar reservas cuando cambie el usuario
+  useEffect(() => {
+    loadBookings();
+  }, [loadBookings]);
+
   return {
     bookings,
     loading,
     error,
     loadBookings,
     refreshBookings
+  };
+};
+
+// ================================
+// HOOK PARA VALIDACIONES DE RESERVAS
+// ================================
+
+export const useBookingValidation = () => {
+  // Validar si se puede reservar un taller
+  const canBookWorkshop = useCallback((workshop: Workshop, userEmail?: string): { canBook: boolean; reason?: string } => {
+    if (!userEmail) {
+      return { canBook: false, reason: 'Usuario no autenticado' };
+    }
+
+    if (workshop.current_participants >= workshop.max_participants) {
+      return { canBook: false, reason: 'Sin cupos disponibles' };
+    }
+
+    try {
+      const workshopDate = new Date(workshop.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (workshopDate < today) {
+        return { canBook: false, reason: 'Taller ya finalizado' };
+      }
+    } catch (error) {
+      console.warn('⚠️ Error validando fecha del taller:', error);
+      // Permitir reserva si no se puede validar la fecha
+    }
+
+    return { canBook: true };
+  }, []);
+
+  // Validar si se puede cancelar una reserva
+  const canCancelBooking = useCallback((booking: any): { canCancel: boolean; reason?: string } => {
+    if (booking.status !== 'Confirmada') {
+      return { canCancel: false, reason: 'Solo se pueden cancelar reservas confirmadas' };
+    }
+
+    if (booking.payment_status === 'Pagado') {
+      return { canCancel: false, reason: 'No se pueden cancelar reservas pagadas' };
+    }
+
+    if (!booking.workshop?.date) {
+      return { canCancel: false, reason: 'No se puede determinar la fecha del taller' };
+    }
+
+    try {
+      const workshopDate = new Date(booking.workshop.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (workshopDate < today) {
+        return { canCancel: false, reason: 'Taller ya finalizado' };
+      }
+      
+      const oneWeekBefore = new Date();
+      oneWeekBefore.setDate(oneWeekBefore.getDate() + 7);
+      
+      if (workshopDate <= oneWeekBefore) {
+        return { canCancel: false, reason: 'Solo hasta una semana antes' };
+      }
+    } catch (error) {
+      console.error('Error validando fecha para cancelación:', error);
+      return { canCancel: false, reason: 'Error validando fecha' };
+    }
+
+    return { canCancel: true };
+  }, []);
+
+  // Validar si se puede pagar una reserva
+  const canPayBooking = useCallback((booking: any): { canPay: boolean; reason?: string } => {
+    if (booking.payment_status === 'Pagado') {
+      return { canPay: false, reason: 'Ya está pagado' };
+    }
+
+    if (booking.status !== 'Confirmada') {
+      return { canPay: false, reason: 'Solo reservas confirmadas' };
+    }
+
+    if (!booking.workshop?.date) {
+      return { canPay: true }; // Permitir pago si no hay fecha
+    }
+
+    try {
+      const workshopDate = new Date(booking.workshop.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (workshopDate < today) {
+        return { canPay: false, reason: 'Taller ya finalizado' };
+      }
+    } catch (error) {
+      console.warn('⚠️ Error validando fecha para pago:', error);
+      // Permitir pago si no se puede validar la fecha
+    }
+
+    return { canPay: true };
+  }, []);
+
+  return {
+    canBookWorkshop,
+    canCancelBooking,
+    canPayBooking
+  };
+};
+
+// ================================
+// HOOK PARA ESTADO DE CONEXIÓN
+// ================================
+
+export const useConnectionStatus = () => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [hasBeenOffline, setHasBeenOffline] = useState(false);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      console.log('🌐 [CONNECTION] Conexión restaurada');
+      setIsOnline(true);
+    };
+
+    const handleOffline = () => {
+      console.log('🚫 [CONNECTION] Conexión perdida');
+      setIsOnline(false);
+      setHasBeenOffline(true);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  return {
+    isOnline,
+    hasBeenOffline,
+    connectionStatus: isOnline ? 'online' : 'offline'
   };
 };

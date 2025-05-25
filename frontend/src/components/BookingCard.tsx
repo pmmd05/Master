@@ -1,4 +1,4 @@
-// frontend/src/components/BookingCard.tsx - COMPLETAMENTE REESCRITO CON NUEVOS ESTILOS
+// frontend/src/components/BookingCard.tsx - INTEGRACIÓN COMPLETA CON API
 import React from 'react';
 import { Booking, Workshop } from '../types';
 
@@ -11,32 +11,49 @@ interface BookingCardProps {
   onPayment?: (booking: BookingWithWorkshop) => void;
   onCancel?: (booking: BookingWithWorkshop) => void;
   onViewDetails?: (booking: BookingWithWorkshop) => void;
+  isProcessing?: boolean; // Para mostrar estados de carga
 }
 
 const BookingCard: React.FC<BookingCardProps> = ({ 
   booking, 
   onPayment, 
   onCancel, 
-  onViewDetails 
+  onViewDetails,
+  isProcessing = false
 }) => {
   
   // ====================================================
   // FUNCIONES DE UTILIDAD
   // ====================================================
   
-  // Formatear fecha
+  // Formatear fecha con mejor manejo de errores
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    try {
+      const date = new Date(dateString);
+      
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        return 'Fecha no disponible';
+      }
+      
+      return date.toLocaleDateString('es-ES', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formateando fecha:', error);
+      return 'Fecha no disponible';
+    }
   };
 
-  // Formatear precio
-  const formatPrice = (price: number) => {
+  // Formatear precio con manejo de errores
+  const formatPrice = (price?: number) => {
+    if (typeof price !== 'number' || isNaN(price)) {
+      return 'Precio no disponible';
+    }
+    
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
       currency: 'EUR'
@@ -45,7 +62,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
 
   // Determinar info del estado de la reserva
   const getStatusInfo = (status: string) => {
-    const statusMap = {
+    const statusMap: { [key: string]: { icon: string; className: string } } = {
       'Confirmada': { 
         icon: '✅',
         className: 'confirmed'
@@ -59,7 +76,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
         className: 'completed'
       }
     };
-    return statusMap[status as keyof typeof statusMap] || { 
+    return statusMap[status] || { 
       icon: '⏳',
       className: 'pending'
     };
@@ -67,7 +84,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
 
   // Determinar info del estado de pago
   const getPaymentStatusInfo = (paymentStatus: string) => {
-    const paymentMap = {
+    const paymentMap: { [key: string]: { icon: string; className: string } } = {
       'Pendiente': { 
         icon: '⏰',
         className: 'pending'
@@ -77,14 +94,16 @@ const BookingCard: React.FC<BookingCardProps> = ({
         className: 'paid'
       }
     };
-    return paymentMap[paymentStatus as keyof typeof paymentMap] || { 
+    return paymentMap[paymentStatus] || { 
       icon: '❓',
       className: 'pending'
     };
   };
 
   // Determinar info de la categoría
-  const getCategoryInfo = (category: string) => {
+  const getCategoryInfo = (category?: string) => {
+    if (!category) return { emoji: '🍽️' };
+    
     const categories: { [key: string]: { emoji: string } } = {
       'Italiana': { emoji: '🍝' },
       'Panadería': { emoji: '🥖' },
@@ -104,32 +123,54 @@ const BookingCard: React.FC<BookingCardProps> = ({
   // Verificar si el taller ya pasó
   const isWorkshopPast = () => {
     if (!booking.workshop?.date) return false;
-    const workshopDate = new Date(booking.workshop.date);
-    const today = new Date();
-    return workshopDate < today;
+    
+    try {
+      const workshopDate = new Date(booking.workshop.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Resetear horas para comparación de fechas
+      
+      return workshopDate < today;
+    } catch (error) {
+      console.error('Error verificando fecha del taller:', error);
+      return false;
+    }
   };
 
-  // 🔥 FUNCIÓN MEJORADA PARA VERIFICAR SI SE PUEDE CANCELAR
+  // Verificar si se puede cancelar (lógica mejorada)
   const canCancel = () => {
     // No se puede cancelar si no está confirmada
     if (booking.status !== 'Confirmada') return false;
     
-    // 🔥 NO se pueden cancelar reservas pagadas
+    // No se pueden cancelar reservas pagadas
     if (booking.payment_status === 'Pagado') return false;
     
     // No se puede cancelar si no hay fecha del taller
     if (!booking.workshop?.date) return false;
     
-    // No se puede cancelar talleres ya finalizados
-    const workshopDate = new Date(booking.workshop.date);
-    const today = new Date();
-    if (workshopDate < today) return false;
-    
-    // 🔥 Solo se puede cancelar hasta UNA SEMANA ANTES
-    const oneWeekBefore = new Date();
-    oneWeekBefore.setDate(oneWeekBefore.getDate() + 7);
-    
-    return workshopDate > oneWeekBefore;
+    try {
+      // No se puede cancelar talleres ya finalizados
+      const workshopDate = new Date(booking.workshop.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (workshopDate < today) return false;
+      
+      // Solo se puede cancelar hasta UNA SEMANA ANTES
+      const oneWeekBefore = new Date();
+      oneWeekBefore.setDate(oneWeekBefore.getDate() + 7);
+      
+      return workshopDate > oneWeekBefore;
+    } catch (error) {
+      console.error('Error verificando si se puede cancelar:', error);
+      return false;
+    }
+  };
+
+  // Verificar si se puede pagar
+  const canPay = () => {
+    return booking.payment_status === 'Pendiente' && 
+           booking.status === 'Confirmada' && 
+           !isWorkshopPast();
   };
 
   // Estados calculados
@@ -137,16 +178,48 @@ const BookingCard: React.FC<BookingCardProps> = ({
   const statusInfo = getStatusInfo(booking.status);
   const paymentInfo = getPaymentStatusInfo(booking.payment_status);
   const categoryInfo = booking.workshop ? getCategoryInfo(booking.workshop.category) : null;
-  
-  const canPay = booking.payment_status === 'Pendiente' && booking.status === 'Confirmada' && !isPastWorkshop;
+  const canPayBooking = canPay();
   const canCancelBooking = canCancel();
 
   // ====================================================
-  // RENDER DEL COMPONENTE
+  // MANEJADORES DE EVENTOS
+  // ====================================================
+
+  const handlePayment = () => {
+    if (canPayBooking && onPayment && !isProcessing) {
+      console.log('💳 [BOOKING_CARD] Iniciando pago para reserva:', booking.id);
+      onPayment(booking);
+    }
+  };
+
+  const handleCancel = () => {
+    if (canCancelBooking && onCancel && !isProcessing) {
+      console.log('🗑️ [BOOKING_CARD] Solicitando cancelación para reserva:', booking.id);
+      onCancel(booking);
+    }
+  };
+
+  const handleViewDetails = () => {
+    if (onViewDetails && !isProcessing) {
+      console.log('👁️ [BOOKING_CARD] Mostrando detalles de reserva:', booking.id);
+      onViewDetails(booking);
+    }
+  };
+
+  // ====================================================
+  // RENDERIZADO DEL COMPONENTE
   // ====================================================
 
   return (
-    <div className={`booking-card ${isPastWorkshop ? 'past' : ''} ${booking.status === 'Cancelada' ? 'cancelled' : ''}`}>
+    <div className={`booking-card ${isPastWorkshop ? 'past' : ''} ${booking.status === 'Cancelada' ? 'cancelled' : ''} ${isProcessing ? 'processing' : ''}`}>
+      
+      {/* Overlay de procesamiento */}
+      {isProcessing && (
+        <div className="booking-card-processing-overlay">
+          <div className="booking-card-processing-spinner"></div>
+          <span>Procesando...</span>
+        </div>
+      )}
       
       {/* Header con badges de estado */}
       <div className="booking-card-header">
@@ -184,7 +257,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
 
           {/* Descripción */}
           <p className="booking-card-description">
-            {booking.workshop.description}
+            {booking.workshop.description || 'Descripción no disponible'}
           </p>
 
           {/* Detalles del taller */}
@@ -222,7 +295,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
               </div>
               <div className="booking-card-detail-content">
                 <div className="booking-card-detail-main">
-                  {booking.workshop.current_participants}/{booking.workshop.max_participants} participantes
+                  {booking.workshop.current_participants || 0}/{booking.workshop.max_participants || 0} participantes
                 </div>
                 <div className="booking-card-detail-sub">
                   Grupo reducido para mejor aprendizaje
@@ -272,7 +345,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
       )}
 
       {/* Alertas contextuales */}
-      {canPay && (
+      {canPayBooking && (
         <div className="booking-card-alert payment-reminder">
           <svg className="booking-card-alert-icon" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
@@ -303,15 +376,16 @@ const BookingCard: React.FC<BookingCardProps> = ({
       <div className="booking-card-actions">
         
         {/* Botón de pago destacado (si está pendiente) */}
-        {canPay && (
+        {canPayBooking && (
           <button
-            onClick={() => onPayment && onPayment(booking)}
+            onClick={handlePayment}
+            disabled={isProcessing}
             className="booking-card-primary-action pay"
           >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-            </svg>
-            Pagar Ahora - {booking.workshop && formatPrice(booking.workshop.price)}
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '14px', height: '14px' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+            {isProcessing ? 'Procesando...' : `Pagar Ahora - ${formatPrice(booking.workshop?.price)}`}
           </button>
         )}
 
@@ -320,10 +394,11 @@ const BookingCard: React.FC<BookingCardProps> = ({
           
           {/* Botón ver detalles */}
           <button
-            onClick={() => onViewDetails && onViewDetails(booking)}
+            onClick={handleViewDetails}
+            disabled={isProcessing}
             className="booking-card-secondary-button view"
           >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '14px', height: '14px' }} >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
@@ -333,19 +408,18 @@ const BookingCard: React.FC<BookingCardProps> = ({
           {/* Botón cancelar (con lógica mejorada) */}
           {canCancelBooking ? (
             <button
-              onClick={() => onCancel && onCancel(booking)}
+              onClick={handleCancel}
+              disabled={isProcessing}
               className="booking-card-secondary-button cancel"
             >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              Cancelar
+              
+              {isProcessing ? 'Cancelando...' : 'Cancelar'}
             </button>
           ) : (
             <div className="booking-card-secondary-button disabled">
               {booking.status === 'Cancelada' ? (
                 <>
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '14px', height: '14px' }}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                   Cancelada
@@ -366,7 +440,7 @@ const BookingCard: React.FC<BookingCardProps> = ({
                 </>
               ) : booking.payment_status === 'Pagado' ? (
                 <>
-                  <svg fill="currentColor" viewBox="0 0 20 20">
+                  <svg fill="currentColor" viewBox="0 0 20 20" style={{ width: '14px', height: '14px' }}>
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
                   No cancelable (Pagado)
