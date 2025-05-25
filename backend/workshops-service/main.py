@@ -1,4 +1,4 @@
-# backend/workshops-service/main.py - ENFOQUE 2: RUTAS SIMPLES
+# backend/workshops-service/main.py - CON UTF-8 CORREGIDO
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +8,7 @@ import mysql.connector
 import time
 from datetime import date, datetime
 
-app = FastAPI(title="Workshops Service", version="1.2")
+app = FastAPI(title="Workshops Service", version="1.3")
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,11 +45,16 @@ class Workshop(BaseModel):
 def get_connection():
     for attempt in range(20):
         try:
+            # 🔧 CONEXIÓN CON UTF-8 CORREGIDO
             return mysql.connector.connect(
                 host="db",
                 user="root",
                 password="12345",
-                database="users_db"
+                database="users_db",
+                charset='utf8mb4',           # ← CHARSET UTF-8
+                collation='utf8mb4_unicode_ci',  # ← COLLATION UNICODE
+                use_unicode=True,            # ← USAR UNICODE
+                autocommit=True              # ← AUTOCOMMIT PARA CONSISTENCIA
             )
         except mysql.connector.Error:
             print(f"[workshops-service] Intento {attempt+1} fallido, esperando...")
@@ -60,24 +65,32 @@ def get_connection():
 def create_table():
     conn = get_connection()
     cursor = conn.cursor()
+    
+    # 🔧 CREAR TABLA CON CHARSET UTF8MB4
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS workshops (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(100),
-            description TEXT,
-            category VARCHAR(50),
+            title VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+            description TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+            category VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
             date DATE,
             max_participants INT,
             current_participants INT DEFAULT 0,
             price DECIMAL(10,2) NOT NULL DEFAULT 0.00
-        )
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     """)
+    
+    # 🔧 CONFIGURAR CHARSET EN LA SESIÓN
+    cursor.execute("SET NAMES utf8mb4")
+    cursor.execute("SET character_set_client = utf8mb4")
+    cursor.execute("SET character_set_connection = utf8mb4")
+    cursor.execute("SET character_set_results = utf8mb4")
+    cursor.execute("SET collation_connection = utf8mb4_unicode_ci")
+    
     conn.commit()
     cursor.close()
     conn.close()
-    print("[workshops-service] Tabla 'workshops' verificada/creada")
-
-# ✅ RUTAS SIMPLES - Coinciden con lo que envía el API Gateway proxy
+    print("[workshops-service] Tabla 'workshops' verificada/creada con UTF-8")
 
 @app.post("/", summary="Registrar un nuevo taller", response_model=Workshop)
 def crear_taller(data: WorkshopCreate):
@@ -85,6 +98,10 @@ def crear_taller(data: WorkshopCreate):
         print(f"[workshops-service] Creando taller: {data.title}")
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
+
+        # 🔧 CONFIGURAR UTF-8 EN CADA CONEXIÓN
+        cursor.execute("SET NAMES utf8mb4")
+        cursor.execute("SET character_set_client = utf8mb4")
 
         cursor.execute("SELECT * FROM workshops WHERE title = %s", (data.title,))
         if cursor.fetchone():
@@ -118,9 +135,14 @@ def listar_talleres():
         print("[workshops-service] Obteniendo lista de talleres")
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
+        
+        # 🔧 CONFIGURAR UTF-8 EN CADA CONSULTA
+        cursor.execute("SET NAMES utf8mb4")
+        cursor.execute("SET character_set_client = utf8mb4")
+        cursor.execute("SET character_set_results = utf8mb4")
+        
         cursor.execute("""
             SELECT * FROM workshops
-            WHERE current_participants < max_participants
             ORDER BY date ASC
         """)
         talleres = cursor.fetchall()
@@ -131,6 +153,11 @@ def listar_talleres():
             raise HTTPException(status_code=404, detail="No hay talleres disponibles")
         
         print(f"[workshops-service] Encontrados {len(talleres)} talleres disponibles")
+        
+        # 🔧 LOG PARA VERIFICAR ENCODING
+        for taller in talleres[:2]:  # Solo los primeros 2 para debug
+            print(f"[UTF-8 CHECK] Taller: {taller['title']} - Categoría: {taller['category']}")
+        
         return talleres
         
     except HTTPException:
@@ -148,6 +175,10 @@ def buscar_talleres(
         print(f"[workshops-service] Búsqueda - Categoría: {categoria}, Palabra: {palabra}")
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
+
+        # 🔧 CONFIGURAR UTF-8
+        cursor.execute("SET NAMES utf8mb4")
+        cursor.execute("SET character_set_client = utf8mb4")
 
         sql = """
             SELECT * FROM workshops
@@ -187,11 +218,12 @@ def health():
     try:
         conn = get_connection()
         cursor = conn.cursor()
+        cursor.execute("SET NAMES utf8mb4")
         cursor.execute("SELECT 1")
         cursor.fetchone()
         cursor.close()
         conn.close()
-        return {"status": "workshops-service ok", "database": "connected"}
+        return {"status": "workshops-service ok", "database": "connected", "charset": "utf8mb4"}
     except Exception as e:
         return {"status": "workshops-service error", "database": "disconnected", "error": str(e)}
 
@@ -199,7 +231,9 @@ def health():
 def debug_info():
     return {
         "service": "workshops-service",
-        "approach": "Enfoque 2 - Rutas simples",
+        "version": "1.3 - UTF-8 Fixed",
+        "charset": "utf8mb4",
+        "collation": "utf8mb4_unicode_ci",
         "routes": [
             "/ (GET, POST) - Listar/Crear talleres",
             "/buscar (GET) - Buscar talleres",
@@ -207,5 +241,5 @@ def debug_info():
             "/debug (GET)"
         ],
         "proxy_info": "API Gateway: /api/v0/workshops/{path} → /{path}",
-        "database": {"host": "db", "name": "users_db"}
+        "database": {"host": "db", "name": "users_db", "charset": "utf8mb4"}
     }
