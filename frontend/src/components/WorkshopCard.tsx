@@ -1,4 +1,4 @@
-// frontend/src/components/WorkshopCard.tsx - CON ESTILOS MASTERCOOK ACADEMY
+// frontend/src/components/WorkshopCard.tsx - CON CONFIRMACIÓN INTEGRADA MODERNA OPTIMIZADA
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import PaymentConfirmationModal from './PaymentConfirmationModal';
@@ -31,7 +31,7 @@ interface WorkshopCardProps {
 const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess }) => {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageType, setMessageType] = useState<'success' | 'error'>('success');
   
@@ -39,12 +39,23 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [currentBooking, setCurrentBooking] = useState<Booking | null>(null);
 
-  // Formatear fecha
+  // Formatear fecha corta
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
       weekday: 'short',
       month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  // Formatear fecha completa para confirmación
+  const formatFullDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
       day: 'numeric'
     });
   };
@@ -62,7 +73,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
   const isFullyBooked = availableSpots <= 0;
   const isAlmostFull = availableSpots <= 3 && availableSpots > 0;
 
-  // Determinar color de la categoría con paleta MasterCook
+  // Determinar categoría con emoji
   const getCategoryInfo = (category: string) => {
     const categories: { [key: string]: { emoji: string } } = {
       'Italiana': { emoji: '🍝' },
@@ -91,9 +102,11 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
 
   const isPastWorkshop = isWorkshopPast();
 
-  // Función principal para hacer la reserva
-  const handleBooking = async () => {
-    if (!user?.email) {
+  // Función para mostrar confirmación integrada
+  const handleShowConfirmation = () => {
+    const userEmail = user?.email || null;
+    
+    if (!user || !userEmail) {
       setMessage('Debes estar autenticado para hacer una reserva');
       setMessageType('error');
       setTimeout(() => setMessage(null), 3000);
@@ -107,14 +120,34 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
       return;
     }
 
+    setShowConfirmation(true);
+  };
+
+  // Función para cancelar confirmación
+  const handleCancelConfirmation = () => {
+    setShowConfirmation(false);
+    setMessage(null);
+  };
+
+  // Función principal para hacer la reserva
+  const handleConfirmBooking = async () => {
+    const userEmail = user?.email || null;
+    
+    if (!user || !userEmail) {
+      setMessage('Error: Usuario no autenticado correctamente');
+      setMessageType('error');
+      return;
+    }
+
     try {
       setIsLoading(true);
       setMessage(null);
       
       console.log('🎯 [WORKSHOP_CARD] Iniciando reserva:', {
-        user: user.email,
+        user: userEmail,
         workshop: workshop.title,
-        workshop_id: workshop.id
+        workshop_id: workshop.id,
+        userObject: user
       });
 
       const token = localStorage.getItem('authToken');
@@ -123,7 +156,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
       }
 
       const bookingData = {
-        user_email: user.email,
+        user_email: userEmail,
         workshop_id: workshop.id
       };
 
@@ -146,8 +179,13 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
       const booking = await response.json();
       console.log('✅ [WORKSHOP_CARD] Reserva exitosa:', booking);
 
-      setCurrentBooking(booking);
-      setShowModal(false);
+      const bookingWithEmail = {
+        ...booking,
+        user_email: userEmail
+      };
+
+      setCurrentBooking(bookingWithEmail);
+      setShowConfirmation(false);
       setShowPaymentModal(true);
 
       if (onBookingSuccess) {
@@ -189,7 +227,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
     setTimeout(() => setMessage(null), 5000);
   };
 
-  // Manejar cierre del modal
+  // Manejar cierre del modal de pago
   const handleClosePaymentModal = () => {
     setShowPaymentModal(false);
     setMessage(`Reserva confirmada para "${workshop.title}". Puedes completar el pago desde "Mis Reservas".`);
@@ -197,10 +235,17 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
     setTimeout(() => setMessage(null), 5000);
   };
 
+  // Determinar clases CSS dinámicas
+  const cardClasses = [
+    'workshop-card',
+    isPastWorkshop && 'opacity-75 grayscale',
+    showConfirmation && 'workshop-card-expanded'
+  ].filter(Boolean).join(' ');
+
   return (
     <>
-      {/* Card Principal con Sistema MasterCook */}
-      <div className={`workshop-card ${isPastWorkshop ? 'opacity-75 grayscale' : ''}`}>
+      {/* Card Principal con confirmación integrada */}
+      <div className={cardClasses}>
         
         {/* Header con indicador de estado */}
         <div className="workshop-card-header">
@@ -233,10 +278,12 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
           {workshop.title}
         </h3>
 
-        {/* Descripción */}
-        <p className="workshop-card-description">
-          {workshop.description}
-        </p>
+        {/* Descripción - Se oculta cuando se muestra confirmación */}
+        {!showConfirmation && (
+          <p className="workshop-card-description">
+            {workshop.description}
+          </p>
+        )}
 
         {/* Información clave */}
         <div className="workshop-card-info">
@@ -285,151 +332,154 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
           </div>
         </div>
 
-        {/* Barra de progreso de ocupación */}
-        <div className="workshop-card-progress">
-          <div className="workshop-card-progress-bar">
-            <div 
-              className={`workshop-card-progress-fill ${
-                isFullyBooked ? 'full' : 
-                isAlmostFull ? 'almost-full' : 
-                'available'
-              }`}
-              style={{ 
-                width: `${Math.min((workshop.current_participants / workshop.max_participants) * 100, 100)}%` 
-              }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Botón de reserva */}
-        <button
-          onClick={() => setShowModal(true)}
-          disabled={isFullyBooked || isLoading || isPastWorkshop}
-          className={`workshop-card-button ${
-            isFullyBooked || isPastWorkshop ? 'disabled' : 'primary'
-          }`}
-        >
-          {isLoading ? (
-            <div className="workshops-loading-content">
-              <div className="workshops-loading-spinner"></div>
-              Reservando...
+        {/* Sección de confirmación integrada */}
+        {showConfirmation && (
+          <div className="workshop-card-confirmation">
+            <div className="workshop-card-confirmation-header">
+              <div className="workshop-card-confirmation-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h4 className="workshop-card-confirmation-title">¿Deseas reservar este taller de cocina?</h4>
             </div>
-          ) : isFullyBooked ? (
-            <>
-              <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              Sin Cupos
-            </>
-          ) : isPastWorkshop ? (
-            <>
-              <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-              </svg>
-              Finalizado
-            </>
-          ) : (
-            <>
-              <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Reservar {formatPrice(workshop.price)}
-            </>
-          )}
-        </button>
+
+            <div className="workshop-card-confirmation-details">
+              <div className="workshop-card-confirmation-detail">
+                <span className="workshop-card-confirmation-label">📅 Fecha:</span>
+                <span className="workshop-card-confirmation-value">{formatFullDate(workshop.date)}</span>
+              </div>
+              <div className="workshop-card-confirmation-detail">
+                <span className="workshop-card-confirmation-label">💰 Precio:</span>
+                <span className="workshop-card-confirmation-value workshop-card-confirmation-price">{formatPrice(workshop.price)}</span>
+              </div>
+              <div className="workshop-card-confirmation-detail">
+                <span className="workshop-card-confirmation-label">🏷️ Categoría:</span>
+                <span className="workshop-card-confirmation-value">{workshop.category}</span>
+              </div>
+              <div className="workshop-card-confirmation-detail">
+                <span className="workshop-card-confirmation-label">👥 Disponibles:</span>
+                <span className="workshop-card-confirmation-value workshop-card-confirmation-available">{availableSpots} cupos</span>
+              </div>
+            </div>
+
+            {/* Información sobre el pago */}
+            <div className="workshop-card-confirmation-note">
+              <div className="workshop-card-confirmation-note-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span>Después de confirmar, podrás elegir pagar ahora o más tarde</span>
+            </div>
+
+            {/* Mostrar error si existe */}
+            {message && messageType === 'error' && (
+              <div className="workshop-card-confirmation-error">
+                <div className="workshop-card-confirmation-error-icon">
+                  <svg fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p>{message}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Barra de progreso - Se oculta cuando se muestra confirmación */}
+        {!showConfirmation && (
+          <div className="workshop-card-progress">
+            <div className="workshop-card-progress-bar">
+              <div 
+                className={`workshop-card-progress-fill ${
+                  isFullyBooked ? 'full' : 
+                  isAlmostFull ? 'almost-full' : 
+                  'available'
+                }`}
+                style={{ 
+                  width: `${Math.min((workshop.current_participants / workshop.max_participants) * 100, 100)}%` 
+                }}
+              ></div>
+            </div>
+          </div>
+        )}
+
+        {/* Botones de acción */}
+        {!showConfirmation ? (
+          /* Botón de reserva normal */
+          <button
+            onClick={handleShowConfirmation}
+            disabled={isFullyBooked || isLoading || isPastWorkshop}
+            className={`workshop-card-button ${
+              isFullyBooked || isPastWorkshop ? 'disabled' : 'primary'
+            }`}
+          >
+            {isLoading ? (
+              <div className="workshops-loading-content">
+                <div className="workshops-loading-spinner"></div>
+                Reservando...
+              </div>
+            ) : isFullyBooked ? (
+              <>
+                <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                Sin Cupos
+              </>
+            ) : isPastWorkshop ? (
+              <>
+                <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                </svg>
+                Finalizado
+              </>
+            ) : (
+              <>
+                <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Reservar {formatPrice(workshop.price)}
+              </>
+            )}
+          </button>
+        ) : (
+          /* Botones de confirmación */
+          <div className="workshop-card-confirmation-buttons">
+            <button
+              onClick={handleCancelConfirmation}
+              disabled={isLoading}
+              className="workshop-card-button outline"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleConfirmBooking}
+              disabled={isLoading}
+              className="workshop-card-button primary"
+            >
+              {isLoading ? (
+                <div className="workshops-loading-content">
+                  <div className="workshops-loading-spinner"></div>
+                  Confirmando...
+                </div>
+              ) : (
+                <>
+                  <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  ✨ Confirmar
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* ID del taller */}
         <div className="workshop-card-id">
           <span>ID: #{workshop.id}</span>
         </div>
       </div>
-
-      {/* Modal de confirmación de reserva */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 scale-100">
-            <div className="p-6">
-              {/* Header del modal */}
-              <div className="text-center mb-6">
-                <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                  <svg className="icon-xl text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Confirmar Reserva
-                </h3>
-                <p className="text-gray-600">
-                  ¿Deseas reservar este taller de cocina?
-                </p>
-              </div>
-              
-              {/* Información del taller */}
-              <div className="bg-gray-50 rounded-xl p-4 mb-6 border">
-                <div className="flex items-start">
-                  <div className="mr-3 text-2xl">{categoryInfo.emoji}</div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-gray-900 mb-2">{workshop.title}</h4>
-                    <div className="space-y-1 text-sm text-gray-600">
-                      <div className="flex justify-between">
-                        <span>📅 Fecha:</span>
-                        <span className="font-medium">{formatDate(workshop.date)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>💰 Precio:</span>
-                        <span className="font-bold text-red-600">{formatPrice(workshop.price)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>🏷️ Categoría:</span>
-                        <span className="font-medium">{workshop.category}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>👥 Disponibles:</span>
-                        <span className="font-medium text-green-600">{availableSpots} cupos</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Información sobre el pago */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6">
-                <div className="flex items-center text-sm text-blue-700">
-                  <svg className="icon-sm mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>Después de confirmar, podrás elegir pagar ahora o más tarde</span>
-                </div>
-              </div>
-
-              {/* Botones */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowModal(false)}
-                  disabled={isLoading}
-                  className="flex-1 btn-outline"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleBooking}
-                  disabled={isLoading}
-                  className="flex-1 btn-primary"
-                >
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Procesando...
-                    </div>
-                  ) : (
-                    '✨ Confirmar'
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal de confirmación de pago */}
       {showPaymentModal && currentBooking && (
@@ -440,19 +490,19 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
             workshop_id: workshop.id,
             workshop_title: workshop.title,
             workshop_price: workshop.price,
-            user_email: currentBooking.user_email
+            user_email: currentBooking.user_email || user?.email || ''
           }}
           onClose={handleClosePaymentModal}
           onPayLater={handlePayLater}
         />
       )}
 
-      {/* Notificación de mensaje */}
+      {/* Notificación de mensaje con estilos premium */}
       {message && (
-        <div className={`fixed top-20 right-4 max-w-sm rounded-xl shadow-2xl z-50 transform transition-all duration-500 p-4 ${
+        <div className={`fixed top-20 right-4 max-w-sm rounded-xl shadow-2xl z-50 transform transition-all duration-500 p-4 backdrop-filter backdrop-blur-lg border ${
           messageType === 'success' 
-            ? 'bg-green-500 text-white' 
-            : 'bg-red-500 text-white'
+            ? 'bg-green-500 bg-opacity-95 text-white border-green-400' 
+            : 'bg-red-500 bg-opacity-95 text-white border-red-400'
         }`}>
           <div className="flex items-start">
             <div className="flex-shrink-0">
@@ -472,7 +522,7 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
                 <div className="mt-3">
                   <button
                     onClick={() => window.location.href = '/bookings'}
-                    className="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-lg text-xs font-medium transition-colors duration-200"
+                    className="bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-lg text-xs font-medium transition-colors duration-200 border border-white border-opacity-30"
                   >
                     Ver Mis Reservas →
                   </button>
