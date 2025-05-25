@@ -1,10 +1,11 @@
-// frontend/src/components/WorkshopsList.tsx - VERSION MEJORADA
+// frontend/src/components/WorkshopsList.tsx - CON ESTILOS MASTERCOOK ACADEMY
 import React, { useState } from 'react';
 import { useWorkshops } from '../context/WorkshopsContext';
 import { useAuth } from '../context/AuthContext';
 import WorkshopCard from './WorkshopCard';
 import { Workshop } from '../types';
 import { bookingService } from '../services/api';
+import './estilos/workshops.css';
 
 const WorkshopsList: React.FC = () => {
   const { workshops, loading, error, refreshWorkshops } = useWorkshops();
@@ -13,7 +14,6 @@ const WorkshopsList: React.FC = () => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
-
 
   // Confirmar reserva
   const confirmBooking = async () => {
@@ -126,10 +126,10 @@ const WorkshopsList: React.FC = () => {
   // Estados de carga y error del listado
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando talleres disponibles...</p>
+      <div className="workshops-loading">
+        <div className="workshops-loading-content">
+          <div className="workshops-loading-spinner"></div>
+          <p className="workshops-loading-text">Cargando talleres disponibles...</p>
         </div>
       </div>
     );
@@ -137,24 +137,22 @@ const WorkshopsList: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
-        <div className="flex items-center justify-center mb-2">
-          <svg className="w-6 h-6 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h3 className="text-lg font-medium text-red-800">Error al cargar talleres</h3>
-        </div>
-        <p className="text-red-600 mb-4">{error}</p>
-        <div className="flex gap-3 justify-center">
+      <div className="workshops-error">
+        <svg className="workshops-error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 className="workshops-error-title">Error al cargar talleres</h3>
+        <p className="workshops-error-message">{error}</p>
+        <div className="workshops-error-actions">
           <button
             onClick={() => window.location.reload()}
-            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            className="workshops-error-button primary"
           >
             Reintentar
           </button>
           <button
             onClick={() => window.location.href = '/debug'}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            className="workshops-error-button secondary"
           >
             Panel Debug
           </button>
@@ -165,15 +163,15 @@ const WorkshopsList: React.FC = () => {
 
   if (workshops.length === 0) {
     return (
-      <div className="text-center py-12">
-        <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="workshops-empty">
+        <svg className="workshops-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No hay talleres disponibles</h3>
-        <p className="text-gray-600 mb-4">No se encontraron talleres que coincidan con tu búsqueda.</p>
+        <h3 className="workshops-empty-title">No hay talleres disponibles</h3>
+        <p className="workshops-empty-message">No se encontraron talleres que coincidan con tu búsqueda.</p>
         <button
           onClick={() => window.location.href = '/debug'}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          className="workshops-empty-button"
         >
           Revisar en Panel Debug
         </button>
@@ -184,7 +182,7 @@ const WorkshopsList: React.FC = () => {
   return (
     <>
       {/* Lista de talleres */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="workshops-grid">
         {workshops.map((workshop) => (
           <WorkshopCard
             key={workshop.id}
@@ -316,15 +314,15 @@ const WorkshopsList: React.FC = () => {
       )}
 
       {/* Información útil al final */}
-      <div className="mt-8 bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-        <h3 className="text-lg font-medium text-indigo-900 mb-2">
+      <div className="workshops-info-section">
+        <h3 className="workshops-info-title">
           ℹ️ Información sobre reservas
         </h3>
-        <div className="text-indigo-700 space-y-1 text-sm">
+        <div className="text-sm leading-relaxed space-y-2">
           <p>• Al reservar, el cupo queda asegurado pero el pago queda pendiente</p>
           <p>• Puedes completar el pago desde la sección "Mis Reservas"</p>
           <p>• Las reservas se pueden cancelar hasta 24 horas antes del taller</p>
-          <p>• Si tienes problemas, usa el <a href="/debug" className="underline font-medium">Panel de Debug</a></p>
+          <p>• Si tienes problemas, usa el <a href="/debug" className="link-primary">Panel de Debug</a></p>
         </div>
       </div>
     </>

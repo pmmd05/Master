@@ -1,66 +1,61 @@
-// frontend/src/components/WorkshopsPage.tsx - VERSION REAL CON API
+// frontend/src/components/WorkshopsPage.tsx - CON ESTILOS MASTERCOOK ACADEMY
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { WorkshopsProvider } from '../context/WorkshopsContext';
 import WorkshopsSearch from './WorkshopsSearch';
 import WorkshopsList from './WorkshopsList';
+import './estilos/workshops.css';
+import Navbar from './Navbar';
 
 const WorkshopsPageContent: React.FC = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-3xl font-bold text-gray-900">
-                Explora Nuestros Talleres
-              </h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Hola, <span className="font-medium">{user?.name}</span>
+    
+    <div className="workshops-container">
+      <Navbar />
+      <div className="workshops-main-content">
+        
+        {/* Header de Workshops */}
+        <div className="workshops-header">
+          <div className="workshops-header-content">
+            <h1 className="workshops-header-title">
+              Explora Nuestros Talleres
+            </h1>
+            <div className="workshops-header-actions">
+              <span className="workshops-header-user-info">
+                Hola, <span className="workshops-header-user-name">{user?.name}</span>
               </span>
-              <button
-                onClick={() => window.location.href = '/dashboard'}
-                className="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-              >
-                ← Dashboard
-              </button>
+              
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Contenido principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Información y bienvenida */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-            <h2 className="text-2xl font-bold mb-2">
+        {/* Hero Section */}
+        <div className="workshops-hero">
+          <div className="workshops-hero-content">
+            <h2 className="workshops-hero-title">
               ¡Hola {user?.name?.split(' ')[0]}! Descubre Experiencias Culinarias Únicas
             </h2>
-            <p className="text-indigo-100 mb-4">
+            <p className="workshops-hero-subtitle">
               Como miembro de nuestra comunidad, tienes acceso completo a todos nuestros talleres. 
               Desde pasta italiana hasta sushi japonés, encuentra el taller perfecto para expandir tus habilidades culinarias.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <div className="workshops-hero-features">
+              <div className="workshops-hero-feature">
+                <svg className="workshops-hero-feature-icon" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 Instructores Expertos
               </div>
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <div className="workshops-hero-feature">
+                <svg className="workshops-hero-feature-icon" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm8 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1V8z" clipRule="evenodd" />
                 </svg>
                 Clases Prácticas
               </div>
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <div className="workshops-hero-feature">
+                <svg className="workshops-hero-feature-icon" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 2L3 7v11a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V7l-7-5z" clipRule="evenodd" />
                 </svg>
                 Ambiente Acogedor
@@ -73,64 +68,72 @@ const WorkshopsPageContent: React.FC = () => {
         <WorkshopsSearch />
 
         {/* Lista de talleres */}
-        <WorkshopsList />
+        <div className="workshops-list-container">
+          <WorkshopsList />
+        </div>
 
         {/* Información adicional */}
-        <div className="mt-12 bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="workshops-info-section">
+          <h3 className="workshops-info-title">
             ¿Cómo funciona?
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                <span className="text-indigo-600 font-bold text-lg">1</span>
+          <div className="workshops-info-grid">
+            <div className="workshops-info-item">
+              <div className="workshops-info-item-icon">
+                <span>1</span>
               </div>
-              <h4 className="font-medium text-gray-900 mb-2">Elige tu Taller</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="workshops-info-item-title">Elige tu Taller</h4>
+              <p className="workshops-info-item-description">
                 Navega por nuestros talleres y encuentra el que más te interese
               </p>
             </div>
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                <span className="text-indigo-600 font-bold text-lg">2</span>
+            <div className="workshops-info-item">
+              <div className="workshops-info-item-icon">
+                <span>2</span>
               </div>
-              <h4 className="font-medium text-gray-900 mb-2">Haz tu Reserva</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="workshops-info-item-title">Haz tu Reserva</h4>
+              <p className="workshops-info-item-description">
                 Reserva tu cupo con un solo click. ¡Los cupos son limitados!
               </p>
             </div>
-            <div className="text-center">
-              <div className="bg-indigo-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                <span className="text-indigo-600 font-bold text-lg">3</span>
+            <div className="workshops-info-item">
+              <div className="workshops-info-item-icon">
+                <span>3</span>
               </div>
-              <h4 className="font-medium text-gray-900 mb-2">Disfruta y Aprende</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="workshops-info-item-title">Disfruta y Aprende</h4>
+              <p className="workshops-info-item-description">
                 Asiste al taller y disfruta de una experiencia culinaria única
               </p>
             </div>
           </div>
         </div>
 
-        {/* Información adicional personalizada para usuarios autenticados */}
-        <div className="mt-8 bg-indigo-50 border border-indigo-200 rounded-lg p-6 text-center">
-          <h3 className="text-lg font-medium text-indigo-800 mb-2">
+        {/* Call to Action personalizada */}
+        <div className="workshops-cta-section">
+          <h3 className="workshops-cta-title">
             ¡Todo listo para reservar!
           </h3>
-          <p className="text-indigo-700 mb-4">
+          <p className="workshops-cta-description">
             Como usuario registrado, puedes reservar cualquier taller disponible con un solo click. 
             Recuerda revisar tus reservas en el dashboard.
           </p>
-          <div className="flex justify-center space-x-3">
+          <div className="workshops-cta-buttons">
             <button
               onClick={() => window.location.href = '/bookings'}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="workshops-cta-button primary"
             >
+              <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
               Ver Mis Reservas
             </button>
             <button
               onClick={() => window.location.href = '/dashboard'}
-              className="bg-white text-indigo-600 px-4 py-2 rounded-md border border-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="workshops-cta-button secondary"
             >
+              <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+              </svg>
               Ir al Dashboard
             </button>
           </div>

@@ -1,7 +1,8 @@
-// frontend/src/components/WorkshopCard.tsx - DISEÑO MASTERCOOK ACADEMY ACTUALIZADO
+// frontend/src/components/WorkshopCard.tsx - CON ESTILOS MASTERCOOK ACADEMY
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import PaymentConfirmationModal from './PaymentConfirmationModal';
+import './estilos/workshops.css';
 
 interface Workshop {
   id: number;
@@ -63,68 +64,20 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
 
   // Determinar color de la categoría con paleta MasterCook
   const getCategoryInfo = (category: string) => {
-    const categories: { [key: string]: { color: string, icon: string, emoji: string } } = {
-      'Italiana': { 
-        color: 'bg-red-50 text-red-700 border-red-200', 
-        icon: 'text-red-600',
-        emoji: '🍝'
-      },
-      'Panadería': { 
-        color: 'bg-yellow-50 text-yellow-700 border-yellow-200', 
-        icon: 'text-yellow-600',
-        emoji: '🥖'
-      },
-      'Repostería': { 
-        color: 'bg-pink-50 text-pink-700 border-pink-200', 
-        icon: 'text-pink-600',
-        emoji: '🧁'
-      },
-      'Japonesa': { 
-        color: 'bg-indigo-50 text-indigo-700 border-indigo-200', 
-        icon: 'text-indigo-600',
-        emoji: '🍣'
-      },
-      'Vegana': { 
-        color: 'bg-green-50 text-green-700 border-green-200', 
-        icon: 'text-green-600',
-        emoji: '🥬'
-      },
-      'Mexicana': { 
-        color: 'bg-orange-50 text-orange-700 border-orange-200', 
-        icon: 'text-orange-600',
-        emoji: '🌮'
-      },
-      'Francesa': { 
-        color: 'bg-blue-50 text-blue-700 border-blue-200', 
-        icon: 'text-blue-600',
-        emoji: '🥐'
-      },
-      'Española': { 
-        color: 'bg-amber-50 text-amber-700 border-amber-200', 
-        icon: 'text-amber-600',
-        emoji: '🥘'
-      },
-      'Barbacoa': { 
-        color: 'bg-gray-50 text-gray-700 border-gray-200', 
-        icon: 'text-gray-600',
-        emoji: '🔥'
-      },
-      'Tailandesa': { 
-        color: 'bg-emerald-50 text-emerald-700 border-emerald-200', 
-        icon: 'text-emerald-600',
-        emoji: '🍜'
-      },
-      'Bebidas': { 
-        color: 'bg-cyan-50 text-cyan-700 border-cyan-200', 
-        icon: 'text-cyan-600',
-        emoji: '🥤'
-      }
+    const categories: { [key: string]: { emoji: string } } = {
+      'Italiana': { emoji: '🍝' },
+      'Panadería': { emoji: '🥖' },
+      'Repostería': { emoji: '🧁' },
+      'Japonesa': { emoji: '🍣' },
+      'Vegana': { emoji: '🥬' },
+      'Mexicana': { emoji: '🌮' },
+      'Francesa': { emoji: '🥐' },
+      'Española': { emoji: '🥘' },
+      'Barbacoa': { emoji: '🔥' },
+      'Tailandesa': { emoji: '🍜' },
+      'Bebidas': { emoji: '🥤' }
     };
-    return categories[category] || { 
-      color: 'bg-gray-50 text-gray-700 border-gray-200', 
-      icon: 'text-gray-600',
-      emoji: '🍽️'
-    };
+    return categories[category] || { emoji: '🍽️' };
   };
 
   const categoryInfo = getCategoryInfo(workshop.category);
@@ -246,153 +199,148 @@ const WorkshopCard: React.FC<WorkshopCardProps> = ({ workshop, onBookingSuccess 
 
   return (
     <>
-      {/* Card Principal con Nueva Paleta MasterCook */}
-      <div className={`workshop-card group ${isPastWorkshop ? 'opacity-75 grayscale' : ''}`}>
+      {/* Card Principal con Sistema MasterCook */}
+      <div className={`workshop-card ${isPastWorkshop ? 'opacity-75 grayscale' : ''}`}>
         
         {/* Header con indicador de estado */}
-        <div className="relative mb-4">
+        <div className="workshop-card-header">
+          {/* Categoría */}
+          <div className="workshop-card-category">
+            <span>{categoryInfo.emoji}</span>
+            {workshop.category}
+          </div>
+
           {/* Indicador de disponibilidad */}
-          <div className="absolute top-0 right-0 z-10">
+          <div className="workshop-card-status-container">
             {isFullyBooked ? (
-              <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <span className="workshop-card-status full">
                 Agotado
               </span>
             ) : isAlmostFull ? (
-              <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+              <span className="workshop-card-status almost-full">
                 ¡Últimos cupos!
               </span>
             ) : (
-              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <span className="workshop-card-status available">
                 Disponible
               </span>
             )}
           </div>
-
-          {/* Categoría */}
-          <div className={`inline-flex items-center px-3 py-2 rounded-xl text-sm font-medium border ${categoryInfo.color}`}>
-            <span className="text-lg mr-2">{categoryInfo.emoji}</span>
-            {workshop.category}
-          </div>
         </div>
 
         {/* Título del taller */}
-        <h3 className="text-xl font-bold text-gray-800 leading-tight mb-3 group-hover:text-red-600 transition-colors duration-300">
+        <h3 className="workshop-card-title">
           {workshop.title}
         </h3>
 
         {/* Descripción */}
-        <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-2">
+        <p className="workshop-card-description">
           {workshop.description}
         </p>
 
         {/* Información clave */}
-        <div className="space-y-3 mb-6">
+        <div className="workshop-card-info">
           {/* Fecha */}
-          <div className="flex items-center bg-gray-50 rounded-lg px-3 py-2">
-            <div className="bg-blue-100 rounded-lg p-2 mr-3">
-              <svg className="icon-sm text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="workshop-card-info-item">
+            <div className="workshop-card-info-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
-            <div>
-              <div className="text-sm font-medium text-gray-800">
+            <div className="workshop-card-info-content">
+              <div className="workshop-card-info-main">
                 {formatDate(workshop.date)}
               </div>
               {isPastWorkshop && (
-                <div className="text-xs text-red-500 font-medium">
+                <div className="workshop-card-info-sub text-error">
                   Taller finalizado
                 </div>
               )}
             </div>
           </div>
 
-          {/* Participantes */}
-          <div className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">
-            <div className="flex items-center">
-              <div className="bg-green-100 rounded-lg p-2 mr-3">
-                <svg className="icon-sm text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+          {/* Participantes y Precio */}
+          <div className="workshop-card-info-item">
+            <div className="workshop-card-info-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div className="workshop-card-info-content">
+              <div className="workshop-card-info-main">
+                {workshop.current_participants}/{workshop.max_participants}
               </div>
-              <div>
-                <div className="text-sm font-medium text-gray-800">
-                  {workshop.current_participants}/{workshop.max_participants}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {availableSpots} disponibles
-                </div>
+              <div className="workshop-card-info-sub">
+                {availableSpots} disponibles
               </div>
             </div>
             
             {/* Precio */}
-            <div className="text-right">
-              <div className="text-xl font-bold text-gray-900">
+            <div className="workshop-card-info-price">
+              <div className="workshop-card-info-price-amount">
                 {formatPrice(workshop.price)}
               </div>
-              <div className="text-xs text-gray-500">por persona</div>
+              <div className="workshop-card-info-price-label">por persona</div>
             </div>
           </div>
         </div>
 
         {/* Barra de progreso de ocupación */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
-          <div 
-            className={`h-2 rounded-full transition-all duration-1000 ${
-              isFullyBooked ? 'bg-red-500' : 
-              isAlmostFull ? 'bg-yellow-500' : 
-              'bg-green-500'
-            }`}
-            style={{ 
-              width: `${Math.min((workshop.current_participants / workshop.max_participants) * 100, 100)}%` 
-            }}
-          ></div>
+        <div className="workshop-card-progress">
+          <div className="workshop-card-progress-bar">
+            <div 
+              className={`workshop-card-progress-fill ${
+                isFullyBooked ? 'full' : 
+                isAlmostFull ? 'almost-full' : 
+                'available'
+              }`}
+              style={{ 
+                width: `${Math.min((workshop.current_participants / workshop.max_participants) * 100, 100)}%` 
+              }}
+            ></div>
+          </div>
         </div>
 
         {/* Botón de reserva */}
         <button
           onClick={() => setShowModal(true)}
           disabled={isFullyBooked || isLoading || isPastWorkshop}
-          className={`
-            w-full py-4 px-6 rounded-xl font-bold text-sm
-            transition-all duration-300 transform
-            ${isFullyBooked || isPastWorkshop
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'btn-primary hover:scale-105'
-            }
-          `}
+          className={`workshop-card-button ${
+            isFullyBooked || isPastWorkshop ? 'disabled' : 'primary'
+          }`}
         >
           {isLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+            <div className="workshops-loading-content">
+              <div className="workshops-loading-spinner"></div>
               Reservando...
             </div>
           ) : isFullyBooked ? (
-            <div className="flex items-center justify-center">
-              <svg className="icon-sm mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <>
+              <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
               Sin Cupos
-            </div>
+            </>
           ) : isPastWorkshop ? (
-            <div className="flex items-center justify-center">
-              <svg className="icon-sm mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <>
+              <svg className="icon-sm" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
               </svg>
               Finalizado
-            </div>
+            </>
           ) : (
-            <div className="flex items-center justify-center">
-              <svg className="icon-sm mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <>
+              <svg className="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
               Reservar {formatPrice(workshop.price)}
-            </div>
+            </>
           )}
         </button>
 
         {/* ID del taller */}
-        <div className="text-center mt-4 pt-3 border-t border-gray-100">
-          <span className="text-xs text-gray-400">ID: #{workshop.id}</span>
+        <div className="workshop-card-id">
+          <span>ID: #{workshop.id}</span>
         </div>
       </div>
 
