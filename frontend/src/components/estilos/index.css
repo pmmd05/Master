@@ -21,6 +21,7 @@
 @import './register.css';
 @import './dashboard.css';
 @import './navbar.css';
+@import './workshops.css';
 
 /* ========================================
    DOCUMENTACIÓN DE USO
@@ -36,6 +37,7 @@
  *    import '../estilos/login.css';
  *    import '../estilos/dashboard.css';
  *    import '../estilos/navbar.css';
+ *    import '../estilos/workshops.css';
  *    ```
  * 
  * 2. CLASES PRINCIPALES DISPONIBLES:
@@ -47,6 +49,8 @@
  *    - .dashboard-container: Contenedor principal del dashboard
  *    - .dashboard-main-content: Contenido principal del dashboard
  *    - .navbar-mastercook: Barra de navegación principal
+ *    - .workshops-container: Contenedor principal de workshops
+ *    - .workshops-main-content: Contenido principal de workshops
  * 
  *    FORMULARIOS:
  *    - .label-field: Etiquetas de campos
@@ -72,6 +76,26 @@
  *    - .dashboard-stats: Sección de estadísticas
  *    - .dashboard-system-info: Información del sistema
  *    - .dashboard-help-info: Información de ayuda
+ * 
+ *    WORKSHOPS:
+ *    - .workshops-header: Header de la página de workshops
+ *    - .workshops-hero: Sección hero de workshops
+ *    - .workshops-search-container: Contenedor de búsqueda
+ *    - .workshops-search-input: Campo de búsqueda
+ *    - .workshops-search-select: Selector de categorías
+ *    - .workshops-search-quick-filter: Filtros rápidos
+ *    - .workshops-grid: Grid de talleres
+ *    - .workshop-card: Tarjeta individual de taller
+ *    - .workshop-card-title: Título del taller
+ *    - .workshop-card-description: Descripción del taller
+ *    - .workshop-card-info: Información del taller (fecha, precio, etc.)
+ *    - .workshop-card-button: Botón de reserva
+ *    - .workshop-card-progress: Barra de progreso de ocupación
+ *    - .workshops-loading: Estado de carga
+ *    - .workshops-error: Estado de error
+ *    - .workshops-empty: Estado vacío
+ *    - .workshops-info-section: Información adicional
+ *    - .workshops-cta-section: Llamada a la acción
  * 
  *    MENSAJES:
  *    - .message-error: Mensajes de error
@@ -145,6 +169,18 @@
  *    - Grid adaptativo para diferentes tamaños de pantalla
  *    - Iconos optimizados para mejor usabilidad
  *    - Espaciado coherente en todos los componentes
+ * 
+ * 8. WORKSHOPS ESPECÍFICO:
+ *    - Diseño coherente con dashboard y login/register
+ *    - Cards de talleres con glassmorphism y hover effects
+ *    - Sistema de búsqueda y filtros intuitivo
+ *    - Indicadores visuales de disponibilidad y estado
+ *    - Responsive design optimizado para todos los dispositivos
+ *    - Barras de progreso animadas para ocupación
+ *    - Estados de loading, error y empty state elegantes
+ *    - Categorías con código de colores y emojis
+ *    - Botones de acción con gradientes y animaciones
+ *    - Información clara de precios, fechas y participantes
  */
 
 /* ========================================
@@ -289,13 +325,16 @@
   .dashboard-nav-card,
   .dashboard-quick-actions,
   .dashboard-stats,
-  .navbar-mastercook {
+  .navbar-mastercook,
+  .workshop-card,
+  .workshops-search-container {
     box-shadow: none !important;
     border: 1px solid #ccc !important;
   }
   
   .btn-primary,
-  .dashboard-help-button-primary {
+  .dashboard-help-button-primary,
+  .workshop-card-button.primary {
     background: #333 !important;
     color: white !important;
   }
@@ -318,14 +357,18 @@
     --color-text-secondary: #444444;
   }
   
-  .input-field {
+  .input-field,
+  .workshops-search-input,
+  .workshops-search-select {
     border-width: 3px;
   }
   
   .btn-primary,
   .dashboard-nav-card,
   .dashboard-quick-action-button,
-  .navbar-link {
+  .navbar-link,
+  .workshop-card,
+  .workshop-card-button {
     border: 2px solid #000;
   }
 }
@@ -348,7 +391,14 @@
   .dashboard-stats,
   .dashboard-system-info,
   .dashboard-help-info,
-  .navbar-mastercook {
+  .navbar-mastercook,
+  .workshops-header,
+  .workshops-hero,
+  .workshops-search-container,
+  .workshop-card,
+  .workshops-list-container,
+  .workshops-info-section,
+  .workshops-cta-section {
     animation: none !important;
   }
 }
@@ -362,7 +412,13 @@
 .dashboard-help-button:focus-visible,
 .navbar-link:focus-visible,
 .navbar-user-menu-button:focus-visible,
-.navbar-mobile-button:focus-visible {
+.navbar-mobile-button:focus-visible,
+.workshop-card:focus-visible,
+.workshops-search-input:focus-visible,
+.workshops-search-select:focus-visible,
+.workshops-search-quick-filter:focus-visible,
+.workshop-card-button:focus-visible,
+.workshops-cta-button:focus-visible {
   outline: 3px solid var(--color-primary);
   outline-offset: 2px;
 }
