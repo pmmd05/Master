@@ -19,7 +19,6 @@ const Dashboard: React.FC = () => {
         </svg>
       ),
       path: '/workshops',
-      emoji: '🍳'
     },
     {
       title: 'Mis Reservas',
@@ -30,70 +29,21 @@ const Dashboard: React.FC = () => {
         </svg>
       ),
       path: '/bookings',
-      emoji: '📅'
     },
     {
-      title: 'Panel de Debug',
-      description: 'Herramientas de diagnóstico y resolución de problemas para una experiencia óptima',
+      title: 'Pagos',
+      description: 'Gestiona tus métodos de pago y revisa el historial de transacciones de tus talleres',
       icon: (
         <svg className="dashboard-nav-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
         </svg>
       ),
-      path: '/debug',
-      emoji: '🔧'
-    },
-  ];
-
-  const quickActions = [
-    { 
-      emoji: '🍳', 
-      text: 'Talleres', 
-      action: () => {
-        console.log('🔄 [DASHBOARD] Navegando a talleres...');
-        navigate('/workshops');
-      }
-    },
-    { 
-      emoji: '📅', 
-      text: 'Reservas', 
-      action: () => {
-        console.log('🔄 [DASHBOARD] Navegando a reservas...');
-        navigate('/bookings');
-      }
-    },
-    { 
-      emoji: '💳', 
-      text: 'Pagos', 
-      action: () => {
-        console.log('🔄 [DASHBOARD] Navegando a pagos...');
-        navigate('/payments');
-      }
-    },
-    { 
-      emoji: '🔧', 
-      text: 'Debug', 
-      action: () => {
-        console.log('🔄 [DASHBOARD] Navegando a panel de debug...');
-        navigate('/debug');
-      }
-    },
-    { 
-      emoji: '🔄', 
-      text: 'Recargar', 
-      action: () => {
-        console.log('🔄 [DASHBOARD] Recargando página...');
-        window.location.reload();
-      }
+      path: '/payment',
     },
   ];
 
   // Obtener solo el primer nombre del usuario
   const firstName = user?.name?.split(' ')[0] || 'Chef';
-  
-  // Estado del token de autenticación
-  const hasValidToken = localStorage.getItem('authToken');
 
   return (
     <div className="dashboard-container">
@@ -152,7 +102,6 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="dashboard-nav-card-title-container">
                   <span className="dashboard-nav-card-emoji" role="img" aria-label={item.title}>
-                    {item.emoji}
                   </span>
                   <h3 className="dashboard-nav-card-title">{item.title}</h3>
                 </div>
@@ -162,34 +111,10 @@ const Dashboard: React.FC = () => {
           ))}
         </section>
 
-        {/* Acciones rápidas */}
-        <section className="dashboard-quick-actions">
-          <h3 className="dashboard-section-title">
-            <span className="dashboard-section-title-emoji" role="img" aria-label="Acciones rápidas">⚡</span>
-            Acciones Rápidas
-          </h3>
-          <div className="dashboard-quick-actions-grid">
-            {quickActions.map((action, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={action.action}
-                className="dashboard-quick-action-button"
-                aria-label={action.text}
-              >
-                <span className="dashboard-quick-action-emoji" role="img" aria-label={action.text}>
-                  {action.emoji}
-                </span>
-                <span className="dashboard-quick-action-text">{action.text}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
         {/* Estadísticas de usuario */}
         <section className="dashboard-stats">
           <h3 className="dashboard-section-title">
-            <span className="dashboard-section-title-emoji" role="img" aria-label="Estadísticas">📊</span>
+            <span className="dashboard-section-title-emoji" role="img" aria-label="Estadísticas"></span>
             Tu Progreso en MasterCook
           </h3>
           <div className="dashboard-stats-grid">
@@ -211,44 +136,6 @@ const Dashboard: React.FC = () => {
           </div>
         </section>
 
-        {/* Información de estado del sistema */}
-        <section className="dashboard-system-info">
-          <h3 className="dashboard-system-info-title">
-            <span className="dashboard-system-info-title-emoji" role="img" aria-label="Información">ℹ️</span>
-            Estado del Sistema
-          </h3>
-          <div className="dashboard-system-info-content">
-            <div className="dashboard-system-info-item">
-              <span className="dashboard-system-info-bullet">•</span>
-              <span><strong>Usuario:</strong> {user?.email} (ID: {user?.id})</span>
-            </div>
-            <div className="dashboard-system-info-item">
-              <span className="dashboard-system-info-bullet">•</span>
-              <span>
-                <strong>Token:</strong> {hasValidToken ? '✅ Activo' : '❌ No disponible'}
-              </span>
-            </div>
-            <div className="dashboard-system-info-item">
-              <span className="dashboard-system-info-bullet">•</span>
-              <span><strong>Dashboard:</strong> 🟢 Funcionando</span>
-            </div>
-            <div className="dashboard-system-info-item">
-              <span className="dashboard-system-info-bullet">•</span>
-              <span>
-                <strong>Panel de Debug:</strong>{' '}
-                <button
-                  type="button"
-                  onClick={() => navigate('/debug')}
-                  className="dashboard-system-info-link"
-                  aria-label="Ir al panel de debug"
-                >
-                  Acceder aquí
-                </button>
-              </span>
-            </div>
-          </div>
-        </section>
-
         {/* Información de ayuda */}
         <section className="dashboard-help-info">
           <h3 className="dashboard-help-info-title">
@@ -256,20 +143,18 @@ const Dashboard: React.FC = () => {
             ¿Necesitas Ayuda?
           </h3>
           <p className="dashboard-help-info-description">
-            Si experimentas problemas técnicos con las reservas o pagos, tenemos herramientas de diagnóstico disponibles para ayudarte.
+            Si tienes dudas sobre nuestros talleres, reservas o pagos, estamos aquí para ayudarte a tener la mejor experiencia culinaria.
+          </p>
+          <p className="dashboard-help-info-description">
+            Contactanos por correo electrónico o por WhatsApp y te responderemos lo antes posible.
+          </p>
+          <p className="dashboard-correo">
+            Correo: mastercookinfo@gmail.com
+          </p>
+          <p className="dashboard-numero">
+            WhatsApp: +502 3003-9839
           </p>
           <div className="dashboard-help-buttons">
-            <button 
-              type="button"
-              onClick={() => {
-                console.log('🔧 [DASHBOARD] Abriendo panel de debug...');
-                navigate('/debug');
-              }}
-              className="dashboard-help-button dashboard-help-button-secondary"
-              aria-label="Abrir panel de debug"
-            >
-              🔧 Panel de Debug
-            </button>
             <button 
               type="button"
               onClick={() => {
@@ -280,17 +165,6 @@ const Dashboard: React.FC = () => {
               aria-label="Recargar página"
             >
               🔄 Recargar Página
-            </button>
-            <button 
-              type="button"
-              onClick={() => {
-                console.log('🍳 [DASHBOARD] Navegando a talleres...');
-                navigate('/workshops');
-              }}
-              className="dashboard-help-button dashboard-help-button-primary"
-              aria-label="Ver talleres disponibles"
-            >
-              🍳 Ver Talleres
             </button>
           </div>
         </section>
