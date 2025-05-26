@@ -1,4 +1,4 @@
-// frontend/src/components/BookingPage.tsx - INTEGRACIÓN COMPLETA CON API
+// frontend/src/components/BookingPage.tsx - INTEGRACIÓN COMPLETA CON API Y MODALES UNIFICADOS
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../context/AuthContext';
@@ -243,13 +243,13 @@ const BookingsPageContent: React.FC = () => {
       
       if (error.message) {
         if (error.message.includes('conexión') || error.message.includes('network')) {
-          errorMessage = 'Error de conexión. Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo.';
+          errorMessage = 'Error de conexión. Todo estaba listo para reservar... pero el chef de los microservicios dijo "Hoy no cocino". Vuelve cuando recupere el ánimo.';
         } else if (error.message.includes('404')) {
           errorMessage = 'La reserva no existe o ya fue cancelada.';
         } else if (error.message.includes('403') || error.message.includes('unauthorized')) {
           errorMessage = 'No tienes permisos para cancelar esta reserva.';
         } else if (error.message.includes('500')) {
-          errorMessage = 'Error del servidor. Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo.';
+          errorMessage = 'Error del servidor. Todo estaba listo para reservar... pero el chef de los microservicios dijo "Hoy no cocino". Vuelve cuando recupere el ánimo.';
         } else {
           errorMessage = error.message;
         }
@@ -540,65 +540,70 @@ const BookingsPageContent: React.FC = () => {
         </div>
       </div>
 
-      {/* MODALES */}
+      {/* ========================================
+          MODALES UNIFICADOS
+          ======================================== */}
       
       {/* Modal de detalles */}
       {showDetailsModal && selectedBooking && (
-        <div className="booking-details-modal-overlay" onClick={closeModals}>
-          <div className="booking-details-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="booking-details-modal-header">
-              <div className="booking-details-modal-info-icon">
+        <div className="booking-modal-overlay" onClick={closeModals}>
+          <div className="booking-modal details-modal" onClick={(e) => e.stopPropagation()}>
+            
+            {/* Header */}
+            <div className="booking-modal-header">
+              <div className="booking-modal-header-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="booking-details-modal-header-content">
-                <h3 className="booking-details-modal-title">
+              <div className="booking-modal-header-content">
+                <h3 className="booking-modal-title">
                   Detalles de la Reserva
                 </h3>
-                <p className="booking-details-modal-subtitle">
+                <p className="booking-modal-subtitle">
                   Reserva #{selectedBooking.id}
                 </p>
               </div>
             </div>
             
-            <div className="booking-details-modal-content">
+            {/* Contenido */}
+            <div className="booking-modal-content">
               
               {/* Estado de la reserva */}
-              <div className="booking-details-section">
-                <h4 className="booking-details-section-title">Estado de la Reserva</h4>
-                <div className="booking-details-list">
-                  <div className="booking-details-item">
-                    <span className="booking-details-item-label">Estado:</span>
-                    <span className="booking-details-item-value">{selectedBooking.status}</span>
+              <div className="booking-modal-section">
+                <h4 className="booking-modal-section-title">Estado de la Reserva</h4>
+                <div className="booking-modal-list">
+                  <div className="booking-modal-item">
+                    <span className="booking-modal-item-label">Estado:</span>
+                    <span className="booking-modal-item-value">{selectedBooking.status}</span>
                   </div>
-                  <div className="booking-details-item">
-                    <span className="booking-details-item-label">Pago:</span>
-                    <span className="booking-details-item-value">{selectedBooking.payment_status}</span>
+                  <div className="booking-modal-item">
+                    <span className="booking-modal-item-label">Pago:</span>
+                    <span className="booking-modal-item-value">{selectedBooking.payment_status}</span>
                   </div>
-                  <div className="booking-details-item">
-                    <span className="booking-details-item-label">Email:</span>
-                    <span className="booking-details-item-value">{selectedBooking.user_email}</span>
+                  <div className="booking-modal-item">
+                    <span className="booking-modal-item-label">Email:</span>
+                    <span className="booking-modal-item-value">{selectedBooking.user_email}</span>
                   </div>
                 </div>
               </div>
 
               {/* Información del taller */}
               {selectedBooking.workshop && (
-                <div className="booking-details-section">
-                  <h4 className="booking-details-section-title">Información del Taller</h4>
-                  <div className="booking-details-list">
-                    <div className="booking-details-item">
-                      <span className="booking-details-item-label">Taller:</span>
-                      <span className="booking-details-item-value">{selectedBooking.workshop.title}</span>
+                <div className="booking-modal-section">
+                  <h4 className="booking-modal-section-title">Información del Taller</h4>
+                  <div className="booking-modal-list">
+                    <div className="booking-modal-item">
+                      <span className="booking-modal-item-label">Taller:</span>
+                      <span className="booking-modal-item-value">{selectedBooking.workshop.title}</span>
                     </div>
-                    <div className="booking-details-item">
-                      <span className="booking-details-item-label">Categoría:</span>
-                      <span className="booking-details-item-value">{selectedBooking.workshop.category}</span>
+                    <div className="booking-modal-item">
+                      <span className="booking-modal-item-label">Categoría:</span>
+                      <span className="booking-modal-item-value">{selectedBooking.workshop.category}</span>
                     </div>
-                    <div className="booking-details-item">
-                      <span className="booking-details-item-label">Fecha:</span>
-                      <span className="booking-details-item-value">
+                    <div className="booking-modal-item">
+                      <span className="booking-modal-item-label">Fecha:</span>
+                      <span className="booking-modal-item-value">
                         {(() => {
                           try {
                             return new Date(selectedBooking.workshop.date).toLocaleDateString('es-ES', {
@@ -613,9 +618,9 @@ const BookingsPageContent: React.FC = () => {
                         })()}
                       </span>
                     </div>
-                    <div className="booking-details-item">
-                      <span className="booking-details-item-label">Precio:</span>
-                      <span className="booking-details-item-value">
+                    <div className="booking-modal-item">
+                      <span className="booking-modal-item-label">Precio:</span>
+                      <span className="booking-modal-item-value">
                         {(() => {
                           try {
                             return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price);
@@ -625,9 +630,9 @@ const BookingsPageContent: React.FC = () => {
                         })()}
                       </span>
                     </div>
-                    <div className="booking-details-item">
-                      <span className="booking-details-item-label">Participantes:</span>
-                      <span className="booking-details-item-value">
+                    <div className="booking-modal-item">
+                      <span className="booking-modal-item-label">Participantes:</span>
+                      <span className="booking-modal-item-value">
                         {selectedBooking.workshop.current_participants || 0}/{selectedBooking.workshop.max_participants || 0}
                       </span>
                     </div>
@@ -635,12 +640,12 @@ const BookingsPageContent: React.FC = () => {
                 </div>
               )}
 
+              {/* Botón cerrar */}
               <button
                 onClick={closeModals}
                 disabled={isProcessing}
-                className="booking-details-modal-close"
+                className="booking-modal-close"
               >
-                
                 Cerrar
               </button>
             </div>
@@ -650,43 +655,46 @@ const BookingsPageContent: React.FC = () => {
 
       {/* Modal de cancelación */}
       {showCancelModal && selectedBooking && (
-        <div className="booking-cancel-modal-overlay" onClick={() => !isProcessing && closeModals()}>
-          <div className="booking-cancel-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="booking-cancel-modal-header">
-              <div className="booking-cancel-modal-warning-icon">
+        <div className="booking-modal-overlay" onClick={() => !isProcessing && closeModals()}>
+          <div className="booking-modal cancel-modal" onClick={(e) => e.stopPropagation()}>
+            
+            {/* Header */}
+            <div className="booking-modal-header">
+              <div className="booking-modal-header-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                 </svg>
               </div>
-              <div className="booking-cancel-modal-header-content">
-                <h3 className="booking-cancel-modal-title">
+              <div className="booking-modal-header-content">
+                <h3 className="booking-modal-title">
                   Cancelar Reserva
                 </h3>
-                <p className="booking-cancel-modal-subtitle">
+                <p className="booking-modal-subtitle">
                   Esta acción no se puede deshacer
                 </p>
               </div>
             </div>
             
-            <div className="booking-cancel-modal-content">
+            {/* Contenido */}
+            <div className="booking-modal-content">
               
               {/* Información del taller a cancelar */}
-              <div className="booking-cancel-modal-workshop-info">
-                <h4 className="booking-cancel-modal-workshop-title">
+              <div className="booking-modal-section">
+                <h4 className="booking-modal-section-title">
                   Estás a punto de cancelar:
                 </h4>
-                <div className="booking-cancel-modal-workshop-details">
-                  <div className="booking-cancel-modal-workshop-detail">
-                    <span className="booking-cancel-modal-detail-label">Taller:</span>
-                    <span className="booking-cancel-modal-detail-value">
+                <div className="booking-modal-list">
+                  <div className="booking-modal-item">
+                    <span className="booking-modal-item-label">Taller:</span>
+                    <span className="booking-modal-item-value">
                       {selectedBooking.workshop?.title || `Taller ${selectedBooking.workshop_id}`}
                     </span>
                   </div>
                   {selectedBooking.workshop && (
                     <>
-                      <div className="booking-cancel-modal-workshop-detail">
-                        <span className="booking-cancel-modal-detail-label">Fecha:</span>
-                        <span className="booking-cancel-modal-detail-value">
+                      <div className="booking-modal-item">
+                        <span className="booking-modal-item-label">Fecha:</span>
+                        <span className="booking-modal-item-value">
                           {(() => {
                             try {
                               return new Date(selectedBooking.workshop.date).toLocaleDateString('es-ES', {
@@ -701,9 +709,9 @@ const BookingsPageContent: React.FC = () => {
                           })()}
                         </span>
                       </div>
-                      <div className="booking-cancel-modal-workshop-detail">
-                        <span className="booking-cancel-modal-detail-label">Precio:</span>
-                        <span className="booking-cancel-modal-detail-value">
+                      <div className="booking-modal-item">
+                        <span className="booking-modal-item-label">Precio:</span>
+                        <span className="booking-modal-item-value">
                           {(() => {
                             try {
                               return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price);
@@ -715,37 +723,38 @@ const BookingsPageContent: React.FC = () => {
                       </div>
                     </>
                   )}
-                  <div className="booking-cancel-modal-workshop-detail">
-                    <span className="booking-cancel-modal-detail-label">Reserva ID:</span>
-                    <span className="booking-cancel-modal-detail-value">#{selectedBooking.id}</span>
+                  <div className="booking-modal-item">
+                    <span className="booking-modal-item-label">Reserva ID:</span>
+                    <span className="booking-modal-item-value">#{selectedBooking.id}</span>
                   </div>
                 </div>
               </div>
 
               {/* Advertencia */}
-              <div className="booking-cancel-modal-warning">
-                <div className="booking-cancel-modal-warning-content">
-                  <svg className="booking-cancel-modal-warning-icon-small" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="booking-modal-warning">
+                <div className="booking-modal-warning-content">
+                  <svg className="booking-modal-warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                   </svg>
-                  <div className="booking-cancel-modal-warning-text">
-                    <h5 className="booking-cancel-modal-warning-title">
+                  <div className="booking-modal-warning-text">
+                    <h5 className="booking-modal-warning-title">
                       ¿Estás seguro?
                     </h5>
-                    <p className="booking-cancel-modal-warning-description">
+                    <p className="booking-modal-warning-description">
                       Una vez cancelada, no podrás recuperar esta reserva. Tendrás que hacer una nueva reserva si cambias de opinión.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="booking-cancel-modal-actions">
+              {/* Acciones */}
+              <div className="booking-modal-actions">
                 <button
                   onClick={closeModals}
                   disabled={isProcessing}
-                  className="booking-cancel-modal-button keep"
+                  className="booking-modal-button keep"
                 >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '14px', height: '14px' }}>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                   No, mantener reserva
@@ -753,16 +762,16 @@ const BookingsPageContent: React.FC = () => {
                 <button
                   onClick={confirmCancel}
                   disabled={isProcessing}
-                  className="booking-cancel-modal-button confirm"
+                  className="booking-modal-button confirm"
                 >
                   {isProcessing ? (
                     <>
-                      <div className="booking-loading-spinner" style={{width: '1rem', height: '1rem'}}></div>
+                      <div className="booking-modal-spinner"></div>
                       Cancelando...
                     </>
                   ) : (
                     <>
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '14px', height: '14px' }}>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                       Sí, cancelar reserva

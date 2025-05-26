@@ -205,6 +205,12 @@
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: var(--spacing-md);
   margin-top: var(--spacing-lg);
+  justify-content: center;
+  align-content: center;
+
+  /* Centra el contenido de cada celda */
+  justify-items: center;
+  align-items: center;
 }
 
 .workshops-hero-feature {
