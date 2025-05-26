@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/api';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import './estilos/register.css';
 
@@ -25,11 +26,12 @@ const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
 
-  const { register } = useAuth();
+  const { login } = useAuth(); // Solo usamos login, no register
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +39,7 @@ const Register: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
     if (error) setError('');
     if (success) setSuccess('');
+    if (name === 'email' && emailError) setEmailError('');
   };
 
   const validatePassword = (password: string): string[] => {
@@ -58,29 +61,120 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(''); setSuccess(''); setDebugInfo(null); setIsLoading(true);
+    setError(''); setSuccess(''); setEmailError(''); setDebugInfo(null); setIsLoading(true);
+    
     try {
-      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) throw new Error('Por favor, completa todos los campos');
-      if (!formData.email.includes('@')) throw new Error('Por favor, ingresa un email válido');
-      if (formData.name.length < 2) throw new Error('El nombre debe tener al menos 2 caracteres');
+      // Validaciones locales
+      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        throw new Error('Por favor, completa todos los campos');
+      }
+      if (!formData.email.includes('@')) {
+        throw new Error('Por favor, ingresa un email válido');
+      }
+      if (formData.name.length < 2) {
+        throw new Error('El nombre debe tener al menos 2 caracteres');
+      }
       const pwErrors = validatePassword(formData.password);
-      if (pwErrors.length) throw new Error(`La contraseña: ${pwErrors.join(', ')}`);
-      if (formData.password !== formData.confirmPassword) throw new Error('Las contraseñas no coinciden');
+      if (pwErrors.length) {
+        throw new Error(`La contraseña: ${pwErrors.join(', ')}`);
+      }
+      if (formData.password !== formData.confirmPassword) {
+        throw new Error('Las contraseñas no coinciden');
+      }
 
-      const result = await register({ name: formData.name, email: formData.email, password: formData.password });
-      setDebugInfo({ step: 'register', success: result, timestamp: new Date().toLocaleTimeString() });
-      if (result) {
-        setSuccess('¡Registro exitoso! Redirigiendo al dashboard...');
-        setTimeout(() => navigate('/dashboard'), 1500);
-      } else throw new Error('El registro falló. Por favor intenta nuevamente.');
+      console.log('🔄 [REGISTER] Iniciando registro directo con API...');
+
+      // NUEVO: Usar authService directamente en lugar del AuthContext
+      const registerResponse = await authService.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+
+      console.log('✅ [REGISTER] Registro exitoso:', registerResponse);
+      
+      // Mostrar mensaje de éxito
+      setSuccess('¡Registro exitoso! Iniciando sesión automáticamente...');
+      setDebugInfo({ 
+        step: 'register_success', 
+        response: registerResponse,
+        timestamp: new Date().toLocaleTimeString() 
+      });
+
+      // Esperar un momento para que el usuario vea el mensaje
+      setTimeout(async () => {
+        try {
+          console.log('🔄 [REGISTER] Iniciando login automático...');
+          
+          // Hacer login automático usando el AuthContext
+          const loginSuccess = await login(formData.email, formData.password);
+          
+          if (loginSuccess) {
+            console.log('✅ [REGISTER] Login automático exitoso');
+            setSuccess('¡Bienvenido! Redirigiendo al dashboard...');
+            setTimeout(() => navigate('/dashboard'), 1000);
+          } else {
+            console.log('⚠️ [REGISTER] Login automático falló, redirigiendo a login');
+            setSuccess('Registro exitoso. Por favor, inicia sesión.');
+            setTimeout(() => navigate('/login'), 2000);
+          }
+          
+        } catch (loginError: any) {
+          console.error('❌ [REGISTER] Error en login automático:', loginError);
+          setSuccess('Registro exitoso. Por favor, inicia sesión manualmente.');
+          setTimeout(() => navigate('/login'), 2000);
+        }
+      }, 1000);
+      
     } catch (err: any) {
+      console.error('❌ [REGISTER] Error en registro:', err);
+      console.log('📋 [REGISTER] Mensaje de error completo:', err.message);
+      
       let msg = err.message || 'Error desconocido';
-      if (/ya registrado|already/.test(msg)) msg = 'Este email ya está registrado. Intenta con otro email o ve al login.';
-      else if (/connection|network/.test(msg)) msg = 'Error de conexión. Verifica que el servidor esté funcionando.';
-      else if (/timeout/.test(msg)) msg = 'El servidor tardó demasiado en responder. Intenta nuevamente.';
-      setError(msg);
-      setDebugInfo({ step: 'error', error: err, message: msg, timestamp: new Date().toLocaleTimeString() });
-    } finally { setIsLoading(false); }
+      
+      // Debugging: mostrar el mensaje completo
+      console.log('🔍 [REGISTER] Analizando mensaje:', msg);
+      
+      // Detectar si es un error de email ya registrado (regex más amplio)
+      const isEmailError = /ya registrado|already|UNIQUE|duplicate|correo|email.*exist|409|Correo ya registrado/i.test(msg);
+      
+      console.log('🎯 [REGISTER] ¿Es error de email?', isEmailError);
+      
+      if (isEmailError) {
+        console.log('📧 [REGISTER] Mostrando error de email duplicado');
+        setEmailError('Este correo ya ha sido registrado. Intente nuevamente con uno diferente.');
+        setDebugInfo({ 
+          step: 'email_error', 
+          error: err, 
+          originalMessage: msg,
+          detectedAs: 'Email duplicado', 
+          timestamp: new Date().toLocaleTimeString() 
+        });
+      } else {
+        console.log('⚠️ [REGISTER] Mostrando error general');
+        // Otros errores van al error general
+        if (/connection|network/i.test(msg)) {
+          msg = 'Error de conexión. Verifica que el servidor esté funcionando.';
+        } else if (/timeout/i.test(msg)) {
+          msg = 'El servidor tardó demasiado en responder. Intenta nuevamente.';
+        } else if (/500|internal server/i.test(msg)) {
+          msg = 'Error del servidor. Intenta nuevamente en unos minutos.';
+        }
+        
+        setError(msg);
+        setDebugInfo({ 
+          step: 'general_error', 
+          error: err, 
+          originalMessage: err.message,
+          processedMessage: msg, 
+          timestamp: new Date().toLocaleTimeString() 
+        });
+      }
+      
+    } finally { 
+      setIsLoading(false); 
+      console.log('🏁 [REGISTER] Proceso completado');
+    }
   };
 
   const passwordStrength = getPasswordStrength(formData.password);
@@ -139,6 +233,14 @@ const Register: React.FC = () => {
                 onChange={handleChange} 
                 disabled={isLoading} 
               />
+              
+              {/* Error específico del email */}
+              {emailError && (
+                <div className="email-error-message slide-in">
+                  <span className="email-error-icon">❌</span>
+                  <span className="email-error-text">{emailError}</span>
+                </div>
+              )}
             </div>
 
             {/* Campo Contraseña */}
@@ -258,6 +360,8 @@ const Register: React.FC = () => {
               </Link>
             </div>
           </form>
+
+         
         </div>
       </div>
     </div>

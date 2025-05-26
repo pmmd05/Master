@@ -58,6 +58,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
+  // ✅ CORREGIDO: Ahora lanza excepciones para que los componentes puedan capturar errores
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       console.log('🚀 [AUTH] Iniciando login para:', email);
@@ -95,7 +96,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       
-      return false;
+      // ✅ CAMBIO PRINCIPAL: Lanzar excepción con mensaje específico
+      let errorMessage = 'Error desconocido al iniciar sesión';
+      
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Personalizar mensajes comunes de login
+      if (errorMessage.includes('Credenciales inválidas') || 
+          errorMessage.includes('Invalid credentials') ||
+          errorMessage.includes('401') ||
+          errorMessage.includes('Unauthorized')) {
+        errorMessage = 'Correo o contraseña incorrectos, intente de nuevo';
+      } else if (errorMessage.includes('Usuario no encontrado') || 
+                 errorMessage.includes('User not found')) {
+        errorMessage = 'Este correo no está registrado. Verifique el correo o regístrese';
+      } else if (errorMessage.includes('conexión') || 
+                 errorMessage.includes('network') || 
+                 errorMessage.includes('timeout')) {
+        errorMessage = 'Error de conexión. Verifique su internet e intente nuevamente';
+      } else if (errorMessage.includes('500') || 
+                 errorMessage.includes('Internal Server')) {
+        errorMessage = 'Error del servidor. Intente nuevamente en unos minutos';
+      }
+      
+      // ✅ LANZAR EXCEPCIÓN para que el componente Login pueda capturarla
+      throw new Error(errorMessage);
+      
     } finally {
       setLoading(false);
     }
@@ -126,13 +156,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (error: any) {
       console.error('❌ [AUTH] Error en registro:', error);
       
-      // Mejor manejo de errores específicos
+      // ✅ MEJORAR manejo de errores específicos de registro
       let errorMessage = 'Error desconocido en el registro';
       
-      if (error.message) {
-        errorMessage = error.message;
-      } else if (error.response?.data?.detail) {
+      if (error.response?.data?.detail) {
         errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Personalizar mensajes específicos de registro
+      if (errorMessage.includes('ya registrado') || 
+          errorMessage.includes('already registered') ||
+          errorMessage.includes('UNIQUE constraint') ||
+          errorMessage.includes('409') ||
+          errorMessage.includes('Correo ya registrado')) {
+        errorMessage = 'Este correo ya ha sido registrado antes. Intente con otro correo o vaya al login';
+      } else if (errorMessage.includes('contraseña') && errorMessage.includes('mayúscula')) {
+        errorMessage = 'La contraseña debe tener al menos una mayúscula, una minúscula y un número';
+      } else if (errorMessage.includes('email') && errorMessage.includes('invalid')) {
+        errorMessage = 'Por favor ingrese un correo electrónico válido';
+      } else if (errorMessage.includes('conexión') || 
+                 errorMessage.includes('network') || 
+                 errorMessage.includes('timeout')) {
+        errorMessage = 'Error de conexión. Verifique su internet e intente nuevamente';
+      } else if (errorMessage.includes('500') || 
+                 errorMessage.includes('Internal Server')) {
+        errorMessage = 'Error del servidor. Intente nuevamente en unos minutos';
       }
       
       console.error('📋 [AUTH] Mensaje de error detallado:', errorMessage);
@@ -188,8 +238,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     loading,
-    // Agregar función de debug (temporal)
-    //getDebugInfo: getDebugInfo as any
   };
 
   return (

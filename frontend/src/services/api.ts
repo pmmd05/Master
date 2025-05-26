@@ -1,4 +1,4 @@
-// frontend/src/services/api.ts - CON CANCELACIÓN DE RESERVAS
+// frontend/src/services/api.ts - CON INTERCEPTOR MEJORADO
 
 import axios, { AxiosResponse } from 'axios';
 import { 
@@ -34,7 +34,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor para manejar errores de respuesta
+// ✅ INTERCEPTOR MEJORADO: No redirigir durante login/register
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -47,14 +47,27 @@ api.interceptors.response.use(
       message: error.message
     });
 
+    // ✅ CAMBIO IMPORTANTE: Solo limpiar token y redirigir si NO es una operación de auth
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
+      const isAuthOperation = error.config?.url?.includes('/auth/login') || 
+                             error.config?.url?.includes('/auth/register') ||
+                             error.config?.url?.includes('/auth/profile');
       
-      // Solo redirigir si no estamos ya en login/register
-      const currentPath = window.location.pathname;
-      if (!currentPath.includes('/login') && !currentPath.includes('/register') && !currentPath.includes('/debug')) {
-        window.location.href = '/login';
+      if (!isAuthOperation) {
+        // Solo limpiar y redirigir si no es login/register
+        console.log('🔒 [API] Token inválido en operación protegida, limpiando sesión...');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        
+        // Solo redirigir si no estamos ya en login/register
+        const currentPath = window.location.pathname;
+        if (!currentPath.includes('/login') && !currentPath.includes('/register') && !currentPath.includes('/debug')) {
+          console.log('🔄 [API] Redirigiendo a login...');
+          window.location.href = '/login';
+        }
+      } else {
+        // Es una operación de auth que falló, NO limpiar ni redirigir
+        console.log('⚠️ [API] Error 401 en operación de autenticación, dejando que el componente lo maneje');
       }
     }
     
@@ -76,7 +89,23 @@ export const authService = {
       return response.data;
     } catch (error: any) {
       console.error('[API] Error en registro:', error.response?.data);
-      const errorMessage = error.response?.data?.detail || error.message || 'Error en el registro';
+      
+      // ✅ MEJORAR manejo de errores específicos
+      let errorMessage = 'Error en el registro';
+      
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Normalizar mensajes comunes
+      if (errorMessage.includes('409') || errorMessage.includes('Correo ya registrado')) {
+        errorMessage = 'Este correo ya ha sido registrado antes';
+      } else if (errorMessage.includes('400') && errorMessage.includes('password')) {
+        errorMessage = 'La contraseña debe tener al menos una mayúscula, una minúscula y un número';
+      }
+      
       throw new Error(errorMessage);
     }
   },
@@ -105,7 +134,23 @@ export const authService = {
       return response.data;
     } catch (error: any) {
       console.error('[API] Error en login:', error.response?.data);
-      const errorMessage = error.response?.data?.detail || error.message || 'Error en el login';
+      
+      // ✅ MEJORAR manejo de errores específicos
+      let errorMessage = 'Error en el login';
+      
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Normalizar mensajes de login
+      if (errorMessage.includes('401') || errorMessage.includes('Credenciales inválidas')) {
+        errorMessage = 'Correo o contraseña incorrectos';
+      } else if (errorMessage.includes('User not found') || errorMessage.includes('Usuario no encontrado')) {
+        errorMessage = 'Este correo no está registrado';
+      }
+      
       throw new Error(errorMessage);
     }
   },

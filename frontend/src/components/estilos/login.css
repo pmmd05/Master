@@ -141,6 +141,7 @@
   border-radius: var(--border-radius-lg);
   transition: all var(--transition-normal);
   background: rgba(255, 255, 255, 0.9);
+  width: 100%;
 }
 
 .login-field-group .input-field:focus {
@@ -150,6 +151,19 @@
     var(--shadow-md);
   background: white;
   transform: translateY(-1px);
+}
+
+/* ✅ NUEVO: Estado de error para inputs */
+.login-field-group .input-error {
+  border-color: #DC2626 !important;
+  background: rgba(254, 242, 242, 0.8) !important;
+}
+
+.login-field-group .input-error:focus {
+  border-color: #DC2626 !important;
+  box-shadow: 
+    0 0 0 3px rgba(220, 38, 38, 0.1),
+    var(--shadow-md) !important;
 }
 
 /* Botón de Login */
@@ -164,6 +178,13 @@
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
 }
 
 .login-button:hover:not(:disabled) {
@@ -174,6 +195,12 @@
 
 .login-button:active:not(:disabled) {
   transform: translateY(-1px);
+}
+
+.login-button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .login-button::before {
@@ -191,25 +218,72 @@
   left: 100%;
 }
 
-/* Mensaje de Error en Login */
+/* ✅ MEJORADO: Mensaje de Error en Login */
 .login-error {
   background: linear-gradient(135deg, #FEF2F2, #FDF2F8);
   border: 1px solid #FECACA;
-  color: #DC2626;
+  border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
   margin-bottom: var(--spacing-lg);
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-md);
   animation: slideIn var(--transition-normal) ease-out;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.1);
 }
 
 .login-error-icon {
   color: #DC2626;
   font-size: var(--font-size-lg);
   margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.login-error-content {
+  flex: 1;
+  color: #DC2626;
+}
+
+.login-error-title {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-xs);
+  color: #B91C1C;
+}
+
+.login-error-message {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre-line;
+  font-family: inherit;
+  color: #DC2626;
+}
+
+.login-error-dismiss {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: none;
+  border: none;
+  color: #B91C1C;
+  font-size: var(--font-size-lg);
+  font-weight: bold;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-fast);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-error-dismiss:hover {
+  background: rgba(185, 28, 28, 0.1);
+  color: #991B1B;
 }
 
 /* Texto de Ayuda en Login */
@@ -248,28 +322,25 @@
   width: 100%;
 }
 
-/* Estados de Carga */
+/* ✅ MEJORADO: Estados de Carga */
 .login-loading {
   position: relative;
+  opacity: 0.9;
 }
 
-.login-loading::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border: 2px solid transparent;
+.login-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-top: 2px solid white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  display: inline-block;
 }
 
 @keyframes spin {
   to {
-    transform: translate(-50%, -50%) rotate(360deg);
+    transform: rotate(360deg);
   }
 }
 
@@ -310,6 +381,14 @@
     padding: var(--spacing-lg) var(--spacing-xl);
     font-size: var(--font-size-base);
   }
+
+  .login-error {
+    padding: var(--spacing-md);
+  }
+
+  .login-error-message {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -329,6 +408,11 @@
   .login-field-group .label-field {
     font-size: var(--font-size-sm);
   }
+
+  .login-error {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
 }
 
 /* Efectos Adicionales */
@@ -345,4 +429,27 @@
 
 input, button {
   transition: all var(--transition-normal);
+}
+
+/* ✅ ANIMACIONES MEJORADAS */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

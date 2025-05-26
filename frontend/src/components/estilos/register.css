@@ -215,6 +215,32 @@
   animation: slideIn var(--transition-normal) ease-out;
 }
 
+/* Mensaje de Error del Email */
+.email-error-message {
+  margin-top: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, #FEF2F2, #FDF2F8);
+  border: 1px solid #FECACA;
+  border-radius: var(--border-radius-sm);
+  animation: slideIn var(--transition-normal) ease-out;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+}
+
+.email-error-icon {
+  font-size: var(--font-size-sm);
+  color: #DC2626;
+}
+
+.email-error-text {
+  font-size: var(--font-size-xs);
+  color: #DC2626;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 .password-strength-bar-container {
   flex: 1;
   height: 8px;
@@ -474,6 +500,10 @@
     font-size: 10px;
     min-width: 60px;
   }
+  
+  .email-error-text {
+    font-size: 11px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -491,6 +521,14 @@
   
   .register-field-group .label-field {
     font-size: var(--font-size-sm);
+  }
+  
+  .email-error-message {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .email-error-text {
+    font-size: 10px;
   }
 }
 
@@ -514,4 +552,36 @@
 
 .password-field-container:focus-within .password-strength-indicator {
   transform: scale(1);
+}
+
+/* Animaciones adicionales */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
