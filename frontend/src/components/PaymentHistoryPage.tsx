@@ -260,7 +260,7 @@ const PaymentHistoryPage: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <h3 className="payment-history-error-title">Error al cargar el historial</h3>
-            <p className="payment-history-error-message">{error}</p>
+            <p className="payment-history-error-message">Error de conexión. Solo el backend conoce la receta del historial. Lástima que se tomó el día libre.  </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={handleRetry} className="payment-history-error-button">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
