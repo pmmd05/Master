@@ -1,10 +1,12 @@
-// frontend/src/components/BookingPage.tsx - INTEGRACIÓN COMPLETA CON API Y MODALES UNIFICADOS
+// frontend/src/components/BookingPage.tsx - CON SISTEMA DE TOASTS INTEGRADO
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import { useAuth } from '../context/AuthContext';
 import { BookingsProvider, useBookings } from '../context/BookingsContext';
+import { ToastProvider, useBookingToasts } from './toastcontainer';
 import BookingCard from './BookingCard';
-import './estilos/bookings.css'; // Corregida la ruta de estilos
+import './estilos/bookings.css';
+import './estilos/toast.css';
 import { Booking, Workshop } from '../types';
 import Navbar from './Navbar';
 
@@ -15,6 +17,7 @@ interface BookingWithWorkshop extends Booking {
 const BookingsPageContent: React.FC = () => {
   const { user } = useAuth();
   const { bookings, loading, error, refreshBookings, cancelBooking } = useBookings();
+  const { showBookingCancelled, showBookingError } = useBookingToasts();
   const navigate = useNavigate(); 
   const [selectedBooking, setSelectedBooking] = useState<BookingWithWorkshop | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -98,18 +101,18 @@ const BookingsPageContent: React.FC = () => {
     console.log('🔄 [BOOKINGS] Iniciando pago para reserva:', booking.id);
     
     if (!booking.workshop) {
-      alert('No se pueden cargar los detalles del taller para procesar el pago');
+      showBookingError('No se pueden cargar los detalles del taller para procesar el pago');
       return;
     }
     
     // Verificaciones adicionales
     if (booking.payment_status === 'Pagado') {
-      alert('Esta reserva ya ha sido pagada');
+      showBookingError('Esta reserva ya ha sido pagada');
       return;
     }
     
     if (booking.status !== 'Confirmada') {
-      alert('Solo se pueden pagar reservas confirmadas');
+      showBookingError('Solo se pueden pagar reservas confirmadas');
       return;
     }
     
@@ -119,7 +122,7 @@ const BookingsPageContent: React.FC = () => {
       today.setHours(0, 0, 0, 0);
       
       if (workshopDate < today) {
-        alert('No se puede pagar un taller que ya ha finalizado');
+        showBookingError('No se puede pagar un taller que ya ha finalizado');
         return;
       }
       
@@ -148,7 +151,7 @@ const BookingsPageContent: React.FC = () => {
       
     } catch (error) {
       console.error('Error procesando fecha del taller:', error);
-      alert('Error al verificar la fecha del taller');
+      showBookingError('Error al verificar la fecha del taller');
     }
   };
 
@@ -158,18 +161,18 @@ const BookingsPageContent: React.FC = () => {
     
     // Verificaciones de negocio
     if (booking.payment_status === 'Pagado') {
-      alert('❌ No se pueden cancelar reservas que ya han sido pagadas.');
+      showBookingError('No se pueden cancelar reservas que ya han sido pagadas.');
       return;
     }
     
     if (booking.status !== 'Confirmada') {
-      alert('❌ Solo se pueden cancelar reservas confirmadas.');
+      showBookingError('Solo se pueden cancelar reservas confirmadas.');
       return;
     }
     
     // Verificar fecha del taller
     if (!booking.workshop?.date) {
-      alert('❌ No se puede determinar la fecha del taller.');
+      showBookingError('No se puede determinar la fecha del taller.');
       return;
     }
     
@@ -181,7 +184,7 @@ const BookingsPageContent: React.FC = () => {
       
       // Verificar si ya pasó
       if (workshopDate < today) {
-        alert('❌ No se pueden cancelar talleres que ya han finalizado.');
+        showBookingError('No se pueden cancelar talleres que ya han finalizado.');
         return;
       }
       
@@ -190,7 +193,7 @@ const BookingsPageContent: React.FC = () => {
       oneWeekBefore.setDate(oneWeekBefore.getDate() + 7);
       
       if (workshopDate <= oneWeekBefore) {
-        alert('⏰ Solo se pueden cancelar reservas hasta una semana antes del taller.');
+        showBookingError('Solo se pueden cancelar reservas hasta una semana antes del taller.');
         return;
       }
       
@@ -200,11 +203,11 @@ const BookingsPageContent: React.FC = () => {
       
     } catch (error) {
       console.error('Error verificando fecha para cancelación:', error);
-      alert('❌ Error al verificar la fecha del taller.');
+      showBookingError('Error al verificar la fecha del taller.');
     }
   };
 
-  // Confirmar cancelación con manejo de errores mejorado
+  // Confirmar cancelación con manejo de errores mejorado y toasts
   const confirmCancel = async () => {
     if (!selectedBooking) return;
     
@@ -219,8 +222,11 @@ const BookingsPageContent: React.FC = () => {
       
       console.log('✅ [BOOKINGS] Reserva cancelada exitosamente');
       
-      // Mostrar mensaje de éxito
-      alert(`✅ Reserva #${selectedBooking.id} cancelada exitosamente`);
+      // Mostrar toast de éxito en lugar de alert
+      showBookingCancelled(
+        selectedBooking.id, 
+        selectedBooking.workshop?.title
+      );
       
       // Cerrar modal
       setShowCancelModal(false);
@@ -238,7 +244,7 @@ const BookingsPageContent: React.FC = () => {
     } catch (error: any) {
       console.error('❌ [BOOKINGS] Error al cancelar reserva:', error);
       
-      // Mensajes de error más específicos
+      // Mensajes de error más específicos usando toasts
       let errorMessage = 'Error desconocido al cancelar la reserva.';
       
       if (error.message) {
@@ -255,7 +261,8 @@ const BookingsPageContent: React.FC = () => {
         }
       }
       
-      alert(`❌ Error al cancelar la reserva: ${errorMessage}`);
+      // Mostrar error usando toast en lugar de alert
+      showBookingError(errorMessage);
     } finally {
       setIsProcessing(false);
       setProcessingBookingId(null);
@@ -541,7 +548,7 @@ const BookingsPageContent: React.FC = () => {
       </div>
 
       {/* ========================================
-          MODALES UNIFICADOS
+          MODALES UNIFICADOS (SIN CAMBIOS)
           ======================================== */}
       
       {/* Modal de detalles */}
@@ -788,14 +795,16 @@ const BookingsPageContent: React.FC = () => {
 };
 
 // ====================================================
-// COMPONENTE PRINCIPAL CON PROVEEDOR DE CONTEXTO
+// COMPONENTE PRINCIPAL CON PROVEEDOR DE CONTEXTO Y TOASTS
 // ====================================================
 
 const BookingsPage: React.FC = () => {
   return (
-    <BookingsProvider>
-      <BookingsPageContent />
-    </BookingsProvider>
+    <ToastProvider position="top-right" maxToasts={3}>
+      <BookingsProvider>
+        <BookingsPageContent />
+      </BookingsProvider>
+    </ToastProvider>
   );
 };
 

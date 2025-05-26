@@ -160,19 +160,19 @@ async def proxy(request: Request, target_base: str, strip_prefix: str, add_prefi
         logger.error(f"⏰ Timeout al conectar con {target_base}")
         raise HTTPException(
             status_code=504, 
-            detail=f"Timeout connecting to service. Please try again."
+            detail=f"Error al conectar con el servidor. Estamos trabajando para encender el horno para ti. VUelve más tarde."
         )
     except httpx.ConnectError:
         logger.error(f"🔌 Error de conexión con {target_base}")
         raise HTTPException(
             status_code=503, 
-            detail=f"Service temporarily unavailable. Please try again later."
+            detail=f"Error al conectar con el servidor. Estamos trabajando para encender el horno para ti. VUelve más tarde."
         )
     except Exception as e:
         logger.error(f"❌ Error proxying to {target_base}: {str(e)}")
         raise HTTPException(
             status_code=500, 
-            detail=f"Internal gateway error. Please contact support."
+            detail=f"Error al conectar con el servidor. Estamos trabajando para encender el horno para ti. VUelve más tarde."
         )
 
 # ================================

@@ -130,12 +130,12 @@ export const BookingsProvider: React.FC<BookingsProviderProps> = ({ children }) 
         setBookings([]);
         setError(null);
       } else if (error.message.includes('Network Error') || error.message.includes('timeout')) {
-        setError('Error de conexión. Verifica tu internet e intenta refrescar.');
+        setError('Error de conexión.Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo.');
         setIsOnline(false);
       } else if (error.message.includes('500')) {
         setError('Error del servidor. Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo.');
       } else {
-        setError('Error al cargar tus reservas. Intenta refrescar la página.');
+        setError('Error al conectar con el servidor. Todo estaba listo para reservar... pero el chef de los microservicios dijo ‘Hoy no cocino’. Vuelve cuando recupere el ánimo..');
       }
     } finally {
       setLoading(false);

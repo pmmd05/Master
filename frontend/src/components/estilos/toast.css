@@ -1,0 +1,677 @@
+/* 
+ * Toast Notification Styles - MasterCook Academy
+ * Archivo: frontend/src/components/estilos/toast.css
+ * Siguiendo la estética de BookingPage, Login, Register
+ */
+
+@import './variables.css';
+
+/* ========================================
+   CONTENEDOR DE TOASTS
+   ======================================== */
+
+.toast-container {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  max-width: 400px;
+  padding: var(--spacing-lg);
+}
+
+/* Posiciones del contenedor */
+.toast-container.top-right {
+  top: 0;
+  right: 0;
+}
+
+.toast-container.top-left {
+  top: 0;
+  left: 0;
+}
+
+.toast-container.top-center {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.toast-container.bottom-right {
+  bottom: 0;
+  right: 0;
+}
+
+.toast-container.bottom-left {
+  bottom: 0;
+  left: 0;
+}
+
+.toast-container.bottom-center {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ========================================
+   TOAST NOTIFICATION BASE
+   ======================================== */
+
+.toast-notification {
+  background: rgba(250, 250, 250, 0.98); /* Snow White con transparencia */
+  backdrop-filter: blur(20px);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 
+    0 25px 50px -12px rgba(51, 51, 51, 0.15), /* Charcoal Gray para sombras */
+    0 0 0 1px rgba(217, 79, 79, 0.08); /* Salsa Tomato sutil */
+  border: 1px solid rgba(255, 243, 226, 0.6); /* Creamy Vanilla para bordes */
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 400px;
+  min-width: 320px;
+  
+  /* Estados de animación */
+  opacity: 0;
+  transform: translateX(100%) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-notification.visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.toast-notification.exiting {
+  opacity: 0;
+  transform: translateX(100%) scale(0.95);
+  transition: all 0.3s ease-in;
+}
+
+/* Animación para contenedores del lado izquierdo */
+.toast-container.top-left .toast-notification,
+.toast-container.bottom-left .toast-notification {
+  transform: translateX(-100%) scale(0.95);
+}
+
+.toast-container.top-left .toast-notification.visible,
+.toast-container.bottom-left .toast-notification.visible {
+  transform: translateX(0) scale(1);
+}
+
+.toast-container.top-left .toast-notification.exiting,
+.toast-container.bottom-left .toast-notification.exiting {
+  transform: translateX(-100%) scale(0.95);
+}
+
+/* Animación para contenedores centrales */
+.toast-container.top-center .toast-notification,
+.toast-container.bottom-center .toast-notification {
+  transform: translateY(-100%) scale(0.95);
+}
+
+.toast-container.top-center .toast-notification.visible,
+.toast-container.bottom-center .toast-notification.visible {
+  transform: translateY(0) scale(1);
+}
+
+.toast-container.top-center .toast-notification.exiting,
+.toast-container.bottom-center .toast-notification.exiting {
+  transform: translateY(-100%) scale(0.95);
+}
+
+/* ========================================
+   BARRA DE PROGRESO
+   ======================================== */
+
+.toast-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.toast-progress-bar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  transform: translateX(-100%);
+  animation: toastProgress linear forwards;
+}
+
+@keyframes toastProgress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ========================================
+   CONTENIDO DEL TOAST
+   ======================================== */
+
+.toast-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
+  padding-top: calc(var(--spacing-xl) + 3px); /* Espacio para la barra de progreso */
+}
+
+/* ========================================
+   ICONO DEL TOAST
+   ======================================== */
+
+.toast-icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.toast-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+/* Efectos de fondo para iconos según tipo - MasterCook Academy */
+.toast-notification.success .toast-icon {
+  background: linear-gradient(135deg, var(--toast-success), #5A7A1A); /* Olive Green más oscuro */
+  box-shadow: 
+    0 8px 16px rgba(107, 142, 35, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.toast-notification.error .toast-icon {
+  background: linear-gradient(135deg, var(--toast-error), #B73E3E); /* Salsa Tomato más oscuro */
+  box-shadow: 
+    0 8px 16px rgba(217, 79, 79, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.toast-notification.warning .toast-icon {
+  background: linear-gradient(135deg, var(--toast-warning), #CC6600); /* Naranja más oscuro */
+  box-shadow: 
+    0 8px 16px rgba(230, 126, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.toast-notification.info .toast-icon {
+  background: linear-gradient(135deg, var(--toast-info), #3D7A8C); /* Azul más oscuro */
+  box-shadow: 
+    0 8px 16px rgba(74, 144, 164, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Efecto de brillo en el icono */
+.toast-icon::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: iconShine 2s ease-in-out infinite;
+}
+
+@keyframes iconShine {
+  0%, 100% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  50% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+/* ========================================
+   TEXTO DEL TOAST
+   ======================================== */
+
+.toast-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--mastercook-text-primary); /* Charcoal Gray */
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.4;
+  font-family: var(--font-family-secondary);
+}
+
+.toast-message {
+  font-size: var(--font-size-sm);
+  color: var(--mastercook-text-secondary); /* Ash Gray */
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* ========================================
+   ACCIONES DEL TOAST
+   ======================================== */
+
+.toast-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.toast-action-button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border: none;
+  background: rgba(var(--mastercook-primary-rgb), 0.1); /* Salsa Tomato suave */
+  color: var(--mastercook-primary); /* Salsa Tomato */
+  border: 1px solid rgba(var(--mastercook-primary-rgb), 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.toast-action-button:hover {
+  background: rgba(var(--mastercook-primary-rgb), 0.15);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.toast-close-button {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: rgba(102, 102, 102, 0.1); /* Ash Gray suave */
+  border: 1px solid rgba(102, 102, 102, 0.2);
+  color: var(--mastercook-text-secondary); /* Ash Gray */
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast-close-button svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.toast-close-button:hover {
+  background: rgba(102, 102, 102, 0.2);
+  color: var(--mastercook-text-primary); /* Charcoal Gray */
+  transform: scale(1.1);
+}
+
+/* ========================================
+   VARIANTES DE COLOR PARA TOASTS - MASTERCOOK ACADEMY
+   ======================================== */
+
+/* Success Toast */
+.toast-notification.success {
+  border-left: 4px solid var(--toast-success); /* Olive Green */
+}
+
+.toast-notification.success .toast-progress-bar {
+  background: linear-gradient(90deg, 
+    var(--toast-success), 
+    rgba(107, 142, 35, 0.8), 
+    var(--toast-success)
+  );
+}
+
+/* Error Toast */
+.toast-notification.error {
+  border-left: 4px solid var(--toast-error); /* Salsa Tomato */
+}
+
+.toast-notification.error .toast-progress-bar {
+  background: linear-gradient(90deg, 
+    var(--toast-error), 
+    rgba(217, 79, 79, 0.8), 
+    var(--toast-error)
+  );
+}
+
+/* Warning Toast */
+.toast-notification.warning {
+  border-left: 4px solid var(--toast-warning); /* Naranja cálido */
+}
+
+.toast-notification.warning .toast-progress-bar {
+  background: linear-gradient(90deg, 
+    var(--toast-warning), 
+    rgba(230, 126, 0, 0.8), 
+    var(--toast-warning)
+  );
+}
+
+/* Info Toast */
+.toast-notification.info {
+  border-left: 4px solid var(--toast-info); /* Azul suave */
+}
+
+.toast-notification.info .toast-progress-bar {
+  background: linear-gradient(90deg, 
+    var(--toast-info), 
+    rgba(74, 144, 164, 0.8), 
+    var(--toast-info)
+  );
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Tablets (768px and down) */
+@media (max-width: 768px) {
+  .toast-container {
+    max-width: 350px;
+    padding: var(--spacing-md);
+  }
+  
+  .toast-notification {
+    min-width: 280px;
+  }
+  
+  .toast-content {
+    padding: var(--spacing-lg);
+    gap: var(--spacing-sm);
+  }
+  
+  .toast-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .toast-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  .toast-title {
+    font-size: var(--font-size-sm);
+  }
+  
+  .toast-message {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Mobile Large (640px and down) */
+@media (max-width: 640px) {
+  .toast-container {
+    left: var(--spacing-md) !important;
+    right: var(--spacing-md) !important;
+    transform: none !important;
+    max-width: none;
+    width: auto;
+  }
+  
+  .toast-notification {
+    min-width: auto;
+    width: 100%;
+  }
+  
+  .toast-content {
+    padding: var(--spacing-md);
+  }
+  
+  .toast-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+  }
+  
+  .toast-action-button {
+    width: 100%;
+    text-align: center;
+    padding: var(--spacing-sm);
+  }
+  
+  .toast-close-button {
+    align-self: flex-end;
+  }
+}
+
+/* Mobile Small (480px and down) */
+@media (max-width: 480px) {
+  .toast-container {
+    padding: var(--spacing-sm);
+  }
+  
+  .toast-content {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+  
+  .toast-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  
+  .toast-icon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  .toast-title {
+    font-size: var(--font-size-xs);
+    margin-bottom: 2px;
+  }
+  
+  .toast-message {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  
+  .toast-action-button {
+    font-size: 11px;
+    padding: 4px var(--spacing-xs);
+  }
+  
+  .toast-close-button {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  .toast-close-button svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+
+/* ========================================
+   ACCESIBILIDAD - MASTERCOOK ACADEMY
+   ======================================== */
+
+.toast-notification:focus-within {
+  outline: 2px solid var(--mastercook-primary); /* Salsa Tomato */
+  outline-offset: 2px;
+}
+
+.toast-action-button:focus,
+.toast-close-button:focus {
+  outline: 2px solid var(--mastercook-primary); /* Salsa Tomato */
+  outline-offset: 2px;
+}
+
+/* ========================================
+   MODO OSCURO - MASTERCOOK ACADEMY
+   ======================================== */
+
+@media (prefers-color-scheme: dark) {
+  .toast-notification {
+    background: rgba(51, 51, 51, 0.95); /* Charcoal Gray de fondo */
+    border-color: rgba(255, 243, 226, 0.15); /* Creamy Vanilla sutil */
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(217, 79, 79, 0.1); /* Salsa Tomato sutil */
+  }
+  
+  .toast-title {
+    color: var(--mastercook-bg-light); /* Snow White para títulos */
+  }
+  
+  .toast-message {
+    color: #CCCCCC; /* Gris más claro que Ash Gray */
+  }
+  
+  .toast-close-button {
+    background: rgba(255, 243, 226, 0.1); /* Creamy Vanilla */
+    border-color: rgba(255, 243, 226, 0.2);
+    color: #CCCCCC;
+  }
+  
+  .toast-close-button:hover {
+    background: rgba(255, 243, 226, 0.2);
+    color: var(--mastercook-bg-light); /* Snow White */
+  }
+  
+  .toast-action-button {
+    background: rgba(var(--mastercook-primary-rgb), 0.15);
+    color: #FF7F7F; /* Salsa Tomato más claro */
+    border-color: rgba(var(--mastercook-primary-rgb), 0.3);
+  }
+  
+  .toast-action-button:hover {
+    background: rgba(var(--mastercook-primary-rgb), 0.25);
+    color: #FF9999;
+  }
+}
+
+/* ========================================
+   ANIMACIONES REDUCIDAS
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-notification {
+    transition: opacity 0.2s ease;
+  }
+  
+  .toast-notification.visible {
+    transform: none;
+  }
+  
+  .toast-notification.exiting {
+    transform: none;
+  }
+  
+  .toast-progress-bar {
+    animation: none;
+  }
+  
+  .toast-icon::before {
+    animation: none;
+  }
+  
+  .toast-action-button:hover,
+  .toast-close-button:hover {
+    transform: none;
+  }
+}
+
+/* ========================================
+   UTILIDADES DE ALTO CONTRASTE - MASTERCOOK ACADEMY
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  .toast-notification {
+    border: 2px solid;
+    background: var(--mastercook-bg-light); /* Snow White sólido */
+  }
+  
+  .toast-notification.success {
+    border-color: var(--toast-success); /* Olive Green */
+  }
+  
+  .toast-notification.error {
+    border-color: var(--toast-error); /* Salsa Tomato */
+  }
+  
+  .toast-notification.warning {
+    border-color: var(--toast-warning); /* Naranja cálido */
+  }
+  
+  .toast-notification.info {
+    border-color: var(--toast-info); /* Azul suave */
+  }
+  
+  .toast-title {
+    color: var(--mastercook-text-primary); /* Charcoal Gray */
+    font-weight: 800; /* Más bold para mejor contraste */
+  }
+  
+  .toast-message {
+    color: var(--mastercook-text-primary); /* Charcoal Gray en lugar de Ash Gray */
+  }
+}
+
+/* ========================================
+   PALETA DE COLORES MASTERCOOK ACADEMY
+   ======================================== */
+
+.toast-notification {
+  /* Spacing y Layout */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  
+  /* Typography */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  
+  /* Border Radius */
+  --border-radius-md: 0.375rem;
+  --border-radius-xl: 0.75rem;
+  
+  /* Paleta de Colores MasterCook Academy */
+  --mastercook-primary: #D94F4F;        /* Salsa Tomato - Rojo suave, cálido, amigable */
+  --mastercook-primary-rgb: 217, 79, 79;
+  --mastercook-secondary: #FFF3E2;      /* Creamy Vanilla - Crema neutro, balance de fondo */
+  --mastercook-accent: #6B8E23;         /* Olive Green - Verde oliva natural, cocina */
+  --mastercook-accent-rgb: 107, 142, 35;
+  --mastercook-text-primary: #333333;   /* Charcoal Gray - Gris oscuro, alta legibilidad */
+  --mastercook-text-secondary: #666666; /* Ash Gray - Gris medio para descripciones */
+  --mastercook-bg-light: #FAFAFA;       /* Snow White - Blanco cálido, evita harshness */
+  
+  /* Estados específicos para toasts */
+  --toast-success: #6B8E23;             /* Usar el Olive Green para éxito (cocina) */
+  --toast-success-rgb: 107, 142, 35;
+  --toast-error: #D94F4F;               /* Usar el Salsa Tomato para errores */
+  --toast-error-rgb: 217, 79, 79;
+  --toast-warning: #E67E00;             /* Naranja cálido complementario */
+  --toast-warning-rgb: 230, 126, 0;
+  --toast-info: #4A90A4;               /* Azul suave complementario */
+  --toast-info-rgb: 74, 144, 164;
+  
+  /* Efectos y Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(51, 51, 51, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(51, 51, 51, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(51, 51, 51, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(51, 51, 51, 0.1);
+  
+  /* Transiciones */
+  --transition-normal: all 0.2s ease;
+}
