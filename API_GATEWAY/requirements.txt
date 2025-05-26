@@ -1,2 +1,5 @@
 fastapi[all]
+httpx
 mysql-connector-python
+python-multipart
+uvicorn[standard]

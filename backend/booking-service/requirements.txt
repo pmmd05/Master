@@ -1,3 +1,7 @@
+# backend/booking-service/requirements.txt
 fastapi[all]
 mysql-connector-python
 pydantic
+pydantic[email]
+python-multipart
+uvicorn[standard]
