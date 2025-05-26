@@ -158,16 +158,16 @@ const Dashboard: React.FC = () => {
           <p className="dashboard-help-info-description">
             Contactanos por correo electrónico o por WhatsApp y te responderemos lo antes posible.
           </p>
-          <div className="dashboard-contact-info">
+          <div className="dashboard-help-info">
             <div className="dashboard-contact-item">
-              <span className="dashboard-contact-icon">📧</span>
+
               <div className="dashboard-contact-details">
                 <div className="dashboard-contact-label">Correo electrónico:</div>
                 <div className="dashboard-contact-value">mastercookinfo@gmail.com</div>
               </div>
             </div>
             <div className="dashboard-contact-item">
-              <span className="dashboard-contact-icon">📱</span>
+       
               <div className="dashboard-contact-details">
                 <div className="dashboard-contact-label">WhatsApp:</div>
                 <div className="dashboard-contact-value">+502 3003-9839</div>

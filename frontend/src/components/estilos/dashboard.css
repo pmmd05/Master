@@ -405,7 +405,9 @@
 
 /* Información del Sistema - Estilo Login/Register */
 .dashboard-system-info {
-  background: rgba(33, 150, 243, 0.05);
+  align-items: center;
+  align-content: center;
+  background: rgba(33, 150s, 243, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(33, 150, 243, 0.15);
   border-radius: var(--border-radius-lg);
@@ -467,7 +469,10 @@
   color: #0D47A1;
 }
 
-/* Información de Ayuda - Estilo Login/Register */
+/* ====================================================
+   INFORMACIÓN DE CONTACTO - NUEVOS ESTILOS
+   ==================================================== */
+
 .dashboard-help-info {
   background: rgba(255, 152, 0, 0.05);
   backdrop-filter: blur(10px);
@@ -498,6 +503,141 @@
   text-align: center;
   font-size: var(--font-size-sm);
 }
+
+/* ✅ NUEVOS ESTILOS PARA CONTACTO */
+.dashboard-contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-md);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-contact-item:last-child {
+  margin-bottom: 0;
+}
+
+.dashboard-contact-item:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 152, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-contact-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    180deg,
+    var(--color-warning) 0%,
+    #F57C00 50%,
+    #E65100 100%
+  );
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+}
+
+.dashboard-contact-icon {
+  font-size: var(--font-size-xl);
+  flex-shrink: 0;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  animation: contactPulse 3s ease-in-out infinite;
+}
+
+@keyframes contactPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.dashboard-contact-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.dashboard-contact-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #E65100;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.dashboard-contact-value {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-secondary);
+  line-height: 1.2;
+  word-break: break-word;
+  position: relative;
+}
+
+.dashboard-contact-value:hover {
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Efecto especial para email */
+.dashboard-contact-item:first-child .dashboard-contact-value {
+  position: relative;
+}
+
+.dashboard-contact-item:first-child .dashboard-contact-value::after {
+
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  font-size: var(--font-size-sm);
+  transition: opacity var(--transition-normal);
+}
+
+.dashboard-contact-item:first-child:hover .dashboard-contact-value::after {
+  opacity: 1;
+}
+
+/* Efecto especial para WhatsApp */
+.dashboard-contact-item:last-child .dashboard-contact-value {
+  position: relative;
+}
+
+.dashboard-contact-item:last-child .dashboard-contact-value::after {
+
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  font-size: var(--font-size-sm);
+  transition: opacity var(--transition-normal);
+}
+
+.dashboard-contact-item:last-child:hover .dashboard-contact-value::after {
+  opacity: 1;
+}
+
+/* ====================================================
+   BOTONES DE AYUDA - MANTENER ESTILOS EXISTENTES
+   ==================================================== */
 
 .dashboard-help-buttons {
   display: flex;
@@ -667,6 +807,24 @@
   .dashboard-stat-number {
     font-size: var(--font-size-xl);
   }
+  
+  /* ✅ RESPONSIVE PARA CONTACTO */
+  .dashboard-contact-item {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+  
+  .dashboard-contact-icon {
+    font-size: var(--font-size-lg);
+  }
+  
+  .dashboard-contact-label {
+    font-size: var(--font-size-xs);
+  }
+  
+  .dashboard-contact-value {
+    font-size: var(--font-size-sm);
+  }
 }
 
 /* Mobile Small */
@@ -724,6 +882,26 @@
     width: 100%;
     max-width: 200px;
   }
+  
+  /* ✅ MOBILE SMALL PARA CONTACTO */
+  .dashboard-contact-item {
+    flex-direction: column;
+    text-align: center;
+    padding: var(--spacing-lg);
+  }
+  
+  .dashboard-contact-icon {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .dashboard-contact-details {
+    align-items: center;
+  }
+  
+  .dashboard-contact-value::after {
+    display: none !important;
+  }
 }
 
 /* Mobile Extra Small */
@@ -760,6 +938,19 @@
   .dashboard-hero-title {
     font-size: var(--font-size-lg);
   }
+  
+  /* ✅ EXTRA SMALL PARA CONTACTO */
+  .dashboard-contact-item {
+    padding: var(--spacing-md);
+  }
+  
+  .dashboard-contact-icon {
+    font-size: var(--font-size-xl);
+  }
+  
+  .dashboard-contact-value {
+    font-size: var(--font-size-xs);
+  }
 }
 
 /* Animaciones - Estilo Login/Register */
@@ -788,7 +979,8 @@
 /* Estados de Foco Mejorados */
 .dashboard-nav-card:focus,
 .dashboard-quick-action-button:focus,
-.dashboard-help-button:focus {
+.dashboard-help-button:focus,
+.dashboard-contact-item:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -807,11 +999,16 @@
   .dashboard-nav-card,
   .dashboard-quick-action-button,
   .dashboard-stat-card,
-  .dashboard-help-button {
+  .dashboard-help-button,
+  .dashboard-contact-item {
     transition: none;
   }
   
   .dashboard-hero::before {
+    animation: none;
+  }
+  
+  .dashboard-contact-icon {
     animation: none;
   }
 }
@@ -820,13 +1017,15 @@
 @media (prefers-contrast: high) {
   .dashboard-nav-card,
   .dashboard-quick-actions,
-  .dashboard-stats {
+  .dashboard-stats,
+  .dashboard-contact-item {
     border-width: 2px;
     border-color: var(--color-text-primary);
   }
   
   .dashboard-nav-card-title,
-  .dashboard-section-title {
+  .dashboard-section-title,
+  .dashboard-contact-value {
     color: var(--color-text-primary);
   }
 }
@@ -836,7 +1035,8 @@
   .dashboard-hero,
   .dashboard-nav-card,
   .dashboard-quick-actions,
-  .dashboard-stats {
+  .dashboard-stats,
+  .dashboard-contact-item {
     box-shadow: none !important;
     border: 1px solid #ccc !important;
     break-inside: avoid;
@@ -852,5 +1052,9 @@
   * {
     animation: none !important;
     transition: none !important;
+  }
+  
+  .dashboard-contact-icon {
+    filter: grayscale(100%);
   }
 }
