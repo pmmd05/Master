@@ -315,9 +315,9 @@ const WorkshopsList: React.FC = () => {
                       💰 Precio
                     </span>
                     <span className="booking-modal-workshop-detail-value">
-                      {new Intl.NumberFormat('es-ES', {
+                      {new Intl.NumberFormat('es-GT', {
                         style: 'currency',
-                        currency: 'EUR'
+                        currency: 'GTQ'
                       }).format(bookingWorkshop.price)}
                     </span>
                   </div>

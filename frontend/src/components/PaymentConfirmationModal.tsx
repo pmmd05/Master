@@ -26,9 +26,9 @@ const PaymentConfirmationModal: React.FC<PaymentConfirmationModalProps> = ({
 
   // Formatear precio
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-ES', {
+    return new Intl.NumberFormat('es-GT', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'GTQ',
     }).format(price);
   };
 

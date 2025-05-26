@@ -1,13 +1,10 @@
--- mysql-init/init.sql - CON UTF-8 CORREGIDO
-
--- 🔧 CONFIGURAR CHARSET UTF-8 GLOBALMENTE
 SET NAMES utf8mb4;
 SET character_set_client = utf8mb4;
 SET character_set_connection = utf8mb4;
 SET character_set_results = utf8mb4;
 SET collation_connection = utf8mb4_unicode_ci;
 
--- 🔧 CREAR BASE DE DATOS CON UTF-8
+-- CREAR BASE DE DATOS CON UTF-8
 DROP DATABASE IF EXISTS users_db;
 CREATE DATABASE users_db 
 DEFAULT CHARACTER SET utf8mb4 
@@ -15,9 +12,11 @@ DEFAULT COLLATE utf8mb4_unicode_ci;
 
 USE users_db;
 
--- 🔧 ASEGURAR UTF-8 EN LA SESIÓN ACTUAL
+-- ASEGURAR UTF-8 EN LA SESIÓN ACTUAL
 SET NAMES utf8mb4;
 
+DROP TABLE IF EXISTS payments;
+DROP TABLE IF EXISTS cancelled_bookings_log;
 DROP TABLE IF EXISTS bookings;
 DROP TABLE IF EXISTS workshops;
 DROP TABLE IF EXISTS users;
@@ -184,6 +183,46 @@ CREATE TABLE bookings (
     FOREIGN KEY (workshop_id) REFERENCES workshops(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 🔧 VERIFICAR CONFIGURACIÓN UTF-8
+-- NUEVA TABLA: HISTORIAL DE PAGOS
+CREATE TABLE payments (
+    id_pago INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    monto DECIMAL(10,2) NOT NULL,
+    ultimos_4_digitos_tarjeta VARCHAR(4) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    id_workshop INT NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    payment_id VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci UNIQUE, -- UUID del pago
+    transaction_id VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, -- ID de transacción
+    status VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'approved',
+    payment_method VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'credit_card',
+    FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE,
+    FOREIGN KEY (id_workshop) REFERENCES workshops(id) ON DELETE CASCADE,
+    INDEX idx_email (email),
+    INDEX idx_workshop (id_workshop),
+    INDEX idx_fecha (fecha)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tabla para auditoría de cancelaciones (del booking service)
+CREATE TABLE cancelled_bookings_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    original_booking_id INT,
+    user_email VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    workshop_id INT,
+    original_status VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    original_payment_status VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    cancelled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    cancel_reason TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    INDEX(user_email),
+    INDEX(workshop_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- VERIFICAR CONFIGURACIÓN UTF-8
 SHOW VARIABLES LIKE 'character_set%';
 SHOW VARIABLES LIKE 'collation%';
+
+-- MOSTRAR ESTRUCTURA DE LAS TABLAS CREADAS
+DESCRIBE users;
+DESCRIBE workshops;
+DESCRIBE bookings;
+DESCRIBE payments;
+DESCRIBE cancelled_bookings_log;

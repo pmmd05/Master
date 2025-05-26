@@ -54,9 +54,9 @@ const BookingCard: React.FC<BookingCardProps> = ({
       return 'Precio no disponible';
     }
     
-    return new Intl.NumberFormat('es-ES', {
+    return new Intl.NumberFormat('es-GT', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'GTQ'
     }).format(price);
   };
 

@@ -1,4 +1,4 @@
-# backend/workshops-service/main.py - CON UTF-8 CORREGIDO
+
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,10 +51,10 @@ def get_connection():
                 user="root",
                 password="12345",
                 database="users_db",
-                charset='utf8mb4',           # ← CHARSET UTF-8
-                collation='utf8mb4_unicode_ci',  # ← COLLATION UNICODE
-                use_unicode=True,            # ← USAR UNICODE
-                autocommit=True              # ← AUTOCOMMIT PARA CONSISTENCIA
+                charset='utf8mb4',           #  CHARSET UTF-8
+                collation='utf8mb4_unicode_ci',  #  COLLATION UNICODE
+                use_unicode=True,            #  USAR UNICODE
+                autocommit=True              #  AUTOCOMMIT PARA CONSISTENCIA
             )
         except mysql.connector.Error:
             print(f"[workshops-service] Intento {attempt+1} fallido, esperando...")

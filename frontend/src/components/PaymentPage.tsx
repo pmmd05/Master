@@ -45,9 +45,9 @@ const PaymentPage: React.FC = () => {
 
   // Formatear precio
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('es-ES', {
+    return new Intl.NumberFormat('es-GT', {
       style: 'currency',
-      currency: 'EUR'
+      currency: 'GTQ'
     }).format(price);
   };
 

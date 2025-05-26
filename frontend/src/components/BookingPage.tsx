@@ -630,7 +630,7 @@ const BookingsPageContent: React.FC = () => {
                       <span className="booking-modal-item-value">
                         {(() => {
                           try {
-                            return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price);
+                            return new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(selectedBooking.workshop.price);
                           } catch {
                             return 'Precio no disponible';
                           }
@@ -721,7 +721,7 @@ const BookingsPageContent: React.FC = () => {
                         <span className="booking-modal-item-value">
                           {(() => {
                             try {
-                              return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(selectedBooking.workshop.price);
+                              return new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(selectedBooking.workshop.price);
                             } catch {
                               return 'Precio no disponible';
                             }
