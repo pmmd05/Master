@@ -1,4 +1,4 @@
-// frontend/src/components/Dashboard.tsx
+// frontend/src/components/Dashboard.tsx - ACTUALIZADO CON HISTORIAL DE PAGOS
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,8 @@ const Dashboard: React.FC = () => {
         </svg>
       ),
       path: '/workshops',
+  
+      color: '#D94F4F'
     },
     {
       title: 'Mis Reservas',
@@ -29,16 +31,21 @@ const Dashboard: React.FC = () => {
         </svg>
       ),
       path: '/bookings',
+     
+      color: '#6B8E23'
     },
+          
     {
-      title: 'Pagos',
-      description: 'Gestiona tus métodos de pago y revisa el historial de transacciones de tus talleres',
+      title: 'Historial de Pagos',
+      description: 'Consulta todos tus pagos anteriores, descargas comprobantes y gestiona tu historial financiero',
       icon: (
         <svg className="dashboard-nav-card-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      path: '/payment',
+      path: '/payment-history',
+
+      color: '#8B5CF6'
     },
   ];
 
@@ -95,6 +102,7 @@ const Dashboard: React.FC = () => {
               }}
               className="dashboard-nav-card"
               aria-label={`Ir a ${item.title}`}
+              style={{'--card-color': item.color} as React.CSSProperties}
             >
               <div className="dashboard-nav-card-header">
                 <div className="dashboard-nav-card-icon-container">
@@ -114,7 +122,7 @@ const Dashboard: React.FC = () => {
         {/* Estadísticas de usuario */}
         <section className="dashboard-stats">
           <h3 className="dashboard-section-title">
-            <span className="dashboard-section-title-emoji" role="img" aria-label="Estadísticas"></span>
+            <span className="dashboard-section-title-emoji" role="img" aria-label="Estadísticas">📈</span>
             Tu Progreso en MasterCook
           </h3>
           <div className="dashboard-stats-grid">
@@ -136,6 +144,8 @@ const Dashboard: React.FC = () => {
           </div>
         </section>
 
+       
+
         {/* Información de ayuda */}
         <section className="dashboard-help-info">
           <h3 className="dashboard-help-info-title">
@@ -148,24 +158,21 @@ const Dashboard: React.FC = () => {
           <p className="dashboard-help-info-description">
             Contactanos por correo electrónico o por WhatsApp y te responderemos lo antes posible.
           </p>
-          <p className="dashboard-correo">
-            Correo: mastercookinfo@gmail.com
-          </p>
-          <p className="dashboard-numero">
-            WhatsApp: +502 3003-9839
-          </p>
-          <div className="dashboard-help-buttons">
-            <button 
-              type="button"
-              onClick={() => {
-                console.log('🔄 [DASHBOARD] Recargando página...');
-                window.location.reload();
-              }}
-              className="dashboard-help-button dashboard-help-button-outline"
-              aria-label="Recargar página"
-            >
-              🔄 Recargar Página
-            </button>
+          <div className="dashboard-contact-info">
+            <div className="dashboard-contact-item">
+              <span className="dashboard-contact-icon">📧</span>
+              <div className="dashboard-contact-details">
+                <div className="dashboard-contact-label">Correo electrónico:</div>
+                <div className="dashboard-contact-value">mastercookinfo@gmail.com</div>
+              </div>
+            </div>
+            <div className="dashboard-contact-item">
+              <span className="dashboard-contact-icon">📱</span>
+              <div className="dashboard-contact-details">
+                <div className="dashboard-contact-label">WhatsApp:</div>
+                <div className="dashboard-contact-value">+502 3003-9839</div>
+              </div>
+            </div>
           </div>
         </section>
       </main>

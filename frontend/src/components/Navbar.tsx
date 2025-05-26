@@ -1,3 +1,4 @@
+// frontend/src/components/Navbar.tsx - ACTUALIZADO CON HISTORIAL DE PAGOS
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -7,218 +8,279 @@ const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
+  // Cerrar menús al hacer clic fuera
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      setIsMenuOpen(false);
+      setIsProfileMenuOpen(false);
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  // Manejar logout
   const handleLogout = async () => {
     try {
+      console.log('🚪 [NAVBAR] Iniciando logout...');
       await logout();
       navigate('/login');
+      console.log('✅ [NAVBAR] Logout exitoso');
     } catch (error) {
-      console.error('Error en logout:', error);
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
+      console.error('❌ [NAVBAR] Error en logout:', error);
+      // Forzar navegación incluso si hay error
       navigate('/login');
     }
   };
 
-  const isActivePath = (path: string) => {
+  // Verificar si una ruta está activa
+  const isActiveRoute = (path: string) => {
     return location.pathname === path;
   };
 
-  const navLinks = [
-    { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
-    { path: '/workshops', label: 'Talleres', icon: '🍳' },
-    { path: '/bookings', label: 'Reservas', icon: '📅' },
-    { path: '/payments', label: 'Pagos', icon: '💳' }
+  // Obtener solo el primer nombre del usuario
+  const firstName = user?.name?.split(' ')[0] || 'Usuario';
+
+  // Elementos de navegación principales
+  const navigationItems = [
+    {
+      path: '/dashboard',
+      label: 'Principal',
+      icon: (
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="navbar-icon">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2M8 5a2 2 0 002 2h4a2 2 0 002-2M8 5v4h8V5" />
+        </svg>
+      ),
+    
+    },
+    {
+      path: '/workshops',
+      label: 'Talleres',
+      icon: (
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="navbar-icon">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      ),
+    
+    },
+    {
+      path: '/bookings',
+      label: 'Mis Reservas',
+      icon: (
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="navbar-icon">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+    
+    },
+    
+    {
+      path: '/payment-history',
+      label: 'Historial de Pagos',
+      icon: (
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="navbar-icon">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+    
+    }
   ];
 
-  const closeMobileMenu = () => setShowMobileMenu(false);
-  const closeUserMenu = () => setShowUserMenu(false);
-
   return (
-    <>
-      <nav className="navbar-mastercook">
-        <div className="navbar-content">
-          
-          {/* Logo y Brand */}
-          <div 
-            className="navbar-logo"
+    <nav className="navbar">
+      <div className="navbar-container">
+        
+        {/* Logo y marca */}
+        <div className="navbar-brand">
+          <button
             onClick={() => navigate('/dashboard')}
-            role="button"
-            tabIndex={0}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                navigate('/dashboard');
-              }
-            }}
+            className="navbar-logo-button"
+            aria-label="Ir al dashboard"
           >
             <img 
               src="/Logo.png.png" 
-              alt="MasterCook Academy Logo" 
-              className="navbar-logo-img"
+              alt="MasterCook Academy" 
+              className="navbar-logo"
             />
-            <div className="navbar-brand">MasterCook Academy</div>
+            <div className="navbar-brand-text">
+              <span className="navbar-brand-name">MasterCook</span>
+              <span className="navbar-brand-subtitle">Academy</span>
+            </div>
+          </button>
+        </div>
+
+        {/* Navegación principal - Desktop */}
+        <div className="navbar-nav-desktop">
+          {navigationItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className={`navbar-nav-item ${isActiveRoute(item.path) ? 'active' : ''}`}
+              aria-label={`Ir a ${item.label}`}
+            >
+              <span className="navbar-nav-emoji" role="img" aria-label={item.label}>
+            
+              </span>
+              {item.icon}
+              <span className="navbar-nav-label">{item.label}</span>
+              {isActiveRoute(item.path) && (
+                <div className="navbar-nav-active-indicator" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Perfil de usuario */}
+        <div className="navbar-user">
+          <div className="navbar-user-info">
+            <span className="navbar-user-greeting">Hola, </span>
+            <span className="navbar-user-name">{firstName}</span>
+          </div>
+          
+          <div className="navbar-profile-menu">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsProfileMenuOpen(!isProfileMenuOpen);
+              }}
+              className="navbar-profile-button"
+              aria-label="Menú de perfil"
+            >
+              <div className="navbar-avatar">
+                <span className="navbar-avatar-text">
+                  {firstName.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <svg 
+                className={`navbar-dropdown-icon ${isProfileMenuOpen ? 'open' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Menú desplegable de perfil */}
+            {isProfileMenuOpen && (
+              <div className="navbar-profile-dropdown" onClick={(e) => e.stopPropagation()}>
+                <div className="navbar-profile-header">
+                  <div className="navbar-profile-avatar">
+                    <span>{firstName.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div className="navbar-profile-info">
+                    <div className="navbar-profile-name">{user?.name}</div>
+                    <div className="navbar-profile-email">{user?.email}</div>
+                  </div>
+                </div>
+
+                <div className="navbar-profile-divider" />
+
+
+                <button
+                  onClick={handleLogout}
+                  className="navbar-profile-logout"
+                >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="navbar-profile-action-icon">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Cerrar Sesión
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Navegación Desktop */}
-          <div className="navbar-nav">
-            {navLinks.map((link) => (
+          {/* Botón de menú móvil */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsMenuOpen(!isMenuOpen);
+            }}
+            className="navbar-mobile-menu-button"
+            aria-label="Abrir menú de navegación"
+          >
+            <svg 
+              className={`navbar-hamburger ${isMenuOpen ? 'open' : ''}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              {isMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Menú móvil */}
+      {isMenuOpen && (
+        <div className="navbar-mobile-menu" onClick={(e) => e.stopPropagation()}>
+          <div className="navbar-mobile-header">
+            <div className="navbar-mobile-user">
+              <div className="navbar-mobile-avatar">
+                <span>{firstName.charAt(0).toUpperCase()}</span>
+              </div>
+              <div className="navbar-mobile-user-info">
+                <div className="navbar-mobile-user-name">{user?.name}</div>
+                <div className="navbar-mobile-user-email">{user?.email}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="navbar-mobile-nav">
+            {navigationItems.map((item) => (
               <button
-                key={link.path}
-                onClick={() => navigate(link.path)}
-                className={`navbar-link ${isActivePath(link.path) ? 'active' : ''}`}
-                aria-label={`Ir a ${link.label}`}
+                key={item.path}
+                onClick={() => {
+                  navigate(item.path);
+                  setIsMenuOpen(false);
+                }}
+                className={`navbar-mobile-nav-item ${isActiveRoute(item.path) ? 'active' : ''}`}
               >
-                <span className="icon-sm" role="img" aria-label={link.label}>
-                  {link.icon}
-                </span>
-                {link.label}
+                <div className="navbar-mobile-nav-icon">
+    
+                  {item.icon}
+                </div>
+                <span className="navbar-mobile-nav-label">{item.label}</span>
+                {isActiveRoute(item.path) && (
+                  <div className="navbar-mobile-nav-active" />
+                )}
               </button>
             ))}
           </div>
 
-          {/* Usuario y Acciones */}
-          <div className="navbar-user">
-            {/* Información del usuario - Desktop */}
-            <div className="navbar-user-info">
-              <div className="navbar-user-details">
-                <div className="navbar-user-name">
-                  {user?.name}
-                </div>
-                <div className="navbar-user-email">
-                  {user?.email}
-                </div>
-              </div>
-              <div className="navbar-avatar">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
-            </div>
-
-            {/* Menú de usuario */}
-            <div className="relative">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="navbar-user-menu-button"
-                aria-label="Menú de usuario"
-                aria-expanded={showUserMenu}
-              >
-                <svg 
-                  className="icon-md" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth="2" 
-                    d="M19 9l-7 7-7-7" 
-                  />
-                </svg>
-              </button>
-
-              {/* Dropdown del usuario */}
-              {showUserMenu && (
-                <div className="navbar-user-dropdown">
-                  <div className="navbar-dropdown-user-info md:hidden">
-                    <div className="navbar-user-name">{user?.name}</div>
-                    <div className="navbar-user-email">{user?.email}</div>
-                  </div>                  
-                  
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      closeUserMenu();
-                    }}
-                    className="navbar-dropdown-item danger"
-                  >
-                    <span className="icon-sm" role="img" aria-label="Cerrar sesión">🚪</span>
-                    Cerrar Sesión
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Botón móvil de menú */}
+          <div className="navbar-mobile-footer">
             <button
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="navbar-mobile-button"
-              aria-label="Menú de navegación móvil"
-              aria-expanded={showMobileMenu}
+              onClick={handleLogout}
+              className="navbar-mobile-logout"
             >
-              <svg 
-                className="icon-lg" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth="2" 
-                  d={showMobileMenu ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-                />
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="navbar-mobile-logout-icon">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
+              Cerrar Sesión
             </button>
           </div>
         </div>
+      )}
 
-        {/* Menú móvil */}
-        {showMobileMenu && (
-          <div className="navbar-mobile-menu">
-            <div className="navbar-mobile-links">
-              {navLinks.map((link) => (
-                <button
-                  key={link.path}
-                  onClick={() => {
-                    navigate(link.path);
-                    closeMobileMenu();
-                  }}
-                  className={`navbar-mobile-link ${
-                    isActivePath(link.path) ? 'active' : ''
-                  }`}
-                  aria-label={`Ir a ${link.label}`}
-                >
-                  <span className="icon-md" role="img" aria-label={link.label}>
-                    {link.icon}
-                  </span>
-                  {link.label}
-                </button>
-              ))}
-            </div>
-            
-            <div className="navbar-mobile-logout">
-              <button
-                onClick={() => {
-                  handleLogout();
-                  closeMobileMenu();
-                }}
-                className="navbar-mobile-logout-button"
-                aria-label="Cerrar sesión"
-              >
-                <span className="icon-md" role="img" aria-label="Cerrar sesión">🚪</span>
-                Cerrar Sesión
-              </button>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* Overlay para cerrar menús */}
-      {(showMobileMenu || showUserMenu) && (
+      {/* Overlay para cerrar menús en móvil */}
+      {(isMenuOpen || isProfileMenuOpen) && (
         <div 
-          className="navbar-overlay" 
+          className="navbar-overlay"
           onClick={() => {
-            closeMobileMenu();
-            closeUserMenu();
+            setIsMenuOpen(false);
+            setIsProfileMenuOpen(false);
           }}
-          aria-hidden="true"
         />
       )}
-    </>
+    </nav>
   );
 };
 
